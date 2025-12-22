@@ -21,9 +21,7 @@ services:
       retries: 5
 
   app:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: cherrish-app:latest
     container_name: cherrish-app
     env_file:
       - .env

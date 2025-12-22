@@ -2,6 +2,7 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '3.5.9'
 	id 'io.spring.dependency-management' version '1.1.7'
+	id 'com.google.cloud.tools.jib' version '3.4.3'
 }
 
 group = 'com.sopt'
@@ -38,4 +39,26 @@ dependencies {
 
 tasks.named('test') {
 	useJUnitPlatform()
+}
+
+jib {
+	from {
+		image = 'eclipse-temurin:21-jre'
+	}
+	to {
+		image = 'cherrish-app'
+		tags = ['latest', project.version]
+	}
+	container {
+		ports = ['8080']
+		user = '1000:1000'
+		jvmFlags = [
+			'-Xms256m',
+			'-Xmx512m',
+			'-XX:+UseG1GC',
+			'-XX:MaxGCPauseMillis=100',
+			'-Djava.security.egd=file:/dev/./urandom'
+		]
+		creationTime = 'USE_CURRENT_TIMESTAMP'
+	}
 }
