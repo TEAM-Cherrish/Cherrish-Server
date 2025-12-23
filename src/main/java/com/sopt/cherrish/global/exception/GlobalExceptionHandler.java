@@ -39,7 +39,8 @@ public class GlobalExceptionHandler {
 	// @Valid 검증 실패 처리 (DTO validation)
 	@ExceptionHandler(MethodArgumentNotValidException.class)
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
-	public CommonApiResponse<Map<String, String>> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
+	public CommonApiResponse<Map<String, String>> handleMethodArgumentNotValidException(
+		MethodArgumentNotValidException e) {
 		Map<String, String> errors = e.getBindingResult()
 			.getFieldErrors()
 			.stream()
