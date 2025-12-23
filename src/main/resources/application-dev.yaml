@@ -5,6 +5,8 @@ spring:
     properties:
       hibernate:
         format_sql: true
+  swagger:
+    base-url: http://localhost:8080
 
 logging:
   level:
