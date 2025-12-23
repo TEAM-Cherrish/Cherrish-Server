@@ -31,5 +31,4 @@ public enum ErrorCode implements ErrorType {
 	public int getStatus() {
 		return status;
 	}
-
 }
