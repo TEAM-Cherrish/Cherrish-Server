@@ -63,6 +63,7 @@ logs/
 ### Environment ###
 .env
 .env.*
+!.env.example
 application-local.yml
 !application.yml
 
