@@ -52,7 +52,3 @@ path_filters:
 # path_filters:
 #   included:
 #     - "src/**/*.java"
-
-# 지식 베이스 사용
-knowledge_base:
-  enabled: true
