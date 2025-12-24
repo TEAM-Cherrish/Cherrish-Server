@@ -1,7 +1,5 @@
 # 코딩 가이드
 
-`Java - 21`
-
 ## 목차
 
 - [1. DTO 작성 규칙](#1-dto-작성-규칙)
@@ -107,9 +105,3 @@ public class SecurityConfig {
 - `@Configuration` 클래스는 `global/config` 패키지에 위치
 - 각 설정은 목적별로 분리 (Security, Database, Redis 등)
 
-## 관련 문서
-
-- [코드 스타일](./CODE_STYLE.md)
-- [API 컨벤션](./API_CONVENTION.md)
-- [Git 워크플로우](./GIT_WORKFLOW.md)
-- [환경 설정 가이드](./SETUP_GUIDE.md)

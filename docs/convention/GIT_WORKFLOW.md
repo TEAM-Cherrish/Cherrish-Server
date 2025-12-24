@@ -44,7 +44,7 @@ chore: 빌드 업무, 패키지 매니저 수정
 Git Flow
 
 main(배포 버전 코드)
-dev(개발 단계 코드)
+develop(개발 단계 코드)
 
 // 영어로 쓰기
 15-feature/implement-user-login
@@ -59,9 +59,3 @@ dev(개발 단계 코드)
 기능 추가 티켓 다 이슈화
 ```
 
-## 관련 문서
-
-- [코드 스타일](./CODE_STYLE.md)
-- [코딩 가이드](./CODING_GUIDE.md)
-- [API 컨벤션](./API_CONVENTION.md)
-- [환경 설정 가이드](./SETUP_GUIDE.md)
