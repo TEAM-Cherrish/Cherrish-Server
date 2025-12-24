@@ -2,6 +2,8 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '3.5.9'
 	id 'io.spring.dependency-management' version '1.1.7'
+	id 'jacoco'
+	id 'checkstyle'
 }
 
 group = 'com.sopt'
@@ -37,6 +39,7 @@ dependencies {
 	// Test
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+	testRuntimeOnly 'com.h2database:h2'
 }
 
 tasks.named('test') {
@@ -49,4 +52,47 @@ tasks.named('bootBuildImage') {
 	environment = [
 		'BP_JVM_VERSION': '21'
 	]
+}
+
+// JaCoCo Configuration
+jacoco {
+	toolVersion = "0.8.12"
+}
+
+jacocoTestReport {
+	dependsOn test
+	reports {
+		xml.required = true
+		html.required = true
+		csv.required = false
+	}
+}
+
+jacocoTestCoverageVerification {
+	violationRules {
+		rule {
+			limit {
+				minimum = 0.0
+			}
+		}
+	}
+}
+
+test {
+	finalizedBy jacocoTestReport
+}
+
+// Checkstyle Configuration
+checkstyle {
+	toolVersion = "12.3.0"
+	configFile = file("${rootDir}/config/checkstyle/checkstyle.xml")
+	maxWarnings = 100
+}
+
+checkstyleMain {
+	source = 'src/main/java'
+}
+
+checkstyleTest {
+	source = 'src/test/java'
 }

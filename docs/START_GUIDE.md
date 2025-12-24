@@ -46,43 +46,27 @@ SELECT * FROM your_table;         # 쿼리 실행
 
 ---
 
-## 배포 가이드 (AWS EC2)
+## 코드 스타일 검사
 
-### 1. 이미지 빌드
+### Checkstyle
+
+프로젝트의 Checkstyle 설정은 `config/checkstyle/checkstyle.xml`에 정의되어 있습니다.
+
+**빌드 시 자동 검사**
+
 ```bash
-./gradlew bootBuildImage
+# 전체 빌드 (Checkstyle 포함)
+./gradlew build
+
+# Checkstyle만 실행
+./gradlew checkstyleMain checkstyleTest
+
+# 리포트 확인
+# build/reports/checkstyle/main.html
 ```
 
-### 2. Docker Hub에 푸시
-```bash
-docker tag cherrish:0.0.1-SNAPSHOT your-dockerhub-username/cherrish:latest
-docker login
-docker push your-dockerhub-username/cherrish:latest
-```
+**CI/CD 파이프라인**
 
-### 3. EC2에서 실행
-```bash
-# EC2 SSH 접속 후
-docker pull your-dockerhub-username/cherrish:latest
-
-docker run -d \
-  --name cherrish-app \
-  -p 8080:8080 \
-  -e SPRING_PROFILES_ACTIVE=prod \
-  -e DB_HOST=your-rds-endpoint \
-  -e DB_PASSWORD=your-password \
-  your-dockerhub-username/cherrish:latest
-```
-
-### 4. AWS RDS PostgreSQL 연결
-- RDS 인스턴스 생성 (PostgreSQL 17)
-- 보안 그룹: EC2에서 5432 포트 접근 허용
-- 환경 변수로 RDS 엔드포인트 전달
-
----
-
-## 참고
-
-- **Gradle**: `./gradlew --help`
-- **Spring Profiles**: `application-dev.yaml` (개발), `application-prod.yaml` (배포)
-- **포트 충돌**: `.env`에서 `DB_PORT` 변경
+- PR 생성 시 자동으로 Checkstyle 검사 실행
+- Checkstyle 통과해야만 병합 가능
+- 최대 경고 허용: 100개 (점진적 개선 목표)
