@@ -234,9 +234,3 @@ int numbers[];
 - Checkstyle 통과해야만 병합 가능
 - 최대 경고 허용: 100개 (점진적 개선 목표)
 
-## 관련 문서
-
-- [코딩 가이드](./CODING_GUIDE.md)
-- [API 컨벤션](./API_CONVENTION.md)
-- [Git 워크플로우](./GIT_WORKFLOW.md)
-- [환경 설정 가이드](./SETUP_GUIDE.md)

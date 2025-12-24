@@ -4,29 +4,29 @@
 
 이 프로젝트의 모든 컨벤션과 가이드는 주제별로 분리되어 있습니다. 필요한 문서를 클릭하여 확인하세요.
 
-### 🏗️ [아키텍처 가이드](./ARCHITECTURE.md)
+### 🏗️ [아키텍처 가이드](ARCHITECTURE.md)
 프로젝트의 전체 구조와 레이어별 책임에 대한 가이드
 - 패키지 구조 (DDD 레이어드 아키텍처)
 - 레이어별 책임 (Controller, Service, Repository)
 
-### 📝 [코드 스타일 가이드](./CODE_STYLE.md)
+### 📝 [코드 스타일 가이드](CODE_STYLE.md)
 코드 작성 스타일과 네이밍 규칙
 - 네이밍 컨벤션 (클래스, 메서드, 변수)
 - Checkstyle 가이드 (자동 검사 규칙)
 
-### 💻 [코딩 가이드](./CODING_GUIDE.md)
+### 💻 [코딩 가이드](CODING_GUIDE.md)
 실제 코드 작성 시 따라야 할 구체적인 규칙
 - DTO 작성 규칙
 - Entity 작성 규칙
 - Configuration 작성 규칙
 
-### 🌐 [API 설계 가이드](./API_CONVENTION.md)
+### 🌐 [API 설계 가이드](API_CONVENTION.md)
 REST API 설계 및 문서화 규칙
 - 공통 응답 컨벤션
 - 예외 처리 컨벤션
 - Swagger 컨벤션
 
-### 🔀 [Git 워크플로우](./GIT_WORKFLOW.md)
+### 🔀 [Git 워크플로우](GIT_WORKFLOW.md)
 협업을 위한 Git 사용 규칙
 - Commit 컨벤션
 - Branch 컨벤션
