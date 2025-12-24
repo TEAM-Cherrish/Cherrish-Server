@@ -1,0 +1,65 @@
+name: CI
+
+on:
+  pull_request:
+    branches:
+      - develop
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: 'gradle'
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Build with Gradle
+        run: ./gradlew clean build
+
+      - name: Run tests
+        run: ./gradlew test
+
+      - name: Run Checkstyle
+        run: ./gradlew checkstyleMain checkstyleTest
+
+      - name: Generate JaCoCo coverage report
+        run: ./gradlew jacocoTestReport
+
+      - name: Check code coverage
+        run: ./gradlew jacocoTestCoverageVerification
+
+      - name: Upload coverage to GitHub
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: jacoco-report
+          path: build/reports/jacoco/test/html/
+
+      - name: Send Discord notification on success
+        if: success()
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: |
+          curl -H "Content-Type: application/json" \
+               -d "{\"embeds\": [{\"title\": \"✅ CI Success\", \"description\": \"PR #${{ github.event.pull_request.number }}: ${{ github.event.pull_request.title }}\", \"color\": 3066993, \"fields\": [{\"name\": \"Branch\", \"value\": \"${{ github.head_ref }} → ${{ github.base_ref }}\", \"inline\": true}, {\"name\": \"Author\", \"value\": \"${{ github.event.pull_request.user.login }}\", \"inline\": true}, {\"name\": \"Commit\", \"value\": \"[\`${GITHUB_SHA:0:7}\`](${{ github.event.pull_request.html_url }})\", \"inline\": true}], \"timestamp\": \"$(date -u +%Y-%m-%dT%H:%M:%S.000Z)\"}]}" \
+               $DISCORD_WEBHOOK
+
+      - name: Send Discord notification on failure
+        if: failure()
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: |
+          curl -H "Content-Type: application/json" \
+               -d "{\"embeds\": [{\"title\": \"❌ CI Failed\", \"description\": \"PR #${{ github.event.pull_request.number }}: ${{ github.event.pull_request.title }}\", \"color\": 15158332, \"fields\": [{\"name\": \"Branch\", \"value\": \"${{ github.head_ref }} → ${{ github.base_ref }}\", \"inline\": true}, {\"name\": \"Author\", \"value\": \"${{ github.event.pull_request.user.login }}\", \"inline\": true}, {\"name\": \"Commit\", \"value\": \"[\`${GITHUB_SHA:0:7}\`](${{ github.event.pull_request.html_url }})\", \"inline\": true}], \"timestamp\": \"$(date -u +%Y-%m-%dT%H:%M:%S.000Z)\"}]}" \
+               $DISCORD_WEBHOOK
