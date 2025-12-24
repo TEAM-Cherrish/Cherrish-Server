@@ -21,7 +21,7 @@ Collect PR information:
 
 !`gh pr view $1 --json title,body,author,url,state,headRefName,baseRefName,createdAt`
 !`gh pr diff $1`
-!`gh pr checks $1`
+!`gh pr checks $1 || true`
 !`gh pr view $1 --comments`
 
 ## Review Instructions
