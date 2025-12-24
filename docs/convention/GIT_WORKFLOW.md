@@ -7,7 +7,6 @@
 - [1. Git Commit 컨벤션](#1-git-commit-컨벤션)
 - [2. Git Branch 컨벤션](#2-git-branch-컨벤션)
 - [3. Issue 잘 만들기](#3-issue-잘-만들기)
-- [관련 문서](#관련-문서)
 
 ## 1. Git Commit 컨벤션
 

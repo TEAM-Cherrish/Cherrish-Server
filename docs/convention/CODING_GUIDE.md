@@ -5,8 +5,6 @@
 - [1. DTO 작성 규칙](#1-dto-작성-규칙)
 - [2. Entity 작성 규칙](#2-entity-작성-규칙)
 - [3. Configuration 작성](#3-configuration-작성)
-- [관련 문서](#관련-문서)
-
 ## 1. DTO 작성 규칙
 
 ```java
