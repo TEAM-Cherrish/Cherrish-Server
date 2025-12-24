@@ -50,16 +50,32 @@ jobs:
         if: success()
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_AUTHOR: ${{ github.event.pull_request.user.login }}
+          HEAD_REF: ${{ github.head_ref }}
+          BASE_REF: ${{ github.base_ref }}
+          PR_URL: ${{ github.event.pull_request.html_url }}
         run: |
+          # Escape special characters for JSON
+          ESCAPED_TITLE=$(echo "$PR_TITLE" | jq -Rs '.')
           curl -H "Content-Type: application/json" \
-               -d "{\"embeds\": [{\"title\": \"✅ CI Success\", \"description\": \"PR #${{ github.event.pull_request.number }}: ${{ github.event.pull_request.title }}\", \"color\": 3066993, \"fields\": [{\"name\": \"Branch\", \"value\": \"${{ github.head_ref }} → ${{ github.base_ref }}\", \"inline\": true}, {\"name\": \"Author\", \"value\": \"${{ github.event.pull_request.user.login }}\", \"inline\": true}, {\"name\": \"Commit\", \"value\": \"[\`${GITHUB_SHA:0:7}\`](${{ github.event.pull_request.html_url }})\", \"inline\": true}], \"timestamp\": \"$(date -u +%Y-%m-%dT%H:%M:%S.000Z)\"}]}" \
+               -d "{\"embeds\": [{\"title\": \"✅ CI Success\", \"description\": \"PR #${PR_NUMBER}: ${ESCAPED_TITLE}\", \"color\": 3066993, \"fields\": [{\"name\": \"Branch\", \"value\": \"${HEAD_REF} → ${BASE_REF}\", \"inline\": true}, {\"name\": \"Author\", \"value\": \"${PR_AUTHOR}\", \"inline\": true}, {\"name\": \"Commit\", \"value\": \"[\`${GITHUB_SHA:0:7}\`](${PR_URL})\", \"inline\": true}], \"timestamp\": \"$(date -u +%Y-%m-%dT%H:%M:%S.000Z)\"}]}" \
                $DISCORD_WEBHOOK
 
       - name: Send Discord notification on failure
         if: failure()
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_AUTHOR: ${{ github.event.pull_request.user.login }}
+          HEAD_REF: ${{ github.head_ref }}
+          BASE_REF: ${{ github.base_ref }}
+          PR_URL: ${{ github.event.pull_request.html_url }}
         run: |
+          # Escape special characters for JSON
+          ESCAPED_TITLE=$(echo "$PR_TITLE" | jq -Rs '.')
           curl -H "Content-Type: application/json" \
-               -d "{\"embeds\": [{\"title\": \"❌ CI Failed\", \"description\": \"PR #${{ github.event.pull_request.number }}: ${{ github.event.pull_request.title }}\", \"color\": 15158332, \"fields\": [{\"name\": \"Branch\", \"value\": \"${{ github.head_ref }} → ${{ github.base_ref }}\", \"inline\": true}, {\"name\": \"Author\", \"value\": \"${{ github.event.pull_request.user.login }}\", \"inline\": true}, {\"name\": \"Commit\", \"value\": \"[\`${GITHUB_SHA:0:7}\`](${{ github.event.pull_request.html_url }})\", \"inline\": true}], \"timestamp\": \"$(date -u +%Y-%m-%dT%H:%M:%S.000Z)\"}]}" \
+               -d "{\"embeds\": [{\"title\": \"❌ CI Failed\", \"description\": \"PR #${PR_NUMBER}: ${ESCAPED_TITLE}\", \"color\": 15158332, \"fields\": [{\"name\": \"Branch\", \"value\": \"${HEAD_REF} → ${BASE_REF}\", \"inline\": true}, {\"name\": \"Author\", \"value\": \"${PR_AUTHOR}\", \"inline\": true}, {\"name\": \"Commit\", \"value\": \"[\`${GITHUB_SHA:0:7}\`](${PR_URL})\", \"inline\": true}], \"timestamp\": \"$(date -u +%Y-%m-%dT%H:%M:%S.000Z)\"}]}" \
                $DISCORD_WEBHOOK
