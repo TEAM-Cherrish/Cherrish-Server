@@ -34,21 +34,15 @@ reviews:
   # 변경 요청 워크플로우
   request_changes_workflow: false
 
+  # 리뷰 파일 필터
+  path_filters:
+    - "!*.md"           # 문서 파일 제외
+    - "!.github/**"     # GitHub 설정 제외
+    - "!gradle/**"      # Gradle 래퍼 제외
+    - "!build/**"       # 빌드 결과물 제외
+    - "!.idea/**"       # IntelliJ 설정 제외
+    - "!*.iml"          # IntelliJ 모듈 파일 제외
+
 # 채팅 기능
 chat:
   auto_reply: false
-
-# 리뷰에서 제외할 파일 패턴
-path_filters:
-  excluded:
-    - "*.md"  # 문서 파일 제외
-    - ".github/**"
-    - "gradle/**"
-    - "build/**"
-    - ".idea/**"
-    - "*.iml"
-
-# 리뷰에 포함할 파일 패턴 (선택사항)
-# path_filters:
-#   included:
-#     - "src/**/*.java"
