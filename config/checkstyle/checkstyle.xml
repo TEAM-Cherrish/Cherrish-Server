@@ -13,6 +13,11 @@
         <property name="fileNamePattern" value="module\-info\.java$"/>
     </module>
 
+    <!-- Excludes all Spring Boot Application files -->
+    <module name="BeforeExecutionExclusionFileFilter">
+        <property name="fileNamePattern" value=".*Application\.java$"/>
+    </module>
+
     <!-- Size Violations -->
     <module name="FileLength">
         <property name="max" value="500"/>
