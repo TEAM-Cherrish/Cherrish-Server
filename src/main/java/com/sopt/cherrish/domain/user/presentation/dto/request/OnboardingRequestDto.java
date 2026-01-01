@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Schema(description = "온보딩 프로필 생성 요청")
-public class OnboardingRequest {
+public class OnboardingRequestDto {
 
 	@Schema(description = "사용자 이름", example = "홍길동", requiredMode = Schema.RequiredMode.REQUIRED)
 	@NotBlank(message = "이름은 필수입니다")

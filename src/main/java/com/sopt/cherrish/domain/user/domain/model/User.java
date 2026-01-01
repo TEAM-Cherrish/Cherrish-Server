@@ -28,16 +28,6 @@ public class User extends BaseTimeEntity {
 	@Column(nullable = false)
 	private Integer age;  // 한국 나이
 
-	// TODO: 소셜 로그인 확장성을 위한 필드 (추후 추가 예정)
-	// @Column(length = 20)
-	// private String provider;  // KAKAO, GOOGLE, APPLE 등
-
-	// @Column(length = 100)
-	// private String providerId;  // 소셜 로그인 제공자의 유저 ID
-
-	// @Column(length = 100)
-	// private String email;
-
 	@Builder
 	private User(String name, Integer age) {
 		validateName(name);
@@ -46,7 +36,6 @@ public class User extends BaseTimeEntity {
 		this.age = age;
 	}
 
-	// 비즈니스 로직: 사용자 정보 수정 (부분 업데이트)
 	public void update(String name, Integer age) {
 		if (name != null) {
 			validateName(name);
@@ -58,7 +47,6 @@ public class User extends BaseTimeEntity {
 		}
 	}
 
-	// 검증 로직
 	private void validateName(String name) {
 		if (name == null || name.isBlank()) {
 			throw new IllegalArgumentException("이름은 필수입니다");

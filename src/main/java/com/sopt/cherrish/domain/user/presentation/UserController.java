@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.sopt.cherrish.domain.user.application.service.UserService;
 import com.sopt.cherrish.domain.user.exception.UserErrorCode;
-import com.sopt.cherrish.domain.user.presentation.dto.request.UserUpdateRequest;
-import com.sopt.cherrish.domain.user.presentation.dto.response.UserResponse;
+import com.sopt.cherrish.domain.user.presentation.dto.request.UserUpdateRequestDto;
+import com.sopt.cherrish.domain.user.presentation.dto.response.UserResponseDto;
 import com.sopt.cherrish.global.annotation.ApiExceptions;
 import com.sopt.cherrish.global.annotation.AutoApiResponse;
 import com.sopt.cherrish.global.annotation.SuccessCodeAnnotation;
@@ -41,11 +41,11 @@ public class UserController {
 	@SuccessCodeAnnotation(SuccessCode.SUCCESS)
 	@ApiExceptions({UserErrorCode.class, ErrorCode.class})
 	@GetMapping("/{id}")
-	public CommonApiResponse<UserResponse> getUser(
+	public CommonApiResponse<UserResponseDto> getUser(
 		@Parameter(description = "사용자 ID", required = true, example = "1")
 		@PathVariable Long id
 	) {
-		UserResponse response = userService.getUser(id);
+		UserResponseDto response = userService.getUser(id);
 		return CommonApiResponse.success(SuccessCode.SUCCESS, response);
 	}
 
@@ -56,12 +56,12 @@ public class UserController {
 	@SuccessCodeAnnotation(SuccessCode.SUCCESS)
 	@ApiExceptions({UserErrorCode.class, ErrorCode.class})
 	@PatchMapping("/{id}")
-	public CommonApiResponse<UserResponse> updateUser(
+	public CommonApiResponse<UserResponseDto> updateUser(
 		@Parameter(description = "사용자 ID", required = true, example = "1")
 		@PathVariable Long id,
-		@Valid @RequestBody UserUpdateRequest request
+		@Valid @RequestBody UserUpdateRequestDto request
 	) {
-		UserResponse response = userService.updateUser(id, request);
+		UserResponseDto response = userService.updateUser(id, request);
 		return CommonApiResponse.success(SuccessCode.SUCCESS, response);
 	}
 

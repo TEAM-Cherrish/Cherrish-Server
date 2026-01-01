@@ -5,8 +5,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.sopt.cherrish.domain.user.domain.model.User;
 import com.sopt.cherrish.domain.user.domain.repository.UserRepository;
-import com.sopt.cherrish.domain.user.presentation.dto.request.OnboardingRequest;
-import com.sopt.cherrish.domain.user.presentation.dto.response.OnboardingResponse;
+import com.sopt.cherrish.domain.user.presentation.dto.request.OnboardingRequestDto;
+import com.sopt.cherrish.domain.user.presentation.dto.response.OnboardingResponseDto;
 
 import lombok.RequiredArgsConstructor;
 
@@ -24,7 +24,7 @@ public class OnboardingService {
 	 * @return 온보딩 응답 (weeklyStreak: null, todayStatus: null, todayCare.routines: [])
 	 */
 	@Transactional
-	public OnboardingResponse createProfile(OnboardingRequest request) {
+	public OnboardingResponseDto createProfile(OnboardingRequestDto request) {
 		// 1. Request DTO -> Entity 변환
 		User user = request.toEntity();
 
@@ -32,6 +32,6 @@ public class OnboardingService {
 		User savedUser = userRepository.save(user);
 
 		// 3. Entity -> Response DTO 변환 (온보딩 형식)
-		return OnboardingResponse.from(savedUser);
+		return OnboardingResponseDto.from(savedUser);
 	}
 }

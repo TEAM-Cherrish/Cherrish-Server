@@ -12,7 +12,7 @@ import lombok.Getter;
 @Getter
 @Builder
 @Schema(description = "사용자 정보 응답")
-public class UserResponse {
+public class UserResponseDto {
 
 	@Schema(description = "사용자 ID", example = "1")
 	private Long id;
@@ -32,8 +32,8 @@ public class UserResponse {
 	private LocalDateTime updatedAt;
 
 	// Entity -> DTO 변환
-	public static UserResponse from(User user) {
-		return UserResponse.builder()
+	public static UserResponseDto from(User user) {
+		return UserResponseDto.builder()
 			.id(user.getId())
 			.name(user.getName())
 			.age(user.getAge())
