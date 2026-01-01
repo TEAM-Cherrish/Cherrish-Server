@@ -20,7 +20,7 @@ public record OnboardingRequestDto(
 	@NotNull(message = "나이는 필수입니다")
 	@Min(value = 1, message = "나이는 1세 이상이어야 합니다")
 	@Max(value = 150, message = "나이는 150세 이하여야 합니다")
-	int age
+	Integer age
 ) {
 	// DTO -> Entity 변환
 	public User toEntity() {

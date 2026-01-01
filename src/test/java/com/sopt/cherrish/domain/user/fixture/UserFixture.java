@@ -21,28 +21,19 @@ public class UserFixture {
 			.name(name)
 			.age(age)
 			.build();
-		setId(user, DEFAULT_ID);
-		setCreatedAt(user, LocalDateTime.now());
+		setField(user, User.class, "id", DEFAULT_ID);
+		setField(user, BaseTimeEntity.class, "createdAt", LocalDateTime.now());
 		return user;
 	}
 
-	private static void setId(User user, Long id) {
+	private static void setField(Object target, Class<?> clazz, String fieldName, Object value) {
 		try {
-			Field idField = User.class.getDeclaredField("id");
-			idField.setAccessible(true);
-			idField.set(user, id);
+			Field field = clazz.getDeclaredField(fieldName);
+			field.setAccessible(true);
+			field.set(target, value);
 		} catch (NoSuchFieldException | IllegalAccessException e) {
-			throw new RuntimeException("Failed to set id field", e);
+			throw new RuntimeException("Failed to set " + fieldName + " field", e);
 		}
 	}
 
-	private static void setCreatedAt(User user, LocalDateTime createdAt) {
-		try {
-			Field createdAtField = BaseTimeEntity.class.getDeclaredField("createdAt");
-			createdAtField.setAccessible(true);
-			createdAtField.set(user, createdAt);
-		} catch (NoSuchFieldException | IllegalAccessException e) {
-			throw new RuntimeException("Failed to set createdAt field", e);
-		}
-	}
 }
