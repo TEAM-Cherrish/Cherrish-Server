@@ -31,7 +31,6 @@ public class UserResponseDto {
 	@JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
 	private LocalDateTime updatedAt;
 
-	// Entity -> DTO 변환
 	public static UserResponseDto from(User user) {
 		return UserResponseDto.builder()
 			.id(user.getId())
