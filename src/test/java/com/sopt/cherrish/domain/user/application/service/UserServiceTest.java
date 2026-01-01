@@ -16,10 +16,9 @@ import com.sopt.cherrish.domain.user.domain.model.User;
 import com.sopt.cherrish.domain.user.domain.repository.UserRepository;
 import com.sopt.cherrish.domain.user.exception.UserErrorCode;
 import com.sopt.cherrish.domain.user.exception.UserException;
+import com.sopt.cherrish.domain.user.fixture.UserFixture;
 import com.sopt.cherrish.domain.user.presentation.dto.request.UserUpdateRequestDto;
 import com.sopt.cherrish.domain.user.presentation.dto.response.UserResponseDto;
-import com.sopt.cherrish.domain.user.fixture.UserFixture;
-import com.sopt.cherrish.domain.user.fixture.UserRequestFixture;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("UserService 단위 테스트")
@@ -69,7 +68,7 @@ class UserServiceTest {
 		Long userId = 1L;
 		User user = UserFixture.createUser("홍길동", 25);
 
-		UserUpdateRequestDto request = UserRequestFixture.createUpdateRequest("김철수", 30);
+		UserUpdateRequestDto request = new UserUpdateRequestDto("김철수", 30);
 		given(userRepository.findById(userId)).willReturn(Optional.of(user));
 
 		// when

@@ -45,7 +45,7 @@ public class UserService {
 		User user = userRepository.findById(id)
 			.orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
 
-		user.update(request.getName(), request.getAge());
+		user.update(request.name(), request.age());
 
 		return UserResponseDto.from(user);
 	}

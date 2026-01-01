@@ -18,7 +18,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sopt.cherrish.domain.user.application.service.UserService;
 import com.sopt.cherrish.domain.user.presentation.dto.request.UserUpdateRequestDto;
 import com.sopt.cherrish.domain.user.presentation.dto.response.UserResponseDto;
-import com.sopt.cherrish.domain.user.fixture.UserRequestFixture;
 
 @WebMvcTest(UserController.class)
 @DisplayName("UserController 통합 테스트")
@@ -60,7 +59,7 @@ class UserControllerTest {
 	void updateUser_Success() throws Exception {
 		// given
 		Long userId = 1L;
-		UserUpdateRequestDto request = UserRequestFixture.createUpdateRequest("김철수", 30);
+		UserUpdateRequestDto request = new UserUpdateRequestDto("김철수", 30);
 
 		UserResponseDto response = UserResponseDto.builder()
 			.id(userId)

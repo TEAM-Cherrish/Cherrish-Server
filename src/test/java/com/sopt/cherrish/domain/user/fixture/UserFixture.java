@@ -1,7 +1,5 @@
 package com.sopt.cherrish.domain.user.fixture;
 
-import org.springframework.test.util.ReflectionTestUtils;
-
 import com.sopt.cherrish.domain.user.domain.model.User;
 
 public class UserFixture {
@@ -18,15 +16,5 @@ public class UserFixture {
 			.name(name)
 			.age(age)
 			.build();
-	}
-
-	public static User createUserWithId(Long id) {
-		return createUserWithId(id, DEFAULT_NAME, DEFAULT_AGE);
-	}
-
-	public static User createUserWithId(Long id, String name, Integer age) {
-		User user = createUser(name, age);
-		ReflectionTestUtils.setField(user, "id", id);
-		return user;
 	}
 }
