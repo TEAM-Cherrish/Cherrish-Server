@@ -5,6 +5,8 @@ import static org.assertj.core.api.Assertions.*;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import com.sopt.cherrish.domain.user.fixture.UserFixture;
+
 @DisplayName("User 엔티티 단위 테스트")
 class UserTest {
 
@@ -12,10 +14,7 @@ class UserTest {
 	@DisplayName("User 생성 성공")
 	void createUser_Success() {
 		// given & when
-		User user = User.builder()
-			.name("홍길동")
-			.age(25)
-			.build();
+		User user = UserFixture.createUser("홍길동", 25);
 
 		// then
 		assertThat(user).isNotNull();
@@ -27,10 +26,7 @@ class UserTest {
 	@DisplayName("User 업데이트 - 이름과 나이 모두 수정")
 	void updateUser_BothFields() {
 		// given
-		User user = User.builder()
-			.name("홍길동")
-			.age(25)
-			.build();
+		User user = UserFixture.createUser("홍길동", 25);
 
 		// when
 		user.update("김철수", 30);
@@ -44,10 +40,7 @@ class UserTest {
 	@DisplayName("User 업데이트 - null 값은 변경하지 않음")
 	void updateUser_NullValues() {
 		// given
-		User user = User.builder()
-			.name("홍길동")
-			.age(25)
-			.build();
+		User user = UserFixture.createUser("홍길동", 25);
 
 		// when
 		user.update(null, null);

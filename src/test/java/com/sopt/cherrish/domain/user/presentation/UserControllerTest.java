@@ -18,6 +18,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sopt.cherrish.domain.user.application.service.UserService;
 import com.sopt.cherrish.domain.user.presentation.dto.request.UserUpdateRequestDto;
 import com.sopt.cherrish.domain.user.presentation.dto.response.UserResponseDto;
+import com.sopt.cherrish.domain.user.fixture.UserRequestFixture;
 
 @WebMvcTest(UserController.class)
 @DisplayName("UserController 통합 테스트")
@@ -59,7 +60,7 @@ class UserControllerTest {
 	void updateUser_Success() throws Exception {
 		// given
 		Long userId = 1L;
-		UserUpdateRequestDto request = createUpdateRequest("김철수", 30);
+		UserUpdateRequestDto request = UserRequestFixture.createUpdateRequest("김철수", 30);
 
 		UserResponseDto response = UserResponseDto.builder()
 			.id(userId)
@@ -91,29 +92,5 @@ class UserControllerTest {
 		// when & then
 		mockMvc.perform(delete("/api/users/{id}", userId))
 			.andExpect(status().isOk());
-	}
-
-	private UserUpdateRequestDto createUpdateRequest(String name, Integer age) {
-		try {
-			var constructor = UserUpdateRequestDto.class.getDeclaredConstructor();
-			constructor.setAccessible(true);
-			UserUpdateRequestDto request = constructor.newInstance();
-
-			if (name != null) {
-				var nameField = UserUpdateRequestDto.class.getDeclaredField("name");
-				nameField.setAccessible(true);
-				nameField.set(request, name);
-			}
-
-			if (age != null) {
-				var ageField = UserUpdateRequestDto.class.getDeclaredField("age");
-				ageField.setAccessible(true);
-				ageField.set(request, age);
-			}
-
-			return request;
-		} catch (Exception e) {
-			throw new RuntimeException("Failed to create UserUpdateRequestDto", e);
-		}
 	}
 }
