@@ -55,18 +55,22 @@ src/
 │   │       │   |   |   │       └── EmailRequest.java
 │   │       │   |   |   └── messaging/        # 메시징/이벤트
 │   │       │   |   |       └── UserEventPublisher.java
-│   │       │   │
+│   │       │   │   └── exception/              # 도메인별 예외
+│   │       │   |   |   ├── UserErrorCode.java
+│   │       │   |   |   └── UserException.java
 │   │       │   ├── post/                    # Post 도메인
-│   │       │   │   ├── presentation/
-│   │       │   │   ├── application/
-│   │       │   │   ├── domain/
-│   │       │   │   └── infrastructure/
+│   │       │       ├── presentation/
+│   │       │       ├── application/
+│   │       │       ├── domain/
+│   │       │       ├── infrastructure/
+│   │       │       └── exception/ 
 │   │       │   │
 │   │       │   └── comment/                 # Comment 도메인
 │   │       │       ├── presentation/
 │   │       │       ├── application/
 │   │       │       ├── domain/
-│   │       │       └── infrastructure/
+│   │       │       ├── infrastructure/
+│   │       │       └── exception/ 
 │   │       │
 │   │       └── Application.java
 │   └── resources/
