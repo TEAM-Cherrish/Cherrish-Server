@@ -1,6 +1,6 @@
 package com.sopt.cherrish.global.swagger;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,16 +27,11 @@ public class SwaggerErrorExampleGenerator {
 	}
 
 	private List<ErrorType> extractErrorTypes(Class<? extends Enum<?>>[] errorEnums) {
-		List<ErrorType> errorTypes = new ArrayList<>();
-		for (Class<? extends Enum<?>> errorEnum : errorEnums) {
-			if (ErrorType.class.isAssignableFrom(errorEnum)) {
-				Object[] enumConstants = errorEnum.getEnumConstants();
-				for (Object constant : enumConstants) {
-					errorTypes.add((ErrorType)constant);
-				}
-			}
-		}
-		return errorTypes;
+		return Arrays.stream(errorEnums)
+			.filter(ErrorType.class::isAssignableFrom)
+			.flatMap(errorEnum -> Arrays.stream(errorEnum.getEnumConstants()))
+			.map(constant -> (ErrorType) constant)
+			.collect(Collectors.toList());
 	}
 
 	private Map<Integer, List<ExampleHolder>> groupByStatus(List<ErrorType> errorTypes) {
