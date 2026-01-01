@@ -14,6 +14,9 @@ import lombok.Getter;
 @Schema(description = "온보딩 프로필 생성 응답")
 public class OnboardingResponseDto {
 
+	@Schema(description = "사용자 고유 식별자", example = "1")
+	private Long id;
+
 	@Schema(description = "사용자 이름", example = "홍길동")
 	private String name;
 
@@ -21,23 +24,12 @@ public class OnboardingResponseDto {
 	@JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
 	private LocalDateTime date;
 
-	@Schema(description = "주간 연속 기록 (온보딩 시 null)", example = "null", nullable = true)
-	private Integer weeklyStreak;
-
-	@Schema(description = "오늘 상태 (온보딩 시 null)", example = "null", nullable = true)
-	private String todayStatus;
-
-	@Schema(description = "오늘의 케어")
-	private OnboardingTodayCareDto todayCare;
-
 	// Entity -> DTO 변환
 	public static OnboardingResponseDto from(User user) {
 		return OnboardingResponseDto.builder()
+			.id(user.getId())
 			.name(user.getName())
 			.date(user.getCreatedAt())
-			.weeklyStreak(null)  // 온보딩 시에는 null
-			.todayStatus(null)   // 온보딩 시에는 null
-			.todayCare(OnboardingTodayCareDto.empty())  // 빈 routines 배열
 			.build();
 	}
 }
