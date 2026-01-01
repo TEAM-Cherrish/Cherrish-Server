@@ -42,10 +42,19 @@ src/
 │   │       │   │   │   └── vo/               # Value Object
 │   │       │   │   │
 │   │       |   |   ├── infrastructure/        # Infrastructure Layer (인프라 계층)
-│   │       |   │   │   ├── persistence/      # 영속성 구현
-│   │       │   |   │   │   ├── entity/       # JPA 엔티티
-│   │       │   |   │   │   └── repository/   # 리포지토리 구현체
-│   │       │   |   │   └── external/         # 외부 API 연동
+│   │       │   |   |   ├── persistence/      # 데이터 영속성
+│   │       │   |   |   │   ├── UserRepositoryImpl.java  # Repository 커스텀 구현
+│   │       │   |   |   │   └── querydsl/
+│   │       │   |   |   │       └── UserRepositoryCustom.java
+│   │       │   |   |   ├── external/         # 외부 API 연동
+│   │       │   |   |   │   ├── client/
+│   │       │   |   |   │   │   ├── S3Client.java
+│   │       │   |   |   │   │   └── EmailClient.java
+│   │       │   |   |   │   └── dto/
+│   │       │   |   |   │       ├── S3UploadResponse.java
+│   │       │   |   |   │       └── EmailRequest.java
+│   │       │   |   |   └── messaging/        # 메시징/이벤트
+│   │       │   |   |       └── UserEventPublisher.java
 │   │       │   │
 │   │       │   ├── post/                    # Post 도메인
 │   │       │   │   ├── presentation/
@@ -232,6 +241,44 @@ public interface UserRepository extends JpaRepository<User, Long> {
 - `existsBy...`: 존재 여부 확인
 - `countBy...`: 개수 세기
 - `deleteBy...`: 삭제
+
+**커스텀 구현 (동적 쿼리, 복잡한 조인 등)**:
+
+복잡한 쿼리가 필요하면 QueryDSL을 사용한 커스텀 구현을 작성합니다.
+
+```java
+// 1. 커스텀 인터페이스 (domain/repository/UserRepositoryCustom.java)
+public interface UserRepositoryCustom {
+    List<User> searchUsers(UserSearchCondition condition);
+}
+
+// 2. 구현체 (infrastructure/persistence/UserRepositoryImpl.java)
+@RequiredArgsConstructor
+public class UserRepositoryImpl implements UserRepositoryCustom {
+    private final JPAQueryFactory queryFactory;
+
+    @Override
+    public List<User> searchUsers(UserSearchCondition condition) {
+        return queryFactory
+            .selectFrom(user)
+            .where(
+                emailContains(condition.getEmail()),  // null이면 조건 무시
+                ageGoe(condition.getMinAge())
+            )
+            .fetch();
+    }
+
+    private BooleanExpression emailContains(String email) {
+        return hasText(email) ? user.email.contains(email) : null;
+    }
+}
+
+// 3. 기존 Repository에 상속 (domain/repository/UserRepository.java)
+public interface UserRepository extends JpaRepository<User, Long>, UserRepositoryCustom {
+    Optional<User> findByEmail(String email);
+    // searchUsers() 메서드도 자동으로 사용 가능
+}
+```
 
 ---
 
