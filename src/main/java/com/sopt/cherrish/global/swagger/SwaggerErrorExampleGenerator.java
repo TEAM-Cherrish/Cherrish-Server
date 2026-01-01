@@ -43,7 +43,7 @@ public class SwaggerErrorExampleGenerator {
 	private ExampleHolder createExampleHolder(ErrorType errorType) {
 		return ExampleHolder.of(
 			createSwaggerExample(errorType),
-			((Enum<?>)errorType).name(),
+			((Enum<?>) errorType).name(),
 			errorType.getStatus()
 		);
 	}
