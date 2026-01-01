@@ -19,7 +19,6 @@ import com.sopt.cherrish.domain.user.application.service.OnboardingService;
 import com.sopt.cherrish.domain.user.presentation.dto.request.OnboardingRequestDto;
 import com.sopt.cherrish.domain.user.presentation.dto.response.OnboardingResponseDto;
 import com.sopt.cherrish.domain.user.presentation.dto.response.OnboardingTodayCareDto;
-import com.sopt.cherrish.domain.user.fixture.UserRequestFixture;
 
 @WebMvcTest(OnboardingController.class)
 @DisplayName("OnboardingController 통합 테스트")
@@ -38,7 +37,7 @@ class OnboardingControllerTest {
 	@DisplayName("온보딩 프로필 생성 성공")
 	void createProfile_Success() throws Exception {
 		// given
-		OnboardingRequestDto request = UserRequestFixture.createOnboardingRequest("홍길동", 25);
+		OnboardingRequestDto request = new OnboardingRequestDto("홍길동", 25);
 
 		OnboardingResponseDto response = OnboardingResponseDto.builder()
 			.name("홍길동")
@@ -66,7 +65,7 @@ class OnboardingControllerTest {
 	@DisplayName("온보딩 프로필 생성 실패 - 유효하지 않은 입력")
 	void createProfile_InvalidInput() throws Exception {
 		// given
-		OnboardingRequestDto request = UserRequestFixture.createOnboardingRequest("", null);
+		OnboardingRequestDto request = new OnboardingRequestDto("", null);
 
 		// when & then
 		mockMvc.perform(post("/api/onboarding/profiles")
