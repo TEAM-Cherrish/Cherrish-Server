@@ -27,10 +27,10 @@ public class User extends BaseTimeEntity {
 	private String name;
 
 	@Column(nullable = false)
-	private Integer age;
+	private int age;
 
 	@Builder
-	private User(String name, Integer age) {
+	private User(String name, int age) {
 		this.name = name;
 		this.age = age;
 	}
