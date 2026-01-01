@@ -27,7 +27,7 @@ class OnboardingServiceTest {
 	private UserRepository userRepository;
 
 	@Test
-	@DisplayName("온보딩 t -m 프로필 생성 성공")
+	@DisplayName("온보딩 프로필 생성 성공")
 	void createProfile_Success() {
 		// given
 		OnboardingRequestDto request = new OnboardingRequestDto("홍길동", 25);
@@ -41,8 +41,7 @@ class OnboardingServiceTest {
 		// then
 		assertThat(result).isNotNull();
 		assertThat(result.getName()).isEqualTo("홍길동");
-		assertThat(result.getWeeklyStreak()).isNull();
-		assertThat(result.getTodayStatus()).isNull();
-		assertThat(result.getTodayCare().getRoutines()).isEmpty();
+		assertThat(result.getId()).isNotNull();
+		assertThat(result.getDate()).isNotNull();
 	}
 }
