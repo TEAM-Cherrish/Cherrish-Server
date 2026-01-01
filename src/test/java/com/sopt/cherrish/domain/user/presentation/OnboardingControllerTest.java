@@ -18,7 +18,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sopt.cherrish.domain.user.application.service.OnboardingService;
 import com.sopt.cherrish.domain.user.presentation.dto.request.OnboardingRequestDto;
 import com.sopt.cherrish.domain.user.presentation.dto.response.OnboardingResponseDto;
-import com.sopt.cherrish.domain.user.presentation.dto.response.OnboardingTodayCareDto;
 
 @WebMvcTest(OnboardingController.class)
 @DisplayName("OnboardingController 통합 테스트")
@@ -40,11 +39,9 @@ class OnboardingControllerTest {
 		OnboardingRequestDto request = new OnboardingRequestDto("홍길동", 25);
 
 		OnboardingResponseDto response = OnboardingResponseDto.builder()
+			.id(1L)
 			.name("홍길동")
 			.date(LocalDateTime.now())
-			.weeklyStreak(null)
-			.todayStatus(null)
-			.todayCare(OnboardingTodayCareDto.empty())
 			.build();
 
 		given(onboardingService.createProfile(any(OnboardingRequestDto.class)))
@@ -55,10 +52,9 @@ class OnboardingControllerTest {
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(request)))
 			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.data.id").value(1))
 			.andExpect(jsonPath("$.data.name").value("홍길동"))
-			.andExpect(jsonPath("$.data.weeklyStreak").isEmpty())
-			.andExpect(jsonPath("$.data.todayStatus").isEmpty())
-			.andExpect(jsonPath("$.data.todayCare.routines").isArray());
+			.andExpect(jsonPath("$.data.date").exists());
 	}
 
 	@Test

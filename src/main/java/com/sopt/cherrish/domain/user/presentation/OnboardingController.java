@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sopt.cherrish.domain.user.application.service.OnboardingService;
+import com.sopt.cherrish.domain.user.exception.UserErrorCode;
 import com.sopt.cherrish.domain.user.presentation.dto.request.OnboardingRequestDto;
 import com.sopt.cherrish.domain.user.presentation.dto.response.OnboardingResponseDto;
 import com.sopt.cherrish.global.annotation.ApiExceptions;
@@ -34,7 +35,7 @@ public class OnboardingController {
 		description = "새 사용자의 프로필을 생성합니다. 이름과 나이를 입력받아 사용자를 등록합니다."
 	)
 	@SuccessCodeAnnotation(SuccessCode.SUCCESS)
-	@ApiExceptions({ErrorCode.class})
+	@ApiExceptions({UserErrorCode.class, ErrorCode.class})
 	@PostMapping("/profiles")
 	public CommonApiResponse<OnboardingResponseDto> createProfile(
 		@Valid @RequestBody OnboardingRequestDto request
