@@ -23,11 +23,11 @@ public class UserResponseDto {
 	@Schema(description = "나이 (한국 나이)", example = "25")
 	private Integer age;
 
-	@Schema(description = "생성일시", example = "2024-01-15T10:30:00")
+	@Schema(description = "생성일시", example = "2024-01-15T10:30:00", type = "string")
 	@JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
 	private LocalDateTime createdAt;
 
-	@Schema(description = "수정일시", example = "2024-01-15T10:30:00")
+	@Schema(description = "수정일시", example = "2024-01-15T10:30:00", type = "string")
 	@JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
 	private LocalDateTime updatedAt;
 
