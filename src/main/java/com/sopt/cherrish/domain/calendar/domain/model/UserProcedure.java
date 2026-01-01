@@ -1,6 +1,7 @@
 package com.sopt.cherrish.domain.calendar.domain.model;
 
 import com.sopt.cherrish.domain.procedure.domain.model.Procedure;
+import com.sopt.cherrish.global.entity.BaseTimeEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -21,7 +22,7 @@ import java.time.LocalDateTime;
 @Table(name = "user_procedures")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class UserProcedure {
+public class UserProcedure extends BaseTimeEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -44,19 +45,11 @@ public class UserProcedure {
 	@Column
 	private Integer downtimeDays;
 
-	@Column(nullable = false, updatable = false)
-	private LocalDateTime createdAt;
-
-	@Column(nullable = false)
-	private LocalDateTime updatedAt;
-
 	@Builder
 	private UserProcedure(Long userId, Procedure procedure, LocalDateTime scheduledAt, Integer downtimeDays) {
 		this.userId = userId;
 		this.procedure = procedure;
 		this.scheduledAt = scheduledAt;
 		this.downtimeDays = downtimeDays;
-		this.createdAt = LocalDateTime.now();
-		this.updatedAt = LocalDateTime.now();
 	}
 }
