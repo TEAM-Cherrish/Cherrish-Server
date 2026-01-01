@@ -80,6 +80,20 @@ class UserServiceTest {
 	}
 
 	@Test
+	@DisplayName("사용자 정보 수정 실패 - 존재하지 않는 사용자")
+	void updateUser_NotFound() {
+		// given
+		Long userId = 999L;
+		UserUpdateRequestDto request = new UserUpdateRequestDto("김철수", 30);
+		given(userRepository.findById(userId)).willReturn(Optional.empty());
+
+		// when & then
+		assertThatThrownBy(() -> userService.updateUser(userId, request))
+			.isInstanceOf(UserException.class)
+			.hasFieldOrPropertyWithValue("errorCode", UserErrorCode.USER_NOT_FOUND);
+	}
+
+	@Test
 	@DisplayName("사용자 삭제 성공")
 	void deleteUser_Success() {
 		// given
@@ -93,5 +107,18 @@ class UserServiceTest {
 
 		// then
 		verify(userRepository, times(1)).delete(user);
+	}
+
+	@Test
+	@DisplayName("사용자 삭제 실패 - 존재하지 않는 사용자")
+	void deleteUser_NotFound() {
+		// given
+		Long userId = 999L;
+		given(userRepository.findById(userId)).willReturn(Optional.empty());
+
+		// when & then
+		assertThatThrownBy(() -> userService.deleteUser(userId))
+			.isInstanceOf(UserException.class)
+			.hasFieldOrPropertyWithValue("errorCode", UserErrorCode.USER_NOT_FOUND);
 	}
 }
