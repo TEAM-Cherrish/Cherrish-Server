@@ -1,6 +1,7 @@
 package com.sopt.cherrish.domain.user.domain.model;
 
 import com.sopt.cherrish.global.entity.BaseTimeEntity;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -30,38 +31,16 @@ public class User extends BaseTimeEntity {
 
 	@Builder
 	private User(String name, Integer age) {
-		validateName(name);
-		validateAge(age);
 		this.name = name;
 		this.age = age;
 	}
 
 	public void update(String name, Integer age) {
 		if (name != null) {
-			validateName(name);
 			this.name = name;
 		}
 		if (age != null) {
-			validateAge(age);
 			this.age = age;
-		}
-	}
-
-	private void validateName(String name) {
-		if (name == null || name.isBlank()) {
-			throw new IllegalArgumentException("이름은 필수입니다");
-		}
-		if (name.length() > 50) {
-			throw new IllegalArgumentException("이름은 50자를 초과할 수 없습니다");
-		}
-	}
-
-	private void validateAge(Integer age) {
-		if (age == null) {
-			throw new IllegalArgumentException("나이는 필수입니다");
-		}
-		if (age < 1 || age > 150) {
-			throw new IllegalArgumentException("나이는 1세에서 150세 사이여야 합니다");
 		}
 	}
 }

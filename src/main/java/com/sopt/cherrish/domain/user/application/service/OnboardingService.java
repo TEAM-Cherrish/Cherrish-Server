@@ -25,13 +25,10 @@ public class OnboardingService {
 	 */
 	@Transactional
 	public OnboardingResponseDto createProfile(OnboardingRequestDto request) {
-		// 1. Request DTO -> Entity 변환
 		User user = request.toEntity();
 
-		// 2. Entity 저장
 		User savedUser = userRepository.save(user);
 
-		// 3. Entity -> Response DTO 변환 (온보딩 형식)
 		return OnboardingResponseDto.from(savedUser);
 	}
 }

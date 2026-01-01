@@ -7,6 +7,7 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,6 +19,7 @@ public class OnboardingRequestDto {
 
 	@Schema(description = "사용자 이름", example = "홍길동", requiredMode = Schema.RequiredMode.REQUIRED)
 	@NotBlank(message = "이름은 필수입니다")
+	@Size(max = 50, message = "이름은 50자를 초과할 수 없습니다")
 	private String name;
 
 	@Schema(description = "나이 (한국 나이)", example = "25", requiredMode = Schema.RequiredMode.REQUIRED)
