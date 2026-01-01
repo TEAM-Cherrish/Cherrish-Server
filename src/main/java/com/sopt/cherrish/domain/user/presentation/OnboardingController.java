@@ -6,8 +6,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sopt.cherrish.domain.user.application.service.OnboardingService;
-import com.sopt.cherrish.domain.user.presentation.dto.request.OnboardingRequest;
-import com.sopt.cherrish.domain.user.presentation.dto.response.OnboardingResponse;
+import com.sopt.cherrish.domain.user.presentation.dto.request.OnboardingRequestDto;
+import com.sopt.cherrish.domain.user.presentation.dto.response.OnboardingResponseDto;
 import com.sopt.cherrish.global.annotation.ApiExceptions;
 import com.sopt.cherrish.global.annotation.AutoApiResponse;
 import com.sopt.cherrish.global.annotation.SuccessCodeAnnotation;
@@ -36,10 +36,10 @@ public class OnboardingController {
 	@SuccessCodeAnnotation(SuccessCode.SUCCESS)
 	@ApiExceptions({ErrorCode.class})
 	@PostMapping("/profiles")
-	public CommonApiResponse<OnboardingResponse> createProfile(
-		@Valid @RequestBody OnboardingRequest request
+	public CommonApiResponse<OnboardingResponseDto> createProfile(
+		@Valid @RequestBody OnboardingRequestDto request
 	) {
-		OnboardingResponse response = onboardingService.createProfile(request);
+		OnboardingResponseDto response = onboardingService.createProfile(request);
 		return CommonApiResponse.success(SuccessCode.SUCCESS, response);
 	}
 }

@@ -12,7 +12,7 @@ import lombok.Getter;
 @Getter
 @Builder
 @Schema(description = "온보딩 프로필 생성 응답")
-public class OnboardingResponse {
+public class OnboardingResponseDto {
 
 	@Schema(description = "사용자 이름", example = "홍길동")
 	private String name;
@@ -31,8 +31,8 @@ public class OnboardingResponse {
 	private OnboardingTodayCareDto todayCare;
 
 	// Entity -> DTO 변환
-	public static OnboardingResponse from(User user) {
-		return OnboardingResponse.builder()
+	public static OnboardingResponseDto from(User user) {
+		return OnboardingResponseDto.builder()
 			.name(user.getName())
 			.date(user.getCreatedAt())
 			.weeklyStreak(null)  // 온보딩 시에는 null

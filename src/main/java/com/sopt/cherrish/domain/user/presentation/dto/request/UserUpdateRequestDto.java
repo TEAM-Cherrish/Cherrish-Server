@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Schema(description = "사용자 정보 수정 요청")
-public class UserUpdateRequest {
+public class UserUpdateRequestDto {
 
 	@Schema(description = "수정할 이름 (선택)", example = "김철수")
 	private String name;

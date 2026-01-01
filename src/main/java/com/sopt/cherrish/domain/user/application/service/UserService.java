@@ -6,8 +6,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.sopt.cherrish.domain.user.domain.model.User;
 import com.sopt.cherrish.domain.user.domain.repository.UserRepository;
 import com.sopt.cherrish.domain.user.exception.UserErrorCode;
-import com.sopt.cherrish.domain.user.presentation.dto.request.UserUpdateRequest;
-import com.sopt.cherrish.domain.user.presentation.dto.response.UserResponse;
+import com.sopt.cherrish.domain.user.presentation.dto.request.UserUpdateRequestDto;
+import com.sopt.cherrish.domain.user.presentation.dto.response.UserResponseDto;
 import com.sopt.cherrish.global.exception.BaseException;
 
 import lombok.RequiredArgsConstructor;
@@ -26,9 +26,9 @@ public class UserService {
 	 * @return 사용자 정보
 	 * @throws BaseException 사용자를 찾을 수 없는 경우
 	 */
-	public UserResponse getUser(Long id) {
+	public UserResponseDto getUser(Long id) {
 		User user = findUserById(id);
-		return UserResponse.from(user);
+		return UserResponseDto.from(user);
 	}
 
 	/**
@@ -40,13 +40,13 @@ public class UserService {
 	 * @throws BaseException 사용자를 찾을 수 없는 경우
 	 */
 	@Transactional
-	public UserResponse updateUser(Long id, UserUpdateRequest request) {
+	public UserResponseDto updateUser(Long id, UserUpdateRequestDto request) {
 		User user = findUserById(id);
 
 		// Entity의 update 메서드를 통해 수정 (Dirty Checking)
 		user.update(request.getName(), request.getAge());
 
-		return UserResponse.from(user);
+		return UserResponseDto.from(user);
 	}
 
 	/**
