@@ -24,7 +24,6 @@ public class OnboardingResponseDto {
 	@JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
 	private LocalDateTime date;
 
-	// Entity -> DTO 변환
 	public static OnboardingResponseDto from(User user) {
 		return OnboardingResponseDto.builder()
 			.id(user.getId())
