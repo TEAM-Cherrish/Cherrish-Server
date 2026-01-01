@@ -14,6 +14,8 @@ import com.sopt.cherrish.domain.user.domain.model.User;
 import com.sopt.cherrish.domain.user.domain.repository.UserRepository;
 import com.sopt.cherrish.domain.user.presentation.dto.request.OnboardingRequestDto;
 import com.sopt.cherrish.domain.user.presentation.dto.response.OnboardingResponseDto;
+import com.sopt.cherrish.domain.user.fixture.UserFixture;
+import com.sopt.cherrish.domain.user.fixture.UserRequestFixture;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("OnboardingService 단위 테스트")
@@ -29,12 +31,8 @@ class OnboardingServiceTest {
 	@DisplayName("온보딩 프로필 생성 성공")
 	void createProfile_Success() {
 		// given
-		OnboardingRequestDto request = createOnboardingRequest("홍길동", 25);
-
-		User savedUser = User.builder()
-			.name("홍길동")
-			.age(25)
-			.build();
+		OnboardingRequestDto request = UserRequestFixture.createOnboardingRequest("홍길동", 25);
+		User savedUser = UserFixture.createUser("홍길동", 25);
 
 		given(userRepository.save(any(User.class))).willReturn(savedUser);
 
@@ -47,25 +45,5 @@ class OnboardingServiceTest {
 		assertThat(result.getWeeklyStreak()).isNull();
 		assertThat(result.getTodayStatus()).isNull();
 		assertThat(result.getTodayCare().getRoutines()).isEmpty();
-	}
-
-	private OnboardingRequestDto createOnboardingRequest(String name, Integer age) {
-		try {
-			var constructor = OnboardingRequestDto.class.getDeclaredConstructor();
-			constructor.setAccessible(true);
-			OnboardingRequestDto request = constructor.newInstance();
-
-			var nameField = OnboardingRequestDto.class.getDeclaredField("name");
-			nameField.setAccessible(true);
-			nameField.set(request, name);
-
-			var ageField = OnboardingRequestDto.class.getDeclaredField("age");
-			ageField.setAccessible(true);
-			ageField.set(request, age);
-
-			return request;
-		} catch (Exception e) {
-			throw new RuntimeException("Failed to create OnboardingRequestDto", e);
-		}
 	}
 }

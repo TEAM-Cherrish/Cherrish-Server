@@ -18,6 +18,8 @@ import com.sopt.cherrish.domain.user.exception.UserErrorCode;
 import com.sopt.cherrish.domain.user.exception.UserException;
 import com.sopt.cherrish.domain.user.presentation.dto.request.UserUpdateRequestDto;
 import com.sopt.cherrish.domain.user.presentation.dto.response.UserResponseDto;
+import com.sopt.cherrish.domain.user.fixture.UserFixture;
+import com.sopt.cherrish.domain.user.fixture.UserRequestFixture;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("UserService 단위 테스트")
@@ -34,10 +36,7 @@ class UserServiceTest {
 	void getUser_Success() {
 		// given
 		Long userId = 1L;
-		User user = User.builder()
-			.name("홍길동")
-			.age(25)
-			.build();
+		User user = UserFixture.createUser("홍길동", 25);
 
 		given(userRepository.findById(userId)).willReturn(Optional.of(user));
 
@@ -68,12 +67,9 @@ class UserServiceTest {
 	void updateUser_Success() {
 		// given
 		Long userId = 1L;
-		User user = User.builder()
-			.name("홍길동")
-			.age(25)
-			.build();
+		User user = UserFixture.createUser("홍길동", 25);
 
-		UserUpdateRequestDto request = createUpdateRequest("김철수", 30);
+		UserUpdateRequestDto request = UserRequestFixture.createUpdateRequest("김철수", 30);
 		given(userRepository.findById(userId)).willReturn(Optional.of(user));
 
 		// when
@@ -89,10 +85,7 @@ class UserServiceTest {
 	void deleteUser_Success() {
 		// given
 		Long userId = 1L;
-		User user = User.builder()
-			.name("홍길동")
-			.age(25)
-			.build();
+		User user = UserFixture.createUser();
 
 		given(userRepository.findById(userId)).willReturn(Optional.of(user));
 
@@ -101,29 +94,5 @@ class UserServiceTest {
 
 		// then
 		verify(userRepository, times(1)).delete(user);
-	}
-
-	private UserUpdateRequestDto createUpdateRequest(String name, Integer age) {
-		try {
-			var constructor = UserUpdateRequestDto.class.getDeclaredConstructor();
-			constructor.setAccessible(true);
-			UserUpdateRequestDto request = constructor.newInstance();
-
-			if (name != null) {
-				var nameField = UserUpdateRequestDto.class.getDeclaredField("name");
-				nameField.setAccessible(true);
-				nameField.set(request, name);
-			}
-
-			if (age != null) {
-				var ageField = UserUpdateRequestDto.class.getDeclaredField("age");
-				ageField.setAccessible(true);
-				ageField.set(request, age);
-			}
-
-			return request;
-		} catch (Exception e) {
-			throw new RuntimeException("Failed to create UserUpdateRequestDto", e);
-		}
 	}
 }

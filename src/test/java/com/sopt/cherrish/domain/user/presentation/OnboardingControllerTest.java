@@ -19,6 +19,7 @@ import com.sopt.cherrish.domain.user.application.service.OnboardingService;
 import com.sopt.cherrish.domain.user.presentation.dto.request.OnboardingRequestDto;
 import com.sopt.cherrish.domain.user.presentation.dto.response.OnboardingResponseDto;
 import com.sopt.cherrish.domain.user.presentation.dto.response.OnboardingTodayCareDto;
+import com.sopt.cherrish.domain.user.fixture.UserRequestFixture;
 
 @WebMvcTest(OnboardingController.class)
 @DisplayName("OnboardingController 통합 테스트")
@@ -37,7 +38,7 @@ class OnboardingControllerTest {
 	@DisplayName("온보딩 프로필 생성 성공")
 	void createProfile_Success() throws Exception {
 		// given
-		OnboardingRequestDto request = createOnboardingRequest("홍길동", 25);
+		OnboardingRequestDto request = UserRequestFixture.createOnboardingRequest("홍길동", 25);
 
 		OnboardingResponseDto response = OnboardingResponseDto.builder()
 			.name("홍길동")
@@ -65,36 +66,12 @@ class OnboardingControllerTest {
 	@DisplayName("온보딩 프로필 생성 실패 - 유효하지 않은 입력")
 	void createProfile_InvalidInput() throws Exception {
 		// given
-		OnboardingRequestDto request = createOnboardingRequest("", null);
+		OnboardingRequestDto request = UserRequestFixture.createOnboardingRequest("", null);
 
 		// when & then
 		mockMvc.perform(post("/api/onboarding/profiles")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(request)))
 			.andExpect(status().isBadRequest());
-	}
-
-	private OnboardingRequestDto createOnboardingRequest(String name, Integer age) {
-		try {
-			var constructor = OnboardingRequestDto.class.getDeclaredConstructor();
-			constructor.setAccessible(true);
-			OnboardingRequestDto request = constructor.newInstance();
-
-			if (name != null) {
-				var nameField = OnboardingRequestDto.class.getDeclaredField("name");
-				nameField.setAccessible(true);
-				nameField.set(request, name);
-			}
-
-			if (age != null) {
-				var ageField = OnboardingRequestDto.class.getDeclaredField("age");
-				ageField.setAccessible(true);
-				ageField.set(request, age);
-			}
-
-			return request;
-		} catch (Exception e) {
-			throw new RuntimeException("Failed to create OnboardingRequestDto", e);
-		}
 	}
 }
