@@ -27,7 +27,8 @@ public class UserService {
 	 * @throws BaseException 사용자를 찾을 수 없는 경우
 	 */
 	public UserResponseDto getUser(Long id) {
-		User user = findUserById(id);
+		User user = userRepository.findById(id)
+			.orElseThrow(() -> new BaseException(UserErrorCode.USER_NOT_FOUND));
 		return UserResponseDto.from(user);
 	}
 
@@ -41,9 +42,9 @@ public class UserService {
 	 */
 	@Transactional
 	public UserResponseDto updateUser(Long id, UserUpdateRequestDto request) {
-		User user = findUserById(id);
+		User user = userRepository.findById(id)
+			.orElseThrow(() -> new BaseException(UserErrorCode.USER_NOT_FOUND));
 
-		// Entity의 update 메서드를 통해 수정 (Dirty Checking)
 		user.update(request.getName(), request.getAge());
 
 		return UserResponseDto.from(user);
@@ -57,13 +58,8 @@ public class UserService {
 	 */
 	@Transactional
 	public void deleteUser(Long id) {
-		User user = findUserById(id);
-		userRepository.delete(user);
-	}
-
-	// 공통 조회 메서드
-	private User findUserById(Long id) {
-		return userRepository.findById(id)
+		User user = userRepository.findById(id)
 			.orElseThrow(() -> new BaseException(UserErrorCode.USER_NOT_FOUND));
+		userRepository.delete(user);
 	}
 }
