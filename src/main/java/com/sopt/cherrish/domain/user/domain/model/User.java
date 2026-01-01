@@ -27,7 +27,7 @@ public class User extends BaseTimeEntity {
 	private String name;
 
 	@Column(nullable = false)
-	private Integer age;  // 한국 나이
+	private int age;  // 한국 나이
 
 	@Builder
 	private User(String name, Integer age) {
