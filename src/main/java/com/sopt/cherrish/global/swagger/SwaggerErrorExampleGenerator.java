@@ -1,12 +1,12 @@
 package com.sopt.cherrish.global.swagger;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.sopt.cherrish.global.response.error.ErrorCode;
+import com.sopt.cherrish.global.response.error.ErrorType;
 
 import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.examples.Example;
@@ -19,30 +19,44 @@ public class SwaggerErrorExampleGenerator {
 
 	private static final String MEDIA_TYPE_JSON = "application/json";
 
-	public void addErrorResponse(Operation operation, ErrorCode[] errorCodes) {
+	public void addErrorResponse(Operation operation, Class<? extends Enum<?>>[] errorEnums) {
 		ApiResponses responses = operation.getResponses();
-		Map<Integer, List<ExampleHolder>> statusWithExampleHolders = groupByStatus(errorCodes);
+		List<ErrorType> errorTypes = extractErrorTypes(errorEnums);
+		Map<Integer, List<ExampleHolder>> statusWithExampleHolders = groupByStatus(errorTypes);
 		addExamplesToResponses(responses, statusWithExampleHolders);
 	}
 
-	private Map<Integer, List<ExampleHolder>> groupByStatus(ErrorCode[] errorCodes) {
-		return Arrays.stream(errorCodes)
+	private List<ErrorType> extractErrorTypes(Class<? extends Enum<?>>[] errorEnums) {
+		List<ErrorType> errorTypes = new ArrayList<>();
+		for (Class<? extends Enum<?>> errorEnum : errorEnums) {
+			if (ErrorType.class.isAssignableFrom(errorEnum)) {
+				Object[] enumConstants = errorEnum.getEnumConstants();
+				for (Object constant : enumConstants) {
+					errorTypes.add((ErrorType)constant);
+				}
+			}
+		}
+		return errorTypes;
+	}
+
+	private Map<Integer, List<ExampleHolder>> groupByStatus(List<ErrorType> errorTypes) {
+		return errorTypes.stream()
 			.map(this::createExampleHolder)
 			.collect(Collectors.groupingBy(ExampleHolder::code));
 	}
 
-	private ExampleHolder createExampleHolder(ErrorCode errorCode) {
+	private ExampleHolder createExampleHolder(ErrorType errorType) {
 		return ExampleHolder.of(
-			createSwaggerExample(errorCode),
-			errorCode.name(),
-			errorCode.getStatus()
+			createSwaggerExample(errorType),
+			((Enum<?>)errorType).name(),
+			errorType.getStatus()
 		);
 	}
 
-	private Example createSwaggerExample(ErrorCode errorCode) {
+	private Example createSwaggerExample(ErrorType errorType) {
 		Map<String, Object> errorResponse = new HashMap<>();
-		errorResponse.put("code", errorCode.getCode());
-		errorResponse.put("message", errorCode.getMessage());
+		errorResponse.put("code", errorType.getCode());
+		errorResponse.put("message", errorType.getMessage());
 		errorResponse.put("data", null);
 
 		Example example = new Example();
