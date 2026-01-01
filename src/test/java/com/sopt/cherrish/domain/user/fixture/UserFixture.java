@@ -9,14 +9,14 @@ import com.sopt.cherrish.global.entity.BaseTimeEntity;
 public class UserFixture {
 
 	private static final String DEFAULT_NAME = "홍길동";
-	private static final Integer DEFAULT_AGE = 25;
+	private static final int DEFAULT_AGE = 25;
 	private static final Long DEFAULT_ID = 1L;
 
 	public static User createUser() {
 		return createUser(DEFAULT_NAME, DEFAULT_AGE);
 	}
 
-	public static User createUser(String name, Integer age) {
+	public static User createUser(String name, int age) {
 		User user = User.builder()
 			.name(name)
 			.age(age)
