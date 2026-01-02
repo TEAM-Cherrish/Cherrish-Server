@@ -1,8 +1,14 @@
 package com.sopt.cherrish.domain.user.presentation;
 
-import static org.mockito.BDDMockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.willDoNothing;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.time.LocalDateTime;
 
@@ -34,7 +40,7 @@ class UserControllerTest {
 
 	@Test
 	@DisplayName("사용자 조회 성공")
-	void getUser_Success() throws Exception {
+	void getUserSuccess() throws Exception {
 		// given
 		Long userId = 1L;
 		UserResponseDto response = UserResponseDto.builder()
@@ -56,7 +62,7 @@ class UserControllerTest {
 
 	@Test
 	@DisplayName("사용자 정보 수정 성공")
-	void updateUser_Success() throws Exception {
+	void updateUserSuccess() throws Exception {
 		// given
 		Long userId = 1L;
 		UserUpdateRequestDto request = new UserUpdateRequestDto("김철수", 30);
@@ -83,7 +89,7 @@ class UserControllerTest {
 
 	@Test
 	@DisplayName("사용자 삭제 성공")
-	void deleteUser_Success() throws Exception {
+	void deleteUserSuccess() throws Exception {
 		// given
 		Long userId = 1L;
 		willDoNothing().given(userService).deleteUser(userId);
