@@ -44,10 +44,11 @@ class CalendarServiceTest {
 		int month = 1;
 		Long userId = 1L;
 
+		com.sopt.cherrish.domain.user.domain.model.User user = CalendarFixture.createUser(userId, "테스트", 25);
 		Procedure procedure = CalendarFixture.createDefaultProcedure();
 		UserProcedure userProcedure = CalendarFixture.createUserProcedure(
 				1L,
-				userId,
+				user,
 				procedure,
 				LocalDateTime.of(2025, 1, 15, 14, 0),
 				7
@@ -64,7 +65,7 @@ class CalendarServiceTest {
 		);
 
 		// when
-		CalendarResponseDto result = calendarService.getCalendar(year, month);
+		CalendarResponseDto result = calendarService.getCalendar(userId, year, month);
 
 		// then
 		assertThat(result).isNotNull();
@@ -93,7 +94,7 @@ class CalendarServiceTest {
 		)).willReturn(Collections.emptyList());
 
 		// when
-		CalendarResponseDto result = calendarService.getCalendar(year, month);
+		CalendarResponseDto result = calendarService.getCalendar(userId, year, month);
 
 		// then
 		assertThat(result).isNotNull();
@@ -110,16 +111,17 @@ class CalendarServiceTest {
 		int month = 1;
 		Long userId = 1L;
 
+		com.sopt.cherrish.domain.user.domain.model.User user = CalendarFixture.createUser(userId, "테스트", 25);
 		Procedure procedure1 = CalendarFixture.createProcedure("레이저 토닝", "레이저", 3, 7);
 		Procedure procedure2 = CalendarFixture.createProcedure("보톡스", "주사", 1, 3);
 
 		LocalDateTime sameDateTime = LocalDateTime.of(2025, 1, 15, 14, 0);
 
 		UserProcedure userProcedure1 = CalendarFixture.createUserProcedure(
-				1L, userId, procedure1, sameDateTime, 7
+				1L, user, procedure1, sameDateTime, 7
 		);
 		UserProcedure userProcedure2 = CalendarFixture.createUserProcedure(
-				2L, userId, procedure2, sameDateTime, 3
+				2L, user, procedure2, sameDateTime, 3
 		);
 
 		given(userProcedureRepository.findByUserIdAndScheduledAtBetween(
@@ -133,7 +135,7 @@ class CalendarServiceTest {
 		);
 
 		// when
-		CalendarResponseDto result = calendarService.getCalendar(year, month);
+		CalendarResponseDto result = calendarService.getCalendar(userId, year, month);
 
 		// then
 		assertThat(result).isNotNull();
@@ -155,14 +157,15 @@ class CalendarServiceTest {
 		int month = 1;
 		Long userId = 1L;
 
+		com.sopt.cherrish.domain.user.domain.model.User user = CalendarFixture.createUser(userId, "테스트", 25);
 		Procedure procedure1 = CalendarFixture.createDefaultProcedure();
 		Procedure procedure2 = CalendarFixture.createProcedure("보톡스", "주사", 1, 3);
 
 		UserProcedure userProcedure1 = CalendarFixture.createUserProcedure(
-				1L, userId, procedure1, LocalDateTime.of(2025, 1, 15, 14, 0), 7
+				1L, user, procedure1, LocalDateTime.of(2025, 1, 15, 14, 0), 7
 		);
 		UserProcedure userProcedure2 = CalendarFixture.createUserProcedure(
-				2L, userId, procedure2, LocalDateTime.of(2025, 1, 20, 16, 0), 3
+				2L, user, procedure2, LocalDateTime.of(2025, 1, 20, 16, 0), 3
 		);
 
 		given(userProcedureRepository.findByUserIdAndScheduledAtBetween(
@@ -176,7 +179,7 @@ class CalendarServiceTest {
 		);
 
 		// when
-		CalendarResponseDto result = calendarService.getCalendar(year, month);
+		CalendarResponseDto result = calendarService.getCalendar(userId, year, month);
 
 		// then
 		assertThat(result).isNotNull();
@@ -195,11 +198,12 @@ class CalendarServiceTest {
 		int month = 1;
 		Long userId = 1L;
 
+		com.sopt.cherrish.domain.user.domain.model.User user = CalendarFixture.createUser(userId, "테스트", 25);
 		Procedure procedure = CalendarFixture.createProcedure("레이저 토닝", "레이저", 3, 10);
 
 		// 개인 설정: 5일 (시술 마스터는 최대 10일)
 		UserProcedure userProcedure = CalendarFixture.createUserProcedure(
-				1L, userId, procedure, LocalDateTime.of(2025, 1, 15, 14, 0), 5
+				1L, user, procedure, LocalDateTime.of(2025, 1, 15, 14, 0), 5
 		);
 
 		given(userProcedureRepository.findByUserIdAndScheduledAtBetween(
@@ -213,7 +217,7 @@ class CalendarServiceTest {
 		);
 
 		// when
-		CalendarResponseDto result = calendarService.getCalendar(year, month);
+		CalendarResponseDto result = calendarService.getCalendar(userId, year, month);
 
 		// then
 		assertThat(result.dates().get(0).events().get(0).downtimeDays()).isEqualTo(5);
@@ -227,11 +231,12 @@ class CalendarServiceTest {
 		int month = 1;
 		Long userId = 1L;
 
+		com.sopt.cherrish.domain.user.domain.model.User user = CalendarFixture.createUser(userId, "테스트", 25);
 		Procedure procedure = CalendarFixture.createProcedure("레이저 토닝", "레이저", 3, 10);
 
 		// 개인 설정 없음 (null)
 		UserProcedure userProcedure = CalendarFixture.createUserProcedureWithoutCustomDowntime(
-				1L, userId, procedure, LocalDateTime.of(2025, 1, 15, 14, 0)
+				1L, user, procedure, LocalDateTime.of(2025, 1, 15, 14, 0)
 		);
 
 		given(userProcedureRepository.findByUserIdAndScheduledAtBetween(
@@ -245,7 +250,7 @@ class CalendarServiceTest {
 		);
 
 		// when
-		CalendarResponseDto result = calendarService.getCalendar(year, month);
+		CalendarResponseDto result = calendarService.getCalendar(userId, year, month);
 
 		// then
 		assertThat(result.dates().get(0).events().get(0).downtimeDays()).isEqualTo(10);

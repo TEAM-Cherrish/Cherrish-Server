@@ -3,6 +3,7 @@ package com.sopt.cherrish.domain.calendar.fixture;
 import com.sopt.cherrish.domain.calendar.domain.model.UserProcedure;
 import com.sopt.cherrish.domain.calendar.domain.vo.DowntimePeriods;
 import com.sopt.cherrish.domain.procedure.domain.model.Procedure;
+import com.sopt.cherrish.domain.user.domain.model.User;
 
 import java.lang.reflect.Field;
 import java.time.LocalDate;
@@ -11,48 +12,57 @@ import java.util.List;
 
 public class CalendarFixture {
 
-	public static Procedure createProcedure(String name, String category, int minDowntimeDays, int maxDowntimeDays) {
-		Procedure procedure = Procedure.builder()
-				.name(name)
-				.category(category)
-				.minDowntimeDays(minDowntimeDays)
-				.maxDowntimeDays(maxDowntimeDays)
-				.build();
+    public static User createUser(Long id, String name, int age) {
+        User user = User.builder()
+                .name(name)
+                .age(age)
+                .build();
+        setId(user, id);
+        return user;
+    }
 
-		setId(procedure, 1L);
-		return procedure;
-	}
+    public static Procedure createProcedure(String name, String category, int minDowntimeDays, int maxDowntimeDays) {
+        Procedure procedure = Procedure.builder()
+                .name(name)
+                .category(category)
+                .minDowntimeDays(minDowntimeDays)
+                .maxDowntimeDays(maxDowntimeDays)
+                .build();
+
+        setId(procedure, 1L);
+        return procedure;
+    }
 
 	public static Procedure createDefaultProcedure() {
 		return createProcedure("레이저 토닝", "레이저", 3, 7);
 	}
 
-	public static UserProcedure createUserProcedure(
-			Long id,
-			Long userId,
-			Procedure procedure,
-			LocalDateTime scheduledAt,
-			Integer downtimeDays
-	) {
-		UserProcedure userProcedure = UserProcedure.builder()
-				.userId(userId)
-				.procedure(procedure)
-				.scheduledAt(scheduledAt)
-				.downtimeDays(downtimeDays)
-				.build();
+    public static UserProcedure createUserProcedure(
+            Long id,
+            User user,
+            Procedure procedure,
+            LocalDateTime scheduledAt,
+            Integer downtimeDays
+    ) {
+        UserProcedure userProcedure = UserProcedure.builder()
+                .user(user)
+                .procedure(procedure)
+                .scheduledAt(scheduledAt)
+                .downtimeDays(downtimeDays)
+                .build();
 
 		setId(userProcedure, id);
 		return userProcedure;
 	}
 
-	public static UserProcedure createUserProcedureWithoutCustomDowntime(
-			Long id,
-			Long userId,
-			Procedure procedure,
-			LocalDateTime scheduledAt
-	) {
-		return createUserProcedure(id, userId, procedure, scheduledAt, null);
-	}
+    public static UserProcedure createUserProcedureWithoutCustomDowntime(
+            Long id,
+            User user,
+            Procedure procedure,
+            LocalDateTime scheduledAt
+    ) {
+        return createUserProcedure(id, user, procedure, scheduledAt, null);
+    }
 
 	public static DowntimePeriods createDefaultDowntimePeriods() {
 		LocalDate baseDate = LocalDate.of(2025, 1, 15);

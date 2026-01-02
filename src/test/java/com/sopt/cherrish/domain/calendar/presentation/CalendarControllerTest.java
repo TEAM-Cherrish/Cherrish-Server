@@ -37,6 +37,7 @@ class CalendarControllerTest {
 	@DisplayName("캘린더 조회 성공 - 정상적인 요청")
 	void getCalendar_Success() throws Exception {
 		// given
+		Long userId = 1L;
 		int year = 2025;
 		int month = 1;
 
@@ -59,10 +60,10 @@ class CalendarControllerTest {
 
 		CalendarResponseDto response = CalendarResponseDto.of(year, month, List.of(dateDto));
 
-		given(calendarService.getCalendar(eq(year), eq(month))).willReturn(response);
+		given(calendarService.getCalendar(eq(userId), eq(year), eq(month))).willReturn(response);
 
 		// when & then
-		mockMvc.perform(get("/api/calendar")
+		mockMvc.perform(get("/api/users/{userId}/calendar", userId)
 						.param("year", String.valueOf(year))
 						.param("month", String.valueOf(month)))
 				.andDo(print())
@@ -82,15 +83,16 @@ class CalendarControllerTest {
 	@DisplayName("캘린더 조회 성공 - 시술이 없는 경우")
 	void getCalendar_Success_WithNoEvents() throws Exception {
 		// given
+		Long userId = 1L;
 		int year = 2025;
 		int month = 2;
 
 		CalendarResponseDto response = CalendarResponseDto.of(year, month, Collections.emptyList());
 
-		given(calendarService.getCalendar(eq(year), eq(month))).willReturn(response);
+		given(calendarService.getCalendar(eq(userId), eq(year), eq(month))).willReturn(response);
 
 		// when & then
-		mockMvc.perform(get("/api/calendar")
+		mockMvc.perform(get("/api/users/{userId}/calendar", userId)
 						.param("year", String.valueOf(year))
 						.param("month", String.valueOf(month)))
 				.andDo(print())
@@ -108,15 +110,16 @@ class CalendarControllerTest {
 	@DisplayName("캘린더 조회 성공 - 경계값 테스트 (2000년 1월)")
 	void getCalendar_Success_BoundaryTest_MinYear() throws Exception {
 		// given
+		Long userId = 1L;
 		int year = 2000;
 		int month = 1;
 
 		CalendarResponseDto response = CalendarResponseDto.of(year, month, Collections.emptyList());
 
-		given(calendarService.getCalendar(eq(year), eq(month))).willReturn(response);
+		given(calendarService.getCalendar(eq(userId), eq(year), eq(month))).willReturn(response);
 
 		// when & then
-		mockMvc.perform(get("/api/calendar")
+		mockMvc.perform(get("/api/users/{userId}/calendar", userId)
 						.param("year", String.valueOf(year))
 						.param("month", String.valueOf(month)))
 				.andDo(print())
@@ -129,15 +132,16 @@ class CalendarControllerTest {
 	@DisplayName("캘린더 조회 성공 - 경계값 테스트 (2100년 12월)")
 	void getCalendar_Success_BoundaryTest_MaxYear() throws Exception {
 		// given
+		Long userId = 1L;
 		int year = 2100;
 		int month = 12;
 
 		CalendarResponseDto response = CalendarResponseDto.of(year, month, Collections.emptyList());
 
-		given(calendarService.getCalendar(eq(year), eq(month))).willReturn(response);
+		given(calendarService.getCalendar(eq(userId), eq(year), eq(month))).willReturn(response);
 
 		// when & then
-		mockMvc.perform(get("/api/calendar")
+		mockMvc.perform(get("/api/users/{userId}/calendar", userId)
 						.param("year", String.valueOf(year))
 						.param("month", String.valueOf(month)))
 				.andDo(print())

@@ -29,13 +29,10 @@ public class CalendarService {
 	private final UserProcedureRepository userProcedureRepository;
 	private final DowntimeCalculator downtimeCalculator;
 
-	public CalendarResponseDto getCalendar(int year, int month) {
+	public CalendarResponseDto getCalendar(Long userId, int year, int month) {
 
         // 도메인 범위 검증
         validateYearMonth(year, month);
-
-        // TODO: 실제 사용자 인증 구현 후 수정
-		Long userId = 1L;
 
 		YearMonth yearMonth = YearMonth.of(year, month);
 		LocalDateTime startDateTime = yearMonth.atDay(1).atStartOfDay();

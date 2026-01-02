@@ -12,13 +12,14 @@ import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @Tag(name = "Calendar", description = "캘린더 관련 API")
 @RestController
-@RequestMapping("/api/calendar")
+@RequestMapping("/api/users/{userId}/calendar")
 @RequiredArgsConstructor
 @Validated
 public class CalendarController {
@@ -31,6 +32,11 @@ public class CalendarController {
 	)
 	@GetMapping
 	public CommonApiResponse<CalendarResponseDto> getCalendar(
+			@Parameter(description = "사용자 ID", example = "1", required = true)
+			@PathVariable
+			@Min(value = 1, message = "사용자 ID는 1 이상이어야 합니다")
+			Long userId,
+
 			@Parameter(description = "조회 연도", example = "2026", required = true)
 			@RequestParam
 			@Min(value = 2000, message = "연도는 2000년 이상이어야 합니다")
@@ -43,7 +49,7 @@ public class CalendarController {
 			@Max(value = 12, message = "월은 12 이하여야 합니다")
 			int month
 	) {
-		CalendarResponseDto calendar = calendarService.getCalendar(year, month);
+		CalendarResponseDto calendar = calendarService.getCalendar(userId, year, month);
 		return CommonApiResponse.success(SuccessCode.SUCCESS, calendar);
 	}
 }
