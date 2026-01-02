@@ -2,13 +2,13 @@ package com.sopt.cherrish.domain.calendar.application.service;
 
 import com.sopt.cherrish.domain.calendar.domain.model.UserProcedure;
 import com.sopt.cherrish.domain.calendar.domain.repository.UserProcedureRepository;
-import com.sopt.cherrish.domain.calendar.domain.service.CalendarValidator;
 import com.sopt.cherrish.domain.calendar.domain.service.DowntimeCalculator;
 import com.sopt.cherrish.domain.calendar.fixture.CalendarFixture;
-import com.sopt.cherrish.domain.calendar.presentation.dto.response.CalendarDateDto;
+import com.sopt.cherrish.domain.calendar.presentation.dto.response.CalendarDateResponseDto;
 import com.sopt.cherrish.domain.calendar.presentation.dto.response.CalendarResponseDto;
 import com.sopt.cherrish.domain.procedure.domain.model.Procedure;
 import com.sopt.cherrish.domain.user.domain.model.User;
+import com.sopt.cherrish.domain.user.fixture.UserFixture;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -38,9 +38,6 @@ class CalendarServiceTest {
 	@Mock
 	private DowntimeCalculator downtimeCalculator;
 
-	@Mock
-	private CalendarValidator calendarValidator;
-
 	@Test
 	@DisplayName("캘린더 조회 성공 - 시술이 1개 있는 경우")
 	void getCalendar_Success_WithOneProcedure() {
@@ -49,7 +46,7 @@ class CalendarServiceTest {
 		int month = 1;
 		Long userId = 1L;
 
-		User user = CalendarFixture.createUser(userId, "테스트", 25);
+		User user = UserFixture.createUser(userId, "테스트", 25);
 		Procedure procedure = CalendarFixture.createDefaultProcedure();
 		UserProcedure userProcedure = CalendarFixture.createUserProcedure(
 				1L,
@@ -78,7 +75,7 @@ class CalendarServiceTest {
 		assertThat(result.month()).isEqualTo(1);
 		assertThat(result.dates()).hasSize(1);
 
-		CalendarDateDto dateDto = result.dates().get(0);
+		CalendarDateResponseDto dateDto = result.dates().get(0);
 		assertThat(dateDto.eventCount()).isEqualTo(1);
 		assertThat(dateDto.events()).hasSize(1);
 		assertThat(dateDto.events().get(0).name()).isEqualTo("레이저 토닝");
@@ -115,7 +112,7 @@ class CalendarServiceTest {
 		int year = 2025;
 		int month = 1;
 		Long userId = 1L;
-		User user = CalendarFixture.createUser(userId, "테스트", 25);
+		User user = UserFixture.createUser(userId, "테스트", 25);
 		Procedure procedure1 = CalendarFixture.createProcedure(1L, "레이저 토닝", "레이저", 3, 7);
 		Procedure procedure2 = CalendarFixture.createProcedure(2L, "보톡스", "주사", 1, 3);
 
@@ -145,7 +142,7 @@ class CalendarServiceTest {
 		assertThat(result).isNotNull();
 		assertThat(result.dates()).hasSize(1);
 
-		CalendarDateDto dateDto = result.dates().get(0);
+		CalendarDateResponseDto dateDto = result.dates().get(0);
 		assertThat(dateDto.eventCount()).isEqualTo(2);
 		assertThat(dateDto.events()).hasSize(2);
 		assertThat(dateDto.events())
@@ -161,7 +158,7 @@ class CalendarServiceTest {
 		int month = 1;
 		Long userId = 1L;
 
-		User user = CalendarFixture.createUser(userId, "테스트", 25);
+		User user = UserFixture.createUser(userId, "테스트", 25);
 		Procedure procedure1 = CalendarFixture.createDefaultProcedure();
 		Procedure procedure2 = CalendarFixture.createProcedure(2L, "보톡스", "주사", 1, 3);
 
@@ -202,7 +199,7 @@ class CalendarServiceTest {
 		int month = 1;
 		Long userId = 1L;
 
-		User user = CalendarFixture.createUser(userId, "테스트", 25);
+		User user = UserFixture.createUser(userId, "테스트", 25);
 		Procedure procedure = CalendarFixture.createProcedure(1L, "레이저 토닝", "레이저", 3, 10);
 
 		// 개인 설정: 5일 (시술 마스터는 최대 10일)
@@ -235,7 +232,7 @@ class CalendarServiceTest {
 		int month = 1;
 		Long userId = 1L;
 
-		User user = CalendarFixture.createUser(userId, "테스트", 25);
+		User user = UserFixture.createUser(userId, "테스트", 25);
 		Procedure procedure = CalendarFixture.createProcedure(1L,"레이저 토닝", "레이저", 3, 10);
 
 		// 개인 설정 없음 (null)
@@ -259,4 +256,30 @@ class CalendarServiceTest {
 		// then
 		assertThat(result.dates().get(0).events().get(0).downtimeDays()).isEqualTo(10);
 	}
+
+    @Test
+    @DisplayName("엣지 케이스 - 시술 마스터의 다운타임 정보가 모두 null인 경우 0일로 처리")
+    void getCalendar_Success_WhenMaxDowntimeIsNull() {
+        // given
+        Long userId = 1L;
+        User user = UserFixture.createUser(userId, "테스트", 25);
+
+        Procedure procedure = CalendarFixture.createProcedure(1L, "관리성 시술", "관리", null, null);
+
+        UserProcedure userProcedure = CalendarFixture.createUserProcedureWithoutCustomDowntime(
+                1L, user, procedure, LocalDateTime.of(2025, 1, 15, 14, 0)
+        );
+
+        given(userProcedureRepository.findByUserIdAndScheduledAtBetween(eq(userId), any(), any()))
+                .willReturn(List.of(userProcedure));
+
+        // calculate가 0으로 호출되는지 확인
+        given(downtimeCalculator.calculate(eq(0), any())).willReturn(CalendarFixture.createDefaultDowntimePeriods());
+
+        // when
+        CalendarResponseDto result = calendarService.getCalendar(userId, 2025, 1);
+
+        // then
+        assertThat(result.dates().get(0).events().get(0).downtimeDays()).isEqualTo(0);
+    }
 }

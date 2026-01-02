@@ -12,8 +12,8 @@ public interface UserProcedureRepository extends JpaRepository<UserProcedure, Lo
 
 	@Query("SELECT up FROM UserProcedure up "
 			+ "JOIN FETCH up.procedure "
-            + "JOIN FETCH up.user "
-            + "WHERE up.user.id = :userId "
+			+ "JOIN FETCH up.user "
+			+ "WHERE up.user.id = :userId "
 			+ "AND up.scheduledAt >= :startDateTime "
 			+ "AND up.scheduledAt < :endDateTime "
 			+ "ORDER BY up.scheduledAt ASC")

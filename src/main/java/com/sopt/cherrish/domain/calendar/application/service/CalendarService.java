@@ -2,12 +2,11 @@ package com.sopt.cherrish.domain.calendar.application.service;
 
 import com.sopt.cherrish.domain.calendar.domain.model.UserProcedure;
 import com.sopt.cherrish.domain.calendar.domain.repository.UserProcedureRepository;
-import com.sopt.cherrish.domain.calendar.domain.service.CalendarValidator;
 import com.sopt.cherrish.domain.calendar.domain.service.DowntimeCalculator;
 import com.sopt.cherrish.domain.calendar.domain.vo.DowntimePeriods;
-import com.sopt.cherrish.domain.calendar.presentation.dto.response.CalendarDateDto;
+import com.sopt.cherrish.domain.calendar.presentation.dto.response.CalendarDateResponseDto;
 import com.sopt.cherrish.domain.calendar.presentation.dto.response.CalendarResponseDto;
-import com.sopt.cherrish.domain.calendar.presentation.dto.response.ProcedureEventDto;
+import com.sopt.cherrish.domain.calendar.presentation.dto.response.ProcedureEventResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,12 +26,8 @@ public class CalendarService {
 
 	private final UserProcedureRepository userProcedureRepository;
 	private final DowntimeCalculator downtimeCalculator;
-	private final CalendarValidator calendarValidator;
 
 	public CalendarResponseDto getCalendar(Long userId, int year, int month) {
-		// 도메인 범위 검증
-		calendarValidator.validateYearMonth(year, month);
-
 		YearMonth yearMonth = YearMonth.of(year, month);
 		LocalDateTime startDateTime = yearMonth.atDay(1).atStartOfDay();
 		LocalDateTime endDateTime = yearMonth.atEndOfMonth().atTime(23, 59, 59);
@@ -48,19 +43,19 @@ public class CalendarService {
             return CalendarResponseDto.of(year, month, Collections.emptyList());
         }
 
-		Map<LocalDate, List<ProcedureEventDto>> eventsByDate = userProcedures.stream()
+		Map<LocalDate, List<ProcedureEventResponseDto>> eventsByDate = userProcedures.stream()
 				.map(this::convertToProcedureEventDto)
 				.collect(Collectors.groupingBy(event -> event.scheduledAt().toLocalDate()));
 
-		List<CalendarDateDto> dates = eventsByDate.entrySet().stream()
-				.map(entry -> CalendarDateDto.of(entry.getKey(), entry.getValue()))
+		List<CalendarDateResponseDto> dates = eventsByDate.entrySet().stream()
+				.map(entry -> CalendarDateResponseDto.of(entry.getKey(), entry.getValue()))
 				.sorted((a, b) -> a.date().compareTo(b.date()))
 				.toList();
 
 		return CalendarResponseDto.of(year, month, dates);
 	}
 
-	private ProcedureEventDto convertToProcedureEventDto(UserProcedure userProcedure) {
+	private ProcedureEventResponseDto convertToProcedureEventDto(UserProcedure userProcedure) {
 		// 다운타임 일수 결정 (개인 설정이 있으면 우선, 없으면 시술 마스터의 최대값)
 		Integer customDowntime = userProcedure.getDowntimeDays();
 		Integer procedureMaxDowntime = userProcedure.getProcedure().getMaxDowntimeDays();
@@ -71,6 +66,6 @@ public class CalendarService {
 		LocalDate scheduledDate = userProcedure.getScheduledAt().toLocalDate();
 		DowntimePeriods periods = downtimeCalculator.calculate(downtimeDays, scheduledDate);
 
-		return ProcedureEventDto.from(userProcedure, periods, downtimeDays);
+		return ProcedureEventResponseDto.from(userProcedure, periods, downtimeDays);
 	}
 }

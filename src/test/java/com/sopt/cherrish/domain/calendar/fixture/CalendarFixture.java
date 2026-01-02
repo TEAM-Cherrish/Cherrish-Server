@@ -12,15 +12,6 @@ import java.util.List;
 
 public class CalendarFixture {
 
-    public static User createUser(Long id, String name, int age) {
-        User user = User.builder()
-                .name(name)
-                .age(age)
-                .build();
-        setId(user, id);
-        return user;
-    }
-
     public static Procedure createProcedure(Long id, String name, String category, Integer minDowntimeDays, Integer maxDowntimeDays) {
         Procedure procedure = Procedure.builder()
                 .name(name)

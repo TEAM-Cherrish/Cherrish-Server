@@ -33,17 +33,17 @@ public class Procedure extends BaseTimeEntity {
 
 	@Builder
 	private Procedure(String name, String category, Integer minDowntimeDays, Integer maxDowntimeDays) {
-        validateDowntimeRange(minDowntimeDays, maxDowntimeDays);
-
-        this.name = name;
+		this.name = name;
 		this.category = category;
 		this.minDowntimeDays = minDowntimeDays != null ? minDowntimeDays : 0;
 		this.maxDowntimeDays = maxDowntimeDays != null ? maxDowntimeDays : 0;
+
+		validateDowntimeRange();
 	}
 
-    private void validateDowntimeRange(Integer min, Integer max) {
-        if (min != null && max != null && min > max) {
-            throw new CalendarException(CalendarErrorCode.INVALID_DOWNTIME_RANGE);
-        }
-    }
+	private void validateDowntimeRange() {
+		if (this.minDowntimeDays > this.maxDowntimeDays) {
+			throw new CalendarException(CalendarErrorCode.INVALID_DOWNTIME_RANGE);
+		}
+	}
 }

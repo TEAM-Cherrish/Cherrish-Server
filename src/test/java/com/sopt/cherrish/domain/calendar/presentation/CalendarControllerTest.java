@@ -1,9 +1,10 @@
 package com.sopt.cherrish.domain.calendar.presentation;
 
 import com.sopt.cherrish.domain.calendar.application.service.CalendarService;
-import com.sopt.cherrish.domain.calendar.presentation.dto.response.CalendarDateDto;
+import com.sopt.cherrish.domain.calendar.presentation.dto.EventType;
+import com.sopt.cherrish.domain.calendar.presentation.dto.response.CalendarDateResponseDto;
 import com.sopt.cherrish.domain.calendar.presentation.dto.response.CalendarResponseDto;
-import com.sopt.cherrish.domain.calendar.presentation.dto.response.ProcedureEventDto;
+import com.sopt.cherrish.domain.calendar.presentation.dto.response.ProcedureEventResponseDto;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,8 +42,8 @@ class CalendarControllerTest {
 		int year = 2025;
 		int month = 1;
 
-		ProcedureEventDto eventDto = new ProcedureEventDto(
-				"PROCEDURE",
+		ProcedureEventResponseDto eventDto = new ProcedureEventResponseDto(
+				EventType.PROCEDURE,
 				1L,
 				1L,
 				"레이저 토닝",
@@ -53,7 +54,7 @@ class CalendarControllerTest {
 				List.of(LocalDate.of(2025, 1, 18))
 		);
 
-		CalendarDateDto dateDto = CalendarDateDto.of(
+		CalendarDateResponseDto dateDto = CalendarDateResponseDto.of(
 				LocalDate.of(2025, 1, 15),
 				List.of(eventDto)
 		);
