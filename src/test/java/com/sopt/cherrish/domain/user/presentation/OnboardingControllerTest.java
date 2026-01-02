@@ -1,8 +1,10 @@
 package com.sopt.cherrish.domain.user.presentation;
 
-import static org.mockito.BDDMockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.time.LocalDateTime;
 
@@ -34,7 +36,7 @@ class OnboardingControllerTest {
 
 	@Test
 	@DisplayName("온보딩 프로필 생성 성공")
-	void createProfile_Success() throws Exception {
+	void createProfileSuccess() throws Exception {
 		// given
 		OnboardingRequestDto request = new OnboardingRequestDto("홍길동", 25);
 
@@ -59,7 +61,7 @@ class OnboardingControllerTest {
 
 	@Test
 	@DisplayName("온보딩 프로필 생성 실패 - 유효하지 않은 입력")
-	void createProfile_InvalidInput() throws Exception {
+	void createProfileInvalidInput() throws Exception {
 		// given
 		OnboardingRequestDto request = new OnboardingRequestDto("", null);
 
