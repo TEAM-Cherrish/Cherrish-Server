@@ -13,7 +13,6 @@ import com.sopt.cherrish.domain.user.exception.UserErrorCode;
 import com.sopt.cherrish.domain.user.presentation.dto.request.UserUpdateRequestDto;
 import com.sopt.cherrish.domain.user.presentation.dto.response.UserResponseDto;
 import com.sopt.cherrish.global.annotation.ApiExceptions;
-import com.sopt.cherrish.global.annotation.AutoApiResponse;
 import com.sopt.cherrish.global.response.CommonApiResponse;
 import com.sopt.cherrish.global.response.error.ErrorCode;
 import com.sopt.cherrish.global.response.success.SuccessCode;
@@ -27,7 +26,6 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
-@AutoApiResponse
 @Tag(name = "User", description = "사용자 관련 API")
 public class UserController {
 
