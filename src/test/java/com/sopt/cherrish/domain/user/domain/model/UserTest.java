@@ -1,6 +1,6 @@
 package com.sopt.cherrish.domain.user.domain.model;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -12,7 +12,7 @@ class UserTest {
 
 	@Test
 	@DisplayName("User 생성 성공")
-	void createUser_Success() {
+	void createUserSuccess() {
 		// given & when
 		User user = UserFixture.createUser("홍길동", 25);
 
@@ -24,7 +24,7 @@ class UserTest {
 
 	@Test
 	@DisplayName("User 업데이트 - 이름과 나이 모두 수정")
-	void updateUser_BothFields() {
+	void updateUserBothFields() {
 		// given
 		User user = UserFixture.createUser("홍길동", 25);
 
@@ -38,7 +38,7 @@ class UserTest {
 
 	@Test
 	@DisplayName("User 업데이트 - null 값은 변경하지 않음")
-	void updateUser_NullValues() {
+	void updateUserNullValues() {
 		// given
 		User user = UserFixture.createUser("홍길동", 25);
 
