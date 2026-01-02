@@ -8,6 +8,7 @@ import com.sopt.cherrish.domain.calendar.fixture.CalendarFixture;
 import com.sopt.cherrish.domain.calendar.presentation.dto.response.CalendarDateDto;
 import com.sopt.cherrish.domain.calendar.presentation.dto.response.CalendarResponseDto;
 import com.sopt.cherrish.domain.procedure.domain.model.Procedure;
+import com.sopt.cherrish.domain.user.domain.model.User;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -48,7 +49,7 @@ class CalendarServiceTest {
 		int month = 1;
 		Long userId = 1L;
 
-		com.sopt.cherrish.domain.user.domain.model.User user = CalendarFixture.createUser(userId, "테스트", 25);
+		User user = CalendarFixture.createUser(userId, "테스트", 25);
 		Procedure procedure = CalendarFixture.createDefaultProcedure();
 		UserProcedure userProcedure = CalendarFixture.createUserProcedure(
 				1L,
@@ -114,10 +115,9 @@ class CalendarServiceTest {
 		int year = 2025;
 		int month = 1;
 		Long userId = 1L;
-
-		com.sopt.cherrish.domain.user.domain.model.User user = CalendarFixture.createUser(userId, "테스트", 25);
-		Procedure procedure1 = CalendarFixture.createProcedure("레이저 토닝", "레이저", 3, 7);
-		Procedure procedure2 = CalendarFixture.createProcedure("보톡스", "주사", 1, 3);
+		User user = CalendarFixture.createUser(userId, "테스트", 25);
+		Procedure procedure1 = CalendarFixture.createProcedure(1L, "레이저 토닝", "레이저", 3, 7);
+		Procedure procedure2 = CalendarFixture.createProcedure(2L, "보톡스", "주사", 1, 3);
 
 		LocalDateTime sameDateTime = LocalDateTime.of(2025, 1, 15, 14, 0);
 
@@ -161,9 +161,9 @@ class CalendarServiceTest {
 		int month = 1;
 		Long userId = 1L;
 
-		com.sopt.cherrish.domain.user.domain.model.User user = CalendarFixture.createUser(userId, "테스트", 25);
+		User user = CalendarFixture.createUser(userId, "테스트", 25);
 		Procedure procedure1 = CalendarFixture.createDefaultProcedure();
-		Procedure procedure2 = CalendarFixture.createProcedure("보톡스", "주사", 1, 3);
+		Procedure procedure2 = CalendarFixture.createProcedure(2L, "보톡스", "주사", 1, 3);
 
 		UserProcedure userProcedure1 = CalendarFixture.createUserProcedure(
 				1L, user, procedure1, LocalDateTime.of(2025, 1, 15, 14, 0), 7
@@ -202,8 +202,8 @@ class CalendarServiceTest {
 		int month = 1;
 		Long userId = 1L;
 
-		com.sopt.cherrish.domain.user.domain.model.User user = CalendarFixture.createUser(userId, "테스트", 25);
-		Procedure procedure = CalendarFixture.createProcedure("레이저 토닝", "레이저", 3, 10);
+		User user = CalendarFixture.createUser(userId, "테스트", 25);
+		Procedure procedure = CalendarFixture.createProcedure(1L, "레이저 토닝", "레이저", 3, 10);
 
 		// 개인 설정: 5일 (시술 마스터는 최대 10일)
 		UserProcedure userProcedure = CalendarFixture.createUserProcedure(
@@ -235,8 +235,8 @@ class CalendarServiceTest {
 		int month = 1;
 		Long userId = 1L;
 
-		com.sopt.cherrish.domain.user.domain.model.User user = CalendarFixture.createUser(userId, "테스트", 25);
-		Procedure procedure = CalendarFixture.createProcedure("레이저 토닝", "레이저", 3, 10);
+		User user = CalendarFixture.createUser(userId, "테스트", 25);
+		Procedure procedure = CalendarFixture.createProcedure(1L,"레이저 토닝", "레이저", 3, 10);
 
 		// 개인 설정 없음 (null)
 		UserProcedure userProcedure = CalendarFixture.createUserProcedureWithoutCustomDowntime(

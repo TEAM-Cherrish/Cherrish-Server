@@ -21,7 +21,7 @@ public class CalendarFixture {
         return user;
     }
 
-    public static Procedure createProcedure(String name, String category, int minDowntimeDays, int maxDowntimeDays) {
+    public static Procedure createProcedure(Long id, String name, String category, Integer minDowntimeDays, Integer maxDowntimeDays) {
         Procedure procedure = Procedure.builder()
                 .name(name)
                 .category(category)
@@ -29,12 +29,12 @@ public class CalendarFixture {
                 .maxDowntimeDays(maxDowntimeDays)
                 .build();
 
-        setId(procedure, 1L);
+        setId(procedure, id);
         return procedure;
     }
 
 	public static Procedure createDefaultProcedure() {
-		return createProcedure("레이저 토닝", "레이저", 3, 7);
+		return createProcedure(1L, "레이저 토닝", "레이저", 3, 7);
 	}
 
     public static UserProcedure createUserProcedure(
