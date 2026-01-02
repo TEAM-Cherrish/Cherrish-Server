@@ -65,13 +65,16 @@ public CommonApiResponse<UserResponseDto> getUser(@PathVariable Long id) {
 
 ## 2. 예외 처리 컨벤션
 
-**global ErrorCode와 BaseException을 사용하여 관리합니다.**
+**도메인별 ErrorCode와 Exception을 사용하여 관리합니다.**
 
 ### 예외 처리 구조
 
 ```
 GlobalExceptionHandler
     ├── BaseException (커스텀 비즈니스 예외)
+    │   ├── UserException (유저 도메인 예외)
+    │   ├── ReviewException (리뷰 도메인 예외)
+    │   └── ...
     ├── MethodArgumentNotValidException (@Valid 검증 실패)
     ├── IllegalArgumentException (도메인 검증 실패)
     ├── HttpMessageNotReadableException (JSON 파싱 실패)
@@ -80,18 +83,16 @@ GlobalExceptionHandler
 
 ### Error Code 추가 방법
 
-1. **에러 코드** (`ErrorCode.java`)
+**에러 코드는 도메인별로 분리하여 관리합니다.**
+
+1. **공통 에러 코드** (`ErrorCode.java`)
 
 ```java
-@Getter
 public enum ErrorCode implements ErrorType {
     // 공통 에러 (C001~C099)
-    INVALID_INPUT("E001", "입력값이 올바르지 않습니다", 400),
-    INVALID_FORMAT("E002", "데이터 형식이 올바르지 않습니다", 400),
-    INTERNAL_SERVER_ERROR("E999", "서버 내부 오류가 발생했습니다", 500),
-
-	// 리뷰 에러
-    REVIEW_NOT_FOUND("R001", "리뷰를 찾을 수 없습니다", 404);
+    INVALID_INPUT("C001", "입력값이 올바르지 않습니다", 400),
+    INVALID_FORMAT("C002", "데이터 형식이 올바르지 않습니다", 400),
+    INTERNAL_SERVER_ERROR("C999", "서버 내부 오류가 발생했습니다", 500);
 
     private final String code;
     private final String message;
@@ -101,6 +102,43 @@ public enum ErrorCode implements ErrorType {
         this.code = code;
         this.message = message;
         this.status = status;
+    }
+
+    @Override
+    public String getCode() { return code; }
+
+    @Override
+    public String getMessage() { return message; }
+
+    @Override
+    public int getStatus() { return status; }
+}
+```
+
+2. **도메인별 에러 코드** (`UserErrorCode.java`)
+
+```java
+@Getter
+@RequiredArgsConstructor
+public enum UserErrorCode implements ErrorType {
+    // User 도메인 에러 (U001 ~ U099)
+    USER_NOT_FOUND("U001", "사용자를 찾을 수 없습니다", 404),
+    INVALID_USER_NAME("U002", "유효하지 않은 사용자 이름입니다", 400),
+    INVALID_USER_AGE("U003", "유효하지 않은 나이입니다 (1-150세)", 400),
+    USER_ALREADY_EXISTS("U004", "이미 존재하는 사용자입니다", 409);
+
+    private final String code;
+    private final String message;
+    private final int status;
+}
+```
+
+3. **도메인별 Exception 클래스** (`UserException.java`)
+
+```java
+public class UserException extends BaseException {
+    public UserException(UserErrorCode errorCode) {
+        super(errorCode);
     }
 }
 ```
@@ -118,15 +156,14 @@ public class UserService {
     public UserResponseDto getUser(Long id) {
         // 도메인별 Exception과 ErrorCode 사용
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new BaseException(ErrorCode.USER_NOT_FOUND));
+                .orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
 
         return UserResponseDto.from(user);
     }
 
-    public void validateEmail(String email) {
-        if (userRepository.existsByEmail(email)) {
-            // 커스텀 메시지와 함께 예외 발생
-            throw new BaseException(ErrorCode.DUPLICATE_EMAIL, email);
+    public void validateUserAge(int age) {
+        if (age < 1 || age > 150) {
+            throw new UserException(UserErrorCode.INVALID_USER_AGE);
         }
     }
 }
@@ -134,17 +171,17 @@ public class UserService {
 
 **코드 네이밍 규칙**
 
-- `E###`: 공통 에러 코드
-- `R###`: 리뷰 관련
-- `C###`: 카테고리 관련
-- `B###`: Book 관련
+- `C###`: 공통 에러 코드 (Common)
+- `U###`: 유저 관련 (User)
 - 각 도메인별로 001부터 099까지 할당
 
 ### 에러 응답 형식
 
+**도메인별 에러 응답**
+
 ```json
 {
-  "code": "M001",
+  "code": "U001",
   "message": "사용자를 찾을 수 없습니다",
   "data": null
 }
@@ -154,7 +191,7 @@ public class UserService {
 
 ```json
 {
-  "code": "E001",
+  "code": "C001",
   "message": "입력값이 올바르지 않습니다",
   "data": {
     "email": "올바른 이메일 형식이 아닙니다",
