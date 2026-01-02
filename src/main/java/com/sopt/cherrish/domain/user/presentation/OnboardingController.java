@@ -10,7 +10,6 @@ import com.sopt.cherrish.domain.user.exception.UserErrorCode;
 import com.sopt.cherrish.domain.user.presentation.dto.request.OnboardingRequestDto;
 import com.sopt.cherrish.domain.user.presentation.dto.response.OnboardingResponseDto;
 import com.sopt.cherrish.global.annotation.ApiExceptions;
-import com.sopt.cherrish.global.annotation.AutoApiResponse;
 import com.sopt.cherrish.global.response.CommonApiResponse;
 import com.sopt.cherrish.global.response.error.ErrorCode;
 import com.sopt.cherrish.global.response.success.SuccessCode;
@@ -23,7 +22,6 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("/api/onboarding")
 @RequiredArgsConstructor
-@AutoApiResponse
 @Tag(name = "Onboarding", description = "온보딩 관련 API")
 public class OnboardingController {
 
