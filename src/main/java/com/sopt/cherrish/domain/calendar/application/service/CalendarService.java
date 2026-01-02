@@ -4,6 +4,8 @@ import com.sopt.cherrish.domain.calendar.domain.model.UserProcedure;
 import com.sopt.cherrish.domain.calendar.domain.repository.UserProcedureRepository;
 import com.sopt.cherrish.domain.calendar.domain.service.DowntimeCalculator;
 import com.sopt.cherrish.domain.calendar.domain.vo.DowntimePeriods;
+import com.sopt.cherrish.domain.calendar.exception.CalendarErrorCode;
+import com.sopt.cherrish.domain.calendar.exception.CalendarException;
 import com.sopt.cherrish.domain.calendar.presentation.dto.response.CalendarDateDto;
 import com.sopt.cherrish.domain.calendar.presentation.dto.response.CalendarResponseDto;
 import com.sopt.cherrish.domain.calendar.presentation.dto.response.ProcedureEventDto;
@@ -14,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -27,7 +30,11 @@ public class CalendarService {
 	private final DowntimeCalculator downtimeCalculator;
 
 	public CalendarResponseDto getCalendar(int year, int month) {
-		// TODO: 실제 사용자 인증 구현 후 수정
+
+        // 도메인 범위 검증
+        validateYearMonth(year, month);
+
+        // TODO: 실제 사용자 인증 구현 후 수정
 		Long userId = 1L;
 
 		YearMonth yearMonth = YearMonth.of(year, month);
@@ -39,6 +46,11 @@ public class CalendarService {
 				startDateTime,
 				endDateTime
 		);
+
+        // 일정이 없는 경우 빈 결과를 즉시 반환
+        if (userProcedures.isEmpty()) {
+            return CalendarResponseDto.of(year, month, Collections.emptyList());
+        }
 
 		Map<LocalDate, List<ProcedureEventDto>> eventsByDate = userProcedures.stream()
 				.map(this::convertToProcedureEventDto)
@@ -52,8 +64,22 @@ public class CalendarService {
 		return CalendarResponseDto.of(year, month, dates);
 	}
 
+    private void validateYearMonth(int year, int month) {
+        if (year < 2000 || year > 2100) {
+            throw new CalendarException(CalendarErrorCode.INVALID_YEAR_RANGE);
+        }
+        if (month < 1 || month > 12) {
+            throw new CalendarException(CalendarErrorCode.INVALID_MONTH_RANGE);
+        }
+    }
+
 	private ProcedureEventDto convertToProcedureEventDto(UserProcedure userProcedure) {
-		// 다운타임 일수 결정 (개인 설정이 있으면 우선, 없으면 시술 마스터의 최대값)
+
+        if (userProcedure.getProcedure() == null) {
+            throw new CalendarException(CalendarErrorCode.PROCEDURE_NOT_FOUND);
+        }
+
+        // 다운타임 일수 결정 (개인 설정이 있으면 우선, 없으면 시술 마스터의 최대값)
 		Integer downtimeDays = userProcedure.getDowntimeDays() != null
 				? userProcedure.getDowntimeDays()
 				: userProcedure.getProcedure().getMaxDowntimeDays();
