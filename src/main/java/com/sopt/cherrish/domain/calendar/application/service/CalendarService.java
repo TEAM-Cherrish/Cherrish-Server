@@ -2,10 +2,9 @@ package com.sopt.cherrish.domain.calendar.application.service;
 
 import com.sopt.cherrish.domain.calendar.domain.model.UserProcedure;
 import com.sopt.cherrish.domain.calendar.domain.repository.UserProcedureRepository;
+import com.sopt.cherrish.domain.calendar.domain.service.CalendarValidator;
 import com.sopt.cherrish.domain.calendar.domain.service.DowntimeCalculator;
 import com.sopt.cherrish.domain.calendar.domain.vo.DowntimePeriods;
-import com.sopt.cherrish.domain.calendar.exception.CalendarErrorCode;
-import com.sopt.cherrish.domain.calendar.exception.CalendarException;
 import com.sopt.cherrish.domain.calendar.presentation.dto.response.CalendarDateDto;
 import com.sopt.cherrish.domain.calendar.presentation.dto.response.CalendarResponseDto;
 import com.sopt.cherrish.domain.calendar.presentation.dto.response.ProcedureEventDto;
@@ -28,11 +27,11 @@ public class CalendarService {
 
 	private final UserProcedureRepository userProcedureRepository;
 	private final DowntimeCalculator downtimeCalculator;
+	private final CalendarValidator calendarValidator;
 
 	public CalendarResponseDto getCalendar(Long userId, int year, int month) {
-
-        // 도메인 범위 검증
-        validateYearMonth(year, month);
+		// 도메인 범위 검증
+		calendarValidator.validateYearMonth(year, month);
 
 		YearMonth yearMonth = YearMonth.of(year, month);
 		LocalDateTime startDateTime = yearMonth.atDay(1).atStartOfDay();
@@ -60,15 +59,6 @@ public class CalendarService {
 
 		return CalendarResponseDto.of(year, month, dates);
 	}
-
-    private void validateYearMonth(int year, int month) {
-        if (year < 2000 || year > 2100) {
-            throw new CalendarException(CalendarErrorCode.INVALID_YEAR_RANGE);
-        }
-        if (month < 1 || month > 12) {
-            throw new CalendarException(CalendarErrorCode.INVALID_MONTH_RANGE);
-        }
-    }
 
 	private ProcedureEventDto convertToProcedureEventDto(UserProcedure userProcedure) {
 		// 다운타임 일수 결정 (개인 설정이 있으면 우선, 없으면 시술 마스터의 최대값)

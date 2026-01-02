@@ -2,6 +2,7 @@ package com.sopt.cherrish.domain.calendar.application.service;
 
 import com.sopt.cherrish.domain.calendar.domain.model.UserProcedure;
 import com.sopt.cherrish.domain.calendar.domain.repository.UserProcedureRepository;
+import com.sopt.cherrish.domain.calendar.domain.service.CalendarValidator;
 import com.sopt.cherrish.domain.calendar.domain.service.DowntimeCalculator;
 import com.sopt.cherrish.domain.calendar.fixture.CalendarFixture;
 import com.sopt.cherrish.domain.calendar.presentation.dto.response.CalendarDateDto;
@@ -35,6 +36,9 @@ class CalendarServiceTest {
 
 	@Mock
 	private DowntimeCalculator downtimeCalculator;
+
+	@Mock
+	private CalendarValidator calendarValidator;
 
 	@Test
 	@DisplayName("캘린더 조회 성공 - 시술이 1개 있는 경우")
