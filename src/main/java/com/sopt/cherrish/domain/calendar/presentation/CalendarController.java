@@ -7,17 +7,17 @@ import com.sopt.cherrish.global.response.success.SuccessCode;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "Calendar", description = "캘린더 관련 API")
 @RestController
 @RequestMapping("/api/users/{userId}/calendar")
 @RequiredArgsConstructor
+@Validated
 public class CalendarController {
 
 	private final CalendarService calendarService;
@@ -29,16 +29,13 @@ public class CalendarController {
 	@GetMapping
 	public CommonApiResponse<CalendarResponseDto> getCalendar(
 			@Parameter(description = "사용자 ID", example = "1", required = true)
-			@PathVariable
-			Long userId,
+			@PathVariable @Min(1) Long userId,
 
 			@Parameter(description = "조회 연도", example = "2026", required = true)
-			@RequestParam
-			int year,
+			@RequestParam @Min(2000) @Max(2100) int year,
 
 			@Parameter(description = "조회 월 (1-12)", example = "1", required = true)
-			@RequestParam
-			int month
+			@RequestParam @Min(1) @Max(12) int month
 	) {
 		CalendarResponseDto calendar = calendarService.getCalendar(userId, year, month);
 		return CommonApiResponse.success(SuccessCode.SUCCESS, calendar);
