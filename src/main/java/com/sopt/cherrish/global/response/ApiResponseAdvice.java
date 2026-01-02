@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 
 import com.sopt.cherrish.global.annotation.AutoApiResponse;
-import com.sopt.cherrish.global.annotation.SuccessCodeAnnotation;
 import com.sopt.cherrish.global.response.success.SuccessCode;
 
 @RestControllerAdvice
@@ -30,15 +29,10 @@ public class ApiResponseAdvice implements ResponseBodyAdvice<Object> {
 			return body;
 		}
 
-		SuccessCodeAnnotation successCodeAnnotation = returnType.getMethodAnnotation(SuccessCodeAnnotation.class);
-		SuccessCode successCode = successCodeAnnotation != null
-			? successCodeAnnotation.value()
-			: SuccessCode.SUCCESS;
-
 		if (body == null || returnType.getParameterType() == Void.class) {
-			return CommonApiResponse.success(successCode);
+			return CommonApiResponse.success(SuccessCode.SUCCESS);
 		}
 
-		return CommonApiResponse.success(successCode, body);
+		return CommonApiResponse.success(SuccessCode.SUCCESS, body);
 	}
 }
