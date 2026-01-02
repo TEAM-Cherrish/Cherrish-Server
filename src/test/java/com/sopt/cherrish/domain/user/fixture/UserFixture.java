@@ -12,6 +12,10 @@ public class UserFixture {
 	private static final int DEFAULT_AGE = 25;
 	private static final Long DEFAULT_ID = 1L;
 
+	private UserFixture() {
+		// Utility class
+	}
+
 	public static User createUser() {
 		return createUser(DEFAULT_NAME, DEFAULT_AGE);
 	}
