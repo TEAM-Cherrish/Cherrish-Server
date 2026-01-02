@@ -29,7 +29,7 @@ class OnboardingServiceTest {
 
 	@Test
 	@DisplayName("온보딩 프로필 생성 성공")
-	void createProfileSuccess() {
+	void createProfile_Success() {
 		// given
 		OnboardingRequestDto request = new OnboardingRequestDto("홍길동", 25);
 		User savedUser = UserFixture.createUser("홍길동", 25);
