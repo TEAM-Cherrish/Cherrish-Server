@@ -1,6 +1,8 @@
 package com.sopt.cherrish.domain.calendar.domain.service;
 
 import com.sopt.cherrish.domain.calendar.domain.vo.DowntimePeriods;
+import com.sopt.cherrish.domain.calendar.exception.CalendarErrorCode;
+import com.sopt.cherrish.domain.calendar.exception.CalendarException;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
@@ -11,6 +13,13 @@ import java.util.stream.IntStream;
 public class DowntimeCalculator {
 
 	public DowntimePeriods calculate(int downtimeDays, LocalDate startDate) {
+		if (downtimeDays < 0) {
+			throw new CalendarException(CalendarErrorCode.INVALID_DOWNTIME_DAYS);
+		}
+		if (startDate == null) {
+			throw new CalendarException(CalendarErrorCode.INVALID_START_DATE);
+		}
+
 		// 다운타임을 3등분하고 나머지는 앞에서부터 순차 배분
 		int baseDay = downtimeDays / 3;
 		int remainder = downtimeDays % 3;

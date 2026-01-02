@@ -62,9 +62,10 @@ public class CalendarService {
 
 	private ProcedureEventDto convertToProcedureEventDto(UserProcedure userProcedure) {
 		// 다운타임 일수 결정 (개인 설정이 있으면 우선, 없으면 시술 마스터의 최대값)
-		Integer downtimeDays = userProcedure.getDowntimeDays() != null
-				? userProcedure.getDowntimeDays()
-				: userProcedure.getProcedure().getMaxDowntimeDays();
+		Integer customDowntime = userProcedure.getDowntimeDays();
+		Integer procedureMaxDowntime = userProcedure.getProcedure().getMaxDowntimeDays();
+		int downtimeDays = customDowntime != null ? customDowntime :
+				(procedureMaxDowntime != null ? procedureMaxDowntime : 0);
 
 		// 다운타임 기간 계산
 		LocalDate scheduledDate = userProcedure.getScheduledAt().toLocalDate();
