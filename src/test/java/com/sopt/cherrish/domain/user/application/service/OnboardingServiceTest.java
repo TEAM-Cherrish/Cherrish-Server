@@ -1,7 +1,8 @@
 package com.sopt.cherrish.domain.user.application.service;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.mockito.BDDMockito.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -28,7 +29,7 @@ class OnboardingServiceTest {
 
 	@Test
 	@DisplayName("온보딩 프로필 생성 성공")
-	void createProfile_Success() {
+	void createProfileSuccess() {
 		// given
 		OnboardingRequestDto request = new OnboardingRequestDto("홍길동", 25);
 		User savedUser = UserFixture.createUser("홍길동", 25);
