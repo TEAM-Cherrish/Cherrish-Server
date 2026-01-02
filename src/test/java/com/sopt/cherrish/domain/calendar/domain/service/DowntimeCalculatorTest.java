@@ -3,6 +3,8 @@ package com.sopt.cherrish.domain.calendar.domain.service;
 import com.sopt.cherrish.domain.calendar.domain.vo.DowntimePeriods;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 import java.time.LocalDate;
 
@@ -13,9 +15,36 @@ class DowntimeCalculatorTest {
 
 	private final DowntimeCalculator downtimeCalculator = new DowntimeCalculator();
 
+	@ParameterizedTest
+	@CsvSource({
+			"1,  1, 0, 0",  // 1일: 민감 1일
+			"3,  1, 1, 1",  // 3일: 각 1일씩
+			"7,  3, 2, 2",  // 7일: 민감 3일, 주의 2일, 회복 2일
+			"8,  3, 3, 2",  // 8일: 민감 3일, 주의 3일, 회복 2일
+			"10, 4, 3, 3"   // 10일: 민감 4일, 주의 3일, 회복 3일
+	})
+	@DisplayName("다운타임 일수별 기간 분배 계산")
+	void calculate_VariousDays(
+			int downtimeDays,
+			int expectedSensitive,
+			int expectedCaution,
+			int expectedRecovery
+	) {
+		// given
+		LocalDate startDate = LocalDate.of(2025, 1, 15);
+
+		// when
+		DowntimePeriods periods = downtimeCalculator.calculate(downtimeDays, startDate);
+
+		// then
+		assertThat(periods.sensitiveDays()).hasSize(expectedSensitive);
+		assertThat(periods.cautionDays()).hasSize(expectedCaution);
+		assertThat(periods.recoveryDays()).hasSize(expectedRecovery);
+	}
+
 	@Test
-	@DisplayName("다운타임 7일 - 3등분 (민감 3일, 주의 2일, 회복 2일)")
-	void calculate_SevenDays() {
+	@DisplayName("다운타임 7일 - 날짜 연속성 검증")
+	void calculate_SevenDays_DateContinuity() {
 		// given
 		int downtimeDays = 7;
 		LocalDate startDate = LocalDate.of(2025, 1, 15);
@@ -24,10 +53,6 @@ class DowntimeCalculatorTest {
 		DowntimePeriods periods = downtimeCalculator.calculate(downtimeDays, startDate);
 
 		// then
-		assertThat(periods.sensitiveDays()).hasSize(3);
-		assertThat(periods.cautionDays()).hasSize(2);
-		assertThat(periods.recoveryDays()).hasSize(2);
-
 		// 날짜 연속성 검증
 		assertThat(periods.sensitiveDays()).containsExactly(
 				LocalDate.of(2025, 1, 15),
@@ -42,78 +67,6 @@ class DowntimeCalculatorTest {
 				LocalDate.of(2025, 1, 20),
 				LocalDate.of(2025, 1, 21)
 		);
-	}
-
-	@Test
-	@DisplayName("다운타임 3일 - 3등분 (민감 1일, 주의 1일, 회복 1일)")
-	void calculate_ThreeDays() {
-		// given
-		int downtimeDays = 3;
-		LocalDate startDate = LocalDate.of(2025, 1, 15);
-
-		// when
-		DowntimePeriods periods = downtimeCalculator.calculate(downtimeDays, startDate);
-
-		// then
-		assertThat(periods.sensitiveDays()).hasSize(1);
-		assertThat(periods.cautionDays()).hasSize(1);
-		assertThat(periods.recoveryDays()).hasSize(1);
-	}
-
-	@Test
-	@DisplayName("다운타임 10일 - 나머지 2일 분배 (민감 4일, 주의 3일, 회복 3일)")
-	void calculate_TenDays() {
-		// given
-		int downtimeDays = 10;
-		LocalDate startDate = LocalDate.of(2025, 1, 15);
-
-		// when
-		DowntimePeriods periods = downtimeCalculator.calculate(downtimeDays, startDate);
-
-		// then
-		// 10 / 3 = 3 나머지 1
-		// 민감: 3 + 1 = 4일
-		// 주의: 3일
-		// 회복: 3일
-		assertThat(periods.sensitiveDays()).hasSize(4);
-		assertThat(periods.cautionDays()).hasSize(3);
-		assertThat(periods.recoveryDays()).hasSize(3);
-	}
-
-	@Test
-	@DisplayName("다운타임 8일 - 나머지 2일 분배 (민감 3일, 주의 3일, 회복 2일)")
-	void calculate_EightDays() {
-		// given
-		int downtimeDays = 8;
-		LocalDate startDate = LocalDate.of(2025, 1, 15);
-
-		// when
-		DowntimePeriods periods = downtimeCalculator.calculate(downtimeDays, startDate);
-
-		// then
-		// 8 / 3 = 2 나머지 2
-		// 민감: 2 + 1 = 3일
-		// 주의: 2 + 1 = 3일
-		// 회복: 2일
-		assertThat(periods.sensitiveDays()).hasSize(3);
-		assertThat(periods.cautionDays()).hasSize(3);
-		assertThat(periods.recoveryDays()).hasSize(2);
-	}
-
-	@Test
-	@DisplayName("다운타임 1일 - 모두 민감 기간")
-	void calculate_OneDay() {
-		// given
-		int downtimeDays = 1;
-		LocalDate startDate = LocalDate.of(2025, 1, 15);
-
-		// when
-		DowntimePeriods periods = downtimeCalculator.calculate(downtimeDays, startDate);
-
-		// then
-		assertThat(periods.sensitiveDays()).hasSize(1);
-		assertThat(periods.cautionDays()).isEmpty();
-		assertThat(periods.recoveryDays()).isEmpty();
 	}
 
 	@Test
