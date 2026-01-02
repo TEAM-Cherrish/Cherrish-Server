@@ -1,7 +1,10 @@
 package com.sopt.cherrish.domain.user.application.service;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.mockito.BDDMockito.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.times;
+import static org.mockito.BDDMockito.verify;
 
 import java.util.Optional;
 
@@ -32,7 +35,7 @@ class UserServiceTest {
 
 	@Test
 	@DisplayName("사용자 조회 성공")
-	void getUser_Success() {
+	void getUserSuccess() {
 		// given
 		Long userId = 1L;
 		User user = UserFixture.createUser("홍길동", 25);
@@ -50,7 +53,7 @@ class UserServiceTest {
 
 	@Test
 	@DisplayName("사용자 조회 실패 - 존재하지 않는 사용자")
-	void getUser_NotFound() {
+	void getUserNotFound() {
 		// given
 		Long userId = 999L;
 		given(userRepository.findById(userId)).willReturn(Optional.empty());
@@ -63,7 +66,7 @@ class UserServiceTest {
 
 	@Test
 	@DisplayName("사용자 정보 수정 성공")
-	void updateUser_Success() {
+	void updateUserSuccess() {
 		// given
 		Long userId = 1L;
 		User user = UserFixture.createUser("홍길동", 25);
@@ -81,7 +84,7 @@ class UserServiceTest {
 
 	@Test
 	@DisplayName("사용자 정보 수정 실패 - 존재하지 않는 사용자")
-	void updateUser_NotFound() {
+	void updateUserNotFound() {
 		// given
 		Long userId = 999L;
 		UserUpdateRequestDto request = new UserUpdateRequestDto("김철수", 30);
@@ -95,7 +98,7 @@ class UserServiceTest {
 
 	@Test
 	@DisplayName("사용자 삭제 성공")
-	void deleteUser_Success() {
+	void deleteUserSuccess() {
 		// given
 		Long userId = 1L;
 		User user = UserFixture.createUser();
@@ -111,7 +114,7 @@ class UserServiceTest {
 
 	@Test
 	@DisplayName("사용자 삭제 실패 - 존재하지 않는 사용자")
-	void deleteUser_NotFound() {
+	void deleteUserNotFound() {
 		// given
 		Long userId = 999L;
 		given(userRepository.findById(userId)).willReturn(Optional.empty());
