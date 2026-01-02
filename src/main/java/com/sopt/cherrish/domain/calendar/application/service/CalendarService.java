@@ -71,12 +71,7 @@ public class CalendarService {
     }
 
 	private ProcedureEventDto convertToProcedureEventDto(UserProcedure userProcedure) {
-
-        if (userProcedure.getProcedure() == null) {
-            throw new CalendarException(CalendarErrorCode.PROCEDURE_NOT_FOUND);
-        }
-
-        // 다운타임 일수 결정 (개인 설정이 있으면 우선, 없으면 시술 마스터의 최대값)
+		// 다운타임 일수 결정 (개인 설정이 있으면 우선, 없으면 시술 마스터의 최대값)
 		Integer downtimeDays = userProcedure.getDowntimeDays() != null
 				? userProcedure.getDowntimeDays()
 				: userProcedure.getProcedure().getMaxDowntimeDays();

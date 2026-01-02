@@ -7,10 +7,7 @@ import com.sopt.cherrish.global.response.success.SuccessCode;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,7 +18,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/users/{userId}/calendar")
 @RequiredArgsConstructor
-@Validated
 public class CalendarController {
 
 	private final CalendarService calendarService;
@@ -34,19 +30,14 @@ public class CalendarController {
 	public CommonApiResponse<CalendarResponseDto> getCalendar(
 			@Parameter(description = "사용자 ID", example = "1", required = true)
 			@PathVariable
-			@Min(value = 1, message = "사용자 ID는 1 이상이어야 합니다")
 			Long userId,
 
 			@Parameter(description = "조회 연도", example = "2026", required = true)
 			@RequestParam
-			@Min(value = 2000, message = "연도는 2000년 이상이어야 합니다")
-			@Max(value = 2100, message = "연도는 2100년 이하여야 합니다")
 			int year,
 
 			@Parameter(description = "조회 월 (1-12)", example = "1", required = true)
 			@RequestParam
-			@Min(value = 1, message = "월은 1 이상이어야 합니다")
-			@Max(value = 12, message = "월은 12 이하여야 합니다")
 			int month
 	) {
 		CalendarResponseDto calendar = calendarService.getCalendar(userId, year, month);
