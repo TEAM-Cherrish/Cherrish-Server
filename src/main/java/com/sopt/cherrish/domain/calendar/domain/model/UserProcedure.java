@@ -40,7 +40,7 @@ public class UserProcedure extends BaseTimeEntity {
 	@Column(nullable = false)
 	private LocalDateTime scheduledAt;
 
-	@Column
+	@Column(nullable = false)
 	private Integer downtimeDays;
 
 	@Builder
@@ -48,6 +48,14 @@ public class UserProcedure extends BaseTimeEntity {
 		this.user = user;
 		this.procedure = procedure;
 		this.scheduledAt = scheduledAt;
-		this.downtimeDays = downtimeDays;
+		this.downtimeDays = determineDowntimeDays(downtimeDays, procedure);
+	}
+
+	private Integer determineDowntimeDays(Integer customDowntime, Procedure procedure) {
+		if (customDowntime != null) {
+			return customDowntime;
+		}
+		Integer maxDowntime = procedure.getMaxDowntimeDays();
+		return maxDowntime != null ? maxDowntime : 0;
 	}
 }
