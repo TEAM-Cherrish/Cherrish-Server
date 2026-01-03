@@ -1,4 +1,4 @@
-package com.sopt.cherrish.domain.challenge.infrastructure.ai;
+package com.sopt.cherrish.domain.challenge.infrastructure.prompt;
 
 import org.springframework.stereotype.Component;
 
