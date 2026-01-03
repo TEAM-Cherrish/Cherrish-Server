@@ -1,11 +1,14 @@
 package com.sopt.cherrish.domain.challenge.application.service;
 
+import java.util.Map;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.sopt.cherrish.domain.challenge.application.dto.AiChallengeRecommendation;
-import com.sopt.cherrish.domain.challenge.infrastructure.ai.OpenAiClient;
+import com.sopt.cherrish.domain.challenge.infrastructure.prompt.ChallengePromptTemplate;
 import com.sopt.cherrish.domain.challenge.presentation.dto.response.AiRecommendationResponseDto;
+import com.sopt.cherrish.domain.openai.infrastructure.client.OpenAiClient;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,6 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 public class AiChallengeRecommendationService {
 
 	private final OpenAiClient openAiClient;
+	private final ChallengePromptTemplate challengePromptTemplate;
 
 	/**
 	 * AI 챌린지 추천 생성 (1단계: 하드코딩된 카테고리)
@@ -32,7 +36,11 @@ public class AiChallengeRecommendationService {
 		String testCategory = "피부 보습 관리";
 
 		try {
-			AiChallengeRecommendation aiResponse = openAiClient.generateChallengeRecommendation(testCategory);
+			AiChallengeRecommendation aiResponse = openAiClient.call(
+				challengePromptTemplate.getChallengeRecommendationTemplate(),
+				Map.of("homecareContent", testCategory),
+				AiChallengeRecommendation.class
+			);
 
 			log.info("AI 챌린지 추천 생성 완료: title={}", aiResponse.challengeTitle());
 
