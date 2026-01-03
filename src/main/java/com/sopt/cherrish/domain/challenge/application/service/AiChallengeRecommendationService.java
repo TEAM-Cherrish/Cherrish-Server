@@ -42,8 +42,6 @@ public class AiChallengeRecommendationService {
 			throw new ChallengeException(ChallengeErrorCode.INVALID_HOMECARE_ROUTINE_ID);
 		}
 
-		log.debug("홈케어 루틴 조회 완료: {}", routine.getDescription());
-
 		try {
 			AiChallengeRecommendation aiResponse = aiClient.call(
 				challengePromptTemplate.getChallengeRecommendationTemplate(),
