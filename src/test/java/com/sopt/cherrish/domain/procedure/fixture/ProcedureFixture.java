@@ -2,6 +2,7 @@ package com.sopt.cherrish.domain.procedure.fixture;
 
 import java.lang.reflect.Field;
 import java.time.LocalDateTime;
+import java.util.concurrent.atomic.AtomicLong;
 
 import com.sopt.cherrish.domain.procedure.domain.model.Procedure;
 import com.sopt.cherrish.global.entity.BaseTimeEntity;
@@ -12,7 +13,7 @@ public class ProcedureFixture {
 	private static final String DEFAULT_CATEGORY = "레이저";
 	private static final int DEFAULT_MIN_DOWNTIME = 1;
 	private static final int DEFAULT_MAX_DOWNTIME = 5;
-	private static final Long DEFAULT_ID = 1L;
+	private static final AtomicLong ID_GENERATOR = new AtomicLong(1L);
 
 	private ProcedureFixture() {
 		// Utility class
@@ -29,7 +30,7 @@ public class ProcedureFixture {
 			.minDowntimeDays(minDowntimeDays)
 			.maxDowntimeDays(maxDowntimeDays)
 			.build();
-		setField(procedure, Procedure.class, "id", DEFAULT_ID);
+		setField(procedure, Procedure.class, "id", ID_GENERATOR.getAndIncrement());
 		setField(procedure, BaseTimeEntity.class, "createdAt", LocalDateTime.now());
 		setField(procedure, BaseTimeEntity.class, "updatedAt", LocalDateTime.now());
 		return procedure;

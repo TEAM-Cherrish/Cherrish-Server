@@ -31,7 +31,7 @@ class ProcedureControllerTest {
 
 	@Test
 	@DisplayName("시술 목록 조회 성공 - 파라미터 없이 전체 조회")
-	void getProceduresWithoutParameters() throws Exception {
+	void searchProceduresWithoutParameters() throws Exception {
 		// given
 		ProcedureResponseDto procedure1 = ProcedureResponseDto.builder()
 			.id(1L)
@@ -64,7 +64,7 @@ class ProcedureControllerTest {
 
 	@Test
 	@DisplayName("시술 목록 조회 성공 - 키워드로 검색")
-	void getProceduresByKeyword() throws Exception {
+	void searchProceduresByKeyword() throws Exception {
 		// given
 		String keyword = "레이저";
 
@@ -92,7 +92,7 @@ class ProcedureControllerTest {
 
 	@Test
 	@DisplayName("시술 목록 조회 성공 - 피부 고민 ID로 검색")
-	void getProceduresByWorryId() throws Exception {
+	void searchProceduresByWorryId() throws Exception {
 		// given
 		Long worryId = 1L;
 
@@ -119,7 +119,7 @@ class ProcedureControllerTest {
 
 	@Test
 	@DisplayName("시술 목록 조회 성공 - 키워드와 피부 고민 ID로 동시 검색")
-	void getProceduresByKeywordAndWorryId() throws Exception {
+	void searchProceduresByKeywordAndWorryId() throws Exception {
 		// given
 		String keyword = "레이저";
 		Long worryId = 3L;
@@ -148,7 +148,7 @@ class ProcedureControllerTest {
 
 	@Test
 	@DisplayName("시술 목록 조회 성공 - 검색 결과 없음")
-	void getProceduresWithNoResults() throws Exception {
+	void searchProceduresWithNoResults() throws Exception {
 		// given
 		String keyword = "존재하지않는시술";
 
@@ -166,7 +166,7 @@ class ProcedureControllerTest {
 
 	@Test
 	@DisplayName("시술 목록 조회 성공 - 응답 필드 검증")
-	void getProceduresCheckResponseFields() throws Exception {
+	void searchProceduresCheckResponseFields() throws Exception {
 		// given
 		ProcedureResponseDto procedure = ProcedureResponseDto.builder()
 			.id(2L)
