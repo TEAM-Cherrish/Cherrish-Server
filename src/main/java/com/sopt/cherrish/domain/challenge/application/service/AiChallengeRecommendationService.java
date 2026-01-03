@@ -34,7 +34,6 @@ public class AiChallengeRecommendationService {
 	public AiRecommendationResponseDto generateRecommendation(Long homecareRoutineId) {
 		log.info("AI 챌린지 추천 생성 시작: homecareRoutineId={}", homecareRoutineId);
 
-		// HomecareRoutine enum 조회
 		HomecareRoutine routine;
 		try {
 			routine = HomecareRoutine.fromId(homecareRoutineId.intValue());
@@ -45,7 +44,6 @@ public class AiChallengeRecommendationService {
 
 		log.debug("홈케어 루틴 조회 완료: {}", routine.getDescription());
 
-		// AI 호출
 		try {
 			AiChallengeRecommendation aiResponse = openAiClient.call(
 				challengePromptTemplate.getChallengeRecommendationTemplate(),
