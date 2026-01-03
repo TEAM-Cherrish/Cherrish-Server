@@ -16,7 +16,12 @@ import lombok.RequiredArgsConstructor;
 public class WorryService {
 
 	private final WorryRepository worryRepository;
-    
+
+	/**
+	 * 피부 고민 목록 조회
+	 *
+	 * @return 피부 고민 목록
+	 */
 	public List<WorryResponseDto> getAllWorries() {
 		return worryRepository.findAll().stream()
 			.map(WorryResponseDto::from)
