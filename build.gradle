@@ -36,6 +36,10 @@ dependencies {
 	//swagger
 	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.14'
 
+	// Spring AI OpenAI
+	implementation platform('org.springframework.ai:spring-ai-bom:1.0.0-M4')
+	implementation 'org.springframework.ai:spring-ai-openai-spring-boot-starter'
+
 	// Test
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
