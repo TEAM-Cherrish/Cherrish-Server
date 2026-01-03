@@ -13,8 +13,6 @@ import com.sopt.cherrish.domain.user.exception.UserErrorCode;
 import com.sopt.cherrish.domain.user.presentation.dto.request.UserUpdateRequestDto;
 import com.sopt.cherrish.domain.user.presentation.dto.response.UserResponseDto;
 import com.sopt.cherrish.global.annotation.ApiExceptions;
-import com.sopt.cherrish.global.annotation.AutoApiResponse;
-import com.sopt.cherrish.global.annotation.SuccessCodeAnnotation;
 import com.sopt.cherrish.global.response.CommonApiResponse;
 import com.sopt.cherrish.global.response.error.ErrorCode;
 import com.sopt.cherrish.global.response.success.SuccessCode;
@@ -28,7 +26,6 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
-@AutoApiResponse
 @Tag(name = "User", description = "사용자 관련 API")
 public class UserController {
 
@@ -38,7 +35,6 @@ public class UserController {
 		summary = "사용자 조회",
 		description = "사용자 ID로 사용자 정보를 조회합니다."
 	)
-	@SuccessCodeAnnotation(SuccessCode.SUCCESS)
 	@ApiExceptions({UserErrorCode.class, ErrorCode.class})
 	@GetMapping("/{id}")
 	public CommonApiResponse<UserResponseDto> getUser(
@@ -53,7 +49,6 @@ public class UserController {
 		summary = "사용자 정보 수정",
 		description = "사용자의 이름 또는 나이를 수정합니다. 제공된 필드만 수정됩니다."
 	)
-	@SuccessCodeAnnotation(SuccessCode.SUCCESS)
 	@ApiExceptions({UserErrorCode.class, ErrorCode.class})
 	@PatchMapping("/{id}")
 	public CommonApiResponse<UserResponseDto> updateUser(
@@ -69,7 +64,6 @@ public class UserController {
 		summary = "사용자 삭제",
 		description = "사용자를 삭제합니다."
 	)
-	@SuccessCodeAnnotation(SuccessCode.SUCCESS)
 	@ApiExceptions({UserErrorCode.class, ErrorCode.class})
 	@DeleteMapping("/{id}")
 	public CommonApiResponse<Void> deleteUser(
