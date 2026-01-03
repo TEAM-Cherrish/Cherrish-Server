@@ -11,7 +11,7 @@ import com.sopt.cherrish.domain.challenge.exception.ChallengeErrorCode;
 import com.sopt.cherrish.domain.challenge.exception.ChallengeException;
 import com.sopt.cherrish.domain.challenge.infrastructure.prompt.ChallengePromptTemplate;
 import com.sopt.cherrish.domain.challenge.presentation.dto.response.AiRecommendationResponseDto;
-import com.sopt.cherrish.domain.openai.infrastructure.client.OpenAiClient;
+import com.sopt.cherrish.domain.openai.AiClient;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 @Transactional(readOnly = true)
 public class AiChallengeRecommendationService {
 
-	private final OpenAiClient openAiClient;
+	private final AiClient aiClient;
 	private final ChallengePromptTemplate challengePromptTemplate;
 
 	/**
@@ -45,7 +45,7 @@ public class AiChallengeRecommendationService {
 		log.debug("홈케어 루틴 조회 완료: {}", routine.getDescription());
 
 		try {
-			AiChallengeRecommendation aiResponse = openAiClient.call(
+			AiChallengeRecommendation aiResponse = aiClient.call(
 				challengePromptTemplate.getChallengeRecommendationTemplate(),
 				Map.of("homecareContent", routine.getDescription()),
 				AiChallengeRecommendation.class
