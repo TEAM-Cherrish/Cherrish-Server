@@ -6,29 +6,23 @@ import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.prompt.PromptTemplate;
 import org.springframework.stereotype.Component;
 
+import com.sopt.cherrish.domain.openai.AiClient;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * OpenAI API 클라이언트
- * 범용 AI 서비스 호출을 담당하는 인프라 컴포넌트
+ * OpenAI API 클라이언트 구현체
+ * AiClient 인터페이스를 OpenAI로 구현
  */
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class OpenAiClient {
+public class OpenAiClient implements AiClient {
 
 	private final ChatClient.Builder chatClientBuilder;
 
-	/**
-	 * OpenAI API를 호출하여 구조화된 응답 받기
-	 *
-	 * @param promptTemplate 프롬프트 템플릿 문자열
-	 * @param variables 템플릿에 삽입할 변수 맵
-	 * @param responseType 응답 타입 클래스
-	 * @param <T> 응답 타입
-	 * @return AI가 생성한 구조화된 응답
-	 */
+	@Override
 	public <T> T call(String promptTemplate, Map<String, Object> variables, Class<T> responseType) {
 		log.debug("OpenAI API 호출 시작: responseType={}", responseType.getSimpleName());
 
