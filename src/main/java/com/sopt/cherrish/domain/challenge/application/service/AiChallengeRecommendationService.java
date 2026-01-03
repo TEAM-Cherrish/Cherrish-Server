@@ -6,6 +6,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.sopt.cherrish.domain.challenge.application.dto.AiChallengeRecommendation;
+import com.sopt.cherrish.domain.challenge.domain.model.HomecareRoutine;
+import com.sopt.cherrish.domain.challenge.exception.ChallengeErrorCode;
+import com.sopt.cherrish.domain.challenge.exception.ChallengeException;
 import com.sopt.cherrish.domain.challenge.infrastructure.prompt.ChallengePromptTemplate;
 import com.sopt.cherrish.domain.challenge.presentation.dto.response.AiRecommendationResponseDto;
 import com.sopt.cherrish.domain.openai.infrastructure.client.OpenAiClient;
@@ -23,22 +26,30 @@ public class AiChallengeRecommendationService {
 	private final ChallengePromptTemplate challengePromptTemplate;
 
 	/**
-	 * AI 챌린지 추천 생성 (1단계: 하드코딩된 카테고리)
+	 * AI 챌린지 추천 생성
 	 *
-	 * @param homecareRoutineId 홈케어 루틴 ID (현재는 사용 안 함, 2단계에서 DB 조회용)
+	 * @param homecareRoutineId 홈케어 루틴 ID (1~6)
 	 * @return AI가 생성한 챌린지 타이틀과 루틴 리스트
 	 */
 	public AiRecommendationResponseDto generateRecommendation(Long homecareRoutineId) {
 		log.info("AI 챌린지 추천 생성 시작: homecareRoutineId={}", homecareRoutineId);
 
-		// TODO: 2단계에서 homecareRoutineId로 DB 조회하여 실제 카테고리 가져오기
-		// 1단계: 하드코딩된 카테고리로 테스트
-		String testCategory = "피부 보습 관리";
+		// HomecareRoutine enum 조회
+		HomecareRoutine routine;
+		try {
+			routine = HomecareRoutine.fromId(homecareRoutineId.intValue());
+		} catch (IllegalArgumentException e) {
+			log.warn("유효하지 않은 홈케어 루틴 ID: {}", homecareRoutineId);
+			throw new ChallengeException(ChallengeErrorCode.INVALID_HOMECARE_ROUTINE_ID);
+		}
 
+		log.debug("홈케어 루틴 조회 완료: {}", routine.getDescription());
+
+		// AI 호출
 		try {
 			AiChallengeRecommendation aiResponse = openAiClient.call(
 				challengePromptTemplate.getChallengeRecommendationTemplate(),
-				Map.of("homecareContent", testCategory),
+				Map.of("homecareContent", routine.getDescription()),
 				AiChallengeRecommendation.class
 			);
 
@@ -51,7 +62,7 @@ public class AiChallengeRecommendationService {
 
 		} catch (Exception e) {
 			log.error("AI 호출 실패: homecareRoutineId={}, error={}", homecareRoutineId, e.getMessage(), e);
-			throw new RuntimeException("AI 서비스를 일시적으로 사용할 수 없습니다.", e);
+			throw new ChallengeException(ChallengeErrorCode.AI_SERVICE_UNAVAILABLE);
 		}
 	}
 }
