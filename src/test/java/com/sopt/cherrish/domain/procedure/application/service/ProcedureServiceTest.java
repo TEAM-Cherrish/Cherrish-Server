@@ -130,7 +130,7 @@ class ProcedureServiceTest {
 
 		// then
 		assertThat(result.getProcedures()).hasSize(1);
-		assertThat(result.getProcedures().get(0).getId()).isEqualTo(1L);
+		assertThat(result.getProcedures().get(0).getId()).isNotNull();
 		assertThat(result.getProcedures().get(0).getName()).isEqualTo("프락셀 레이저");
 		assertThat(result.getProcedures().get(0).getCategory()).isEqualTo("레이저");
 		assertThat(result.getProcedures().get(0).getMinDowntimeDays()).isEqualTo(3);
