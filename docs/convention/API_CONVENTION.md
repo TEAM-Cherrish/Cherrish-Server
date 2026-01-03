@@ -215,33 +215,55 @@ public class UserService {
 @RestController
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
-@Tag(name = "User", description = "회원 관련 API")
+@Tag(name = "User", description = "사용자 관련 API")
 public class UserController {
 
     private final UserService userService;
 
-    @Operation(summary = "회원 정보 조회", description = "ID로 회원 정보를 조회합니다")
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "조회 성공"),
-        @ApiResponse(responseCode = "404", description = "회원을 찾을 수 없음",
-                content = @Content(schema = @Schema(implementation = CommonApiResponse.class)))
-    })
+    @Operation(
+        summary = "사용자 조회",
+        description = "사용자 ID로 사용자 정보를 조회합니다."
+    )
+    @ApiExceptions({UserErrorCode.class, ErrorCode.class})
     @GetMapping("/{id}")
     public CommonApiResponse<UserResponseDto> getUser(
-            @Parameter(description = "회원 ID", required = true) @PathVariable Long id) {
-        UserResponseDto user = userService.getUser(id);
-        return CommonApiResponse.success(SuccessCode.SUCCESS, user);
+        @Parameter(description = "사용자 ID", required = true, example = "1")
+        @PathVariable Long id
+    ) {
+        UserResponseDto response = userService.getUser(id);
+        return CommonApiResponse.success(SuccessCode.SUCCESS, response);
     }
 
-    @Operation(summary = "회원 가입", description = "새로운 회원을 생성합니다")
-    @PostMapping
-    public CommonApiResponse<Void> createUser(
-            @Valid @RequestBody UserRequestDto request) {
-        userService.createUser(request);
-        return CommonApiResponse.success(SuccessCode.SUCCESS);
+    @Operation(
+        summary = "사용자 정보 수정",
+        description = "사용자의 이름 또는 나이를 수정합니다. 제공된 필드만 수정됩니다."
+    )
+    @ApiExceptions({UserErrorCode.class, ErrorCode.class})
+    @PatchMapping("/{id}")
+    public CommonApiResponse<UserResponseDto> updateUser(
+        @Parameter(description = "사용자 ID", required = true, example = "1")
+        @PathVariable Long id,
+        @Valid @RequestBody UserUpdateRequestDto request
+    ) {
+        UserResponseDto response = userService.updateUser(id, request);
+        return CommonApiResponse.success(SuccessCode.SUCCESS, response);
     }
 }
 ```
+
+**`@ApiExceptions` 어노테이션:**
+- 해당 API에서 발생 가능한 에러 코드들을 지정
+- Swagger 문서에 자동으로 에러 응답 예시가 생성됨
+- HTTP 상태 코드별로 그룹화되어 표시
+
+**예시:**
+```java
+@ApiExceptions({UserErrorCode.class, ErrorCode.class})
+```
+위 코드는 Swagger에서 다음과 같이 표시됩니다:
+- 400 Bad Request: `INVALID_INPUT`, `INVALID_FORMAT` 등
+- 404 Not Found: `USER_NOT_FOUND`
+- 500 Internal Server Error: `INTERNAL_SERVER_ERROR`
 
 ### DTO에 Swagger 어노테이션 추가
 
@@ -284,8 +306,8 @@ public class UserResponseDto {
 | 어노테이션 | 사용 위치 | 설명 |
 | --- | --- | --- |
 | `@Tag` | Controller 클래스 | API 그룹 정의 |
-| `@Operation` | Controller 메서드 | API 설명 |
-| `@ApiResponses` | Controller 메서드 | 응답 코드별 설명 |
-| `@Parameter` | 메서드 파라미터 | 파라미터 설명 |
+| `@Operation` | Controller 메서드 | API 설명 (summary, description) |
+| `@ApiExceptions` | Controller 메서드 | 발생 가능한 에러 코드 지정 (자동 문서화) |
+| `@Parameter` | 메서드 파라미터 | 파라미터 설명 (description, required, example) |
 | `@Schema` | DTO 클래스/필드 | 스키마 설명 |
 
