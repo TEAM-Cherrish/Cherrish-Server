@@ -2,7 +2,7 @@ package com.sopt.cherrish.domain.calendar.presentation.dto.response;
 
 import com.sopt.cherrish.domain.calendar.domain.model.UserProcedure;
 import com.sopt.cherrish.domain.calendar.domain.vo.DowntimePeriods;
-import com.sopt.cherrish.domain.calendar.presentation.dto.EventType;
+import com.sopt.cherrish.domain.calendar.domain.model.EventType;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.time.LocalDate;

@@ -1,7 +1,7 @@
 package com.sopt.cherrish.domain.calendar.presentation;
 
 import com.sopt.cherrish.domain.calendar.application.service.CalendarService;
-import com.sopt.cherrish.domain.calendar.presentation.dto.EventType;
+import com.sopt.cherrish.domain.calendar.domain.model.EventType;
 import com.sopt.cherrish.domain.calendar.presentation.dto.response.CalendarDateResponseDto;
 import com.sopt.cherrish.domain.calendar.presentation.dto.response.CalendarResponseDto;
 import com.sopt.cherrish.domain.calendar.presentation.dto.response.ProcedureEventResponseDto;
