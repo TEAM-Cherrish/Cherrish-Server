@@ -19,10 +19,10 @@ public class ChallengePromptTemplate {
 		2. 실천 루틴 리스트: 하루 3-5개의 구체적인 실천 항목 (각 최대 50자)
 
 		응답은 반드시 다음 JSON 형식으로만 답변하세요:
-		{
+		{{
 		  "challenge_title": "챌린지 제목",
 		  "routines": ["루틴1", "루틴2", "루틴3", "루틴4", "루틴5"]
-		}
+		}}
 		""";
 
 	/**
