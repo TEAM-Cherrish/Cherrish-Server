@@ -15,24 +15,25 @@ class HomecareRoutineServiceTest {
 	private final HomecareRoutineService homecareRoutineService = new HomecareRoutineService();
 
 	@Test
-	@DisplayName("모든 홈케어 루틴 조회 성공")
-	void getAllHomecareRoutinesSuccess() {
+	@DisplayName("모든 홈케어 루틴 조회 - 기본 검증")
+	void getAllHomecareRoutinesBasicValidation() {
 		// when
 		List<HomecareRoutineResponseDto> routines = homecareRoutineService.getAllHomecareRoutines();
 
 		// then
-		assertThat(routines).isNotNull();
-		assertThat(routines).hasSize(6);
-		assertThat(routines).allSatisfy(routine -> {
-			assertThat(routine.id()).isBetween(1, 6);
-			assertThat(routine.name()).isNotBlank();
-			assertThat(routine.description()).isNotBlank();
-		});
+		assertThat(routines)
+			.isNotNull()
+			.hasSize(6)
+			.allSatisfy(routine -> {
+				assertThat(routine.id()).isBetween(1, 6);
+				assertThat(routine.name()).isNotBlank();
+				assertThat(routine.description()).isNotBlank();
+			});
 	}
 
 	@Test
-	@DisplayName("홈케어 루틴 ID 순서 검증")
-	void routineIdOrderValidation() {
+	@DisplayName("모든 홈케어 루틴 조회 - ID 순차 증가 검증")
+	void getAllHomecareRoutinesIdSequential() {
 		// when
 		List<HomecareRoutineResponseDto> routines = homecareRoutineService.getAllHomecareRoutines();
 
@@ -43,15 +44,17 @@ class HomecareRoutineServiceTest {
 	}
 
 	@Test
-	@DisplayName("첫 번째 루틴 DTO 변환 검증")
-	void firstRoutineDtoMappingValidation() {
+	@DisplayName("모든 홈케어 루틴 조회 - DTO 매핑 정확성 검증")
+	void getAllHomecareRoutinesDtoMapping() {
 		// when
 		List<HomecareRoutineResponseDto> routines = homecareRoutineService.getAllHomecareRoutines();
-		HomecareRoutineResponseDto firstRoutine = routines.getFirst();
 
 		// then
-		assertThat(firstRoutine.id()).isEqualTo(1);
-		assertThat(firstRoutine.name()).isEqualTo("SKIN_MOISTURIZING");
-		assertThat(firstRoutine.description()).isEqualTo("피부 보습 관리");
+		assertThat(routines.getFirst())
+			.satisfies(routine -> {
+				assertThat(routine.id()).isEqualTo(1);
+				assertThat(routine.name()).isEqualTo("SKIN_MOISTURIZING");
+				assertThat(routine.description()).isEqualTo("피부 보습 관리");
+			});
 	}
 }
