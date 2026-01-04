@@ -91,13 +91,13 @@ class ChallengeControllerTest {
 			@DisplayName("피부 보습 루틴 추천 생성")
 			void skinMoisturizing() throws Exception {
 				// given
-				given(aiRecommendationService.generateRecommendation(1L))
+				given(aiRecommendationService.generateRecommendation(1))
 					.willReturn(skinMoisturizingRecommendation());
 
 				// when & then
 				mockMvc.perform(post("/api/challenges/ai-recommendations")
 						.contentType(MediaType.APPLICATION_JSON)
-						.content(objectMapper.writeValueAsString(recommendationRequest(1L))))
+						.content(objectMapper.writeValueAsString(recommendationRequest(1))))
 					.andExpect(status().isOk())
 					.andExpect(jsonPath("$.data.challengeTitle").value("피부 보습 7일 챌린지"))
 					.andExpect(jsonPath("$.data.routines").isArray())
@@ -109,13 +109,13 @@ class ChallengeControllerTest {
 			@DisplayName("주름 개선 루틴 추천 생성")
 			void wrinkleCare() throws Exception {
 				// given
-				given(aiRecommendationService.generateRecommendation(3L))
+				given(aiRecommendationService.generateRecommendation(3))
 					.willReturn(wrinkleCareRecommendation());
 
 				// when & then
 				mockMvc.perform(post("/api/challenges/ai-recommendations")
 						.contentType(MediaType.APPLICATION_JSON)
-						.content(objectMapper.writeValueAsString(recommendationRequest(3L))))
+						.content(objectMapper.writeValueAsString(recommendationRequest(3))))
 					.andExpect(status().isOk())
 					.andExpect(jsonPath("$.data.challengeTitle").value("주름 개선 7일 챌린지"))
 					.andExpect(jsonPath("$.data.routines.length()").value(2));
@@ -125,13 +125,13 @@ class ChallengeControllerTest {
 			@DisplayName("빈 루틴 리스트 추천 생성")
 			void emptyRoutines() throws Exception {
 				// given
-				given(aiRecommendationService.generateRecommendation(1L))
+				given(aiRecommendationService.generateRecommendation(1))
 					.willReturn(emptyRoutinesRecommendation());
 
 				// when & then
 				mockMvc.perform(post("/api/challenges/ai-recommendations")
 						.contentType(MediaType.APPLICATION_JSON)
-						.content(objectMapper.writeValueAsString(recommendationRequest(1L))))
+						.content(objectMapper.writeValueAsString(recommendationRequest(1))))
 					.andExpect(status().isOk())
 					.andExpect(jsonPath("$.data.challengeTitle").value("테스트 챌린지"))
 					.andExpect(jsonPath("$.data.routines").isArray())

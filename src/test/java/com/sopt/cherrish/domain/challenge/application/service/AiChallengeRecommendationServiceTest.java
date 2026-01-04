@@ -62,7 +62,7 @@ class AiChallengeRecommendationServiceTest {
 		@DisplayName("피부 보습 루틴으로 챌린지 생성")
 		void skinMoisturizing() {
 			// given
-			Long homecareRoutineId = 1L;
+			Integer homecareRoutineId = 1;
 			OpenAiChallengeRecommendationResponseDto mockAiResponse = createMockResponse(
 				"피부 보습 7일 챌린지",
 				List.of("아침 세안 후 토너 바르기", "저녁 보습 크림 충분히 바르기", "하루 8잔 물 마시기")
@@ -92,7 +92,7 @@ class AiChallengeRecommendationServiceTest {
 		@DisplayName("주름 개선 루틴으로 챌린지 생성")
 		void wrinkleCare() {
 			// given
-			Long homecareRoutineId = 3L;
+			Integer homecareRoutineId = 3;
 			OpenAiChallengeRecommendationResponseDto mockAiResponse = createMockResponse(
 				"주름 개선 7일 챌린지",
 				List.of("레티놀 세럼 바르기", "충분한 수면 취하기", "자외선 차단제 바르기", "콜라겐 음식 섭취")
@@ -117,7 +117,7 @@ class AiChallengeRecommendationServiceTest {
 		@DisplayName("빈 루틴 리스트도 정상 처리")
 		void emptyRoutines() {
 			// given
-			Long homecareRoutineId = 1L;
+			Integer homecareRoutineId = 1;
 			OpenAiChallengeRecommendationResponseDto mockAiResponse = createMockResponse(
 				"피부 보습 7일 챌린지",
 				List.of()
@@ -144,9 +144,9 @@ class AiChallengeRecommendationServiceTest {
 	class GenerateRecommendationFailure {
 
 		@ParameterizedTest
-		@ValueSource(longs = {0L, 7L, -1L, 100L})
+		@ValueSource(ints = {0, 7, -1, 100})
 		@DisplayName("유효하지 않은 홈케어 루틴 ID")
-		void invalidRoutineId(Long invalidId) {
+		void invalidRoutineId(Integer invalidId) {
 			// when & then
 			assertThatThrownBy(() -> aiChallengeRecommendationService.generateRecommendation(invalidId))
 				.isInstanceOf(ChallengeException.class)
@@ -157,7 +157,7 @@ class AiChallengeRecommendationServiceTest {
 		@DisplayName("AI 서비스 오류")
 		void aiServiceError() {
 			// given
-			Long homecareRoutineId = 1L;
+			Integer homecareRoutineId = 1;
 			given(challengePromptTemplate.getChallengeRecommendationTemplate()).willReturn(TEST_PROMPT_TEMPLATE);
 			given(aiClient.call(anyString(), anyMap(), any()))
 				.willThrow(new AiClientException(AiErrorCode.AI_SERVICE_UNAVAILABLE));
@@ -174,7 +174,7 @@ class AiChallengeRecommendationServiceTest {
 		@DisplayName("AI 응답 파싱 실패")
 		void parsingError() {
 			// given
-			Long homecareRoutineId = 1L;
+			Integer homecareRoutineId = 1;
 			given(challengePromptTemplate.getChallengeRecommendationTemplate()).willReturn(TEST_PROMPT_TEMPLATE);
 			given(aiClient.call(anyString(), anyMap(), any()))
 				.willThrow(new AiClientException(AiErrorCode.AI_RESPONSE_PARSING_FAILED));

@@ -32,12 +32,12 @@ public class AiChallengeRecommendationService {
 	 * @param homecareRoutineId 홈케어 루틴 ID (1~6)
 	 * @return AI가 생성한 챌린지 타이틀과 루틴 리스트
 	 */
-	public AiRecommendationResponseDto generateRecommendation(Long homecareRoutineId) {
+	public AiRecommendationResponseDto generateRecommendation(Integer homecareRoutineId) {
 		log.info("AI 챌린지 추천 생성 시작: homecareRoutineId={}", homecareRoutineId);
 
 		HomecareRoutine routine;
 		try {
-			routine = HomecareRoutine.fromId(homecareRoutineId.intValue());
+			routine = HomecareRoutine.fromId(homecareRoutineId);
 		} catch (IllegalArgumentException e) {
 			log.warn("유효하지 않은 홈케어 루틴 ID: {}", homecareRoutineId);
 			throw new ChallengeException(ChallengeErrorCode.INVALID_HOMECARE_ROUTINE_ID);

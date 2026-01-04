@@ -21,7 +21,7 @@ public class ChallengeTestFixture {
 	}
 
 	// AiRecommendationRequestDto Fixtures
-	public static AiRecommendationRequestDto recommendationRequest(Long homecareRoutineId) {
+	public static AiRecommendationRequestDto recommendationRequest(Integer homecareRoutineId) {
 		return new AiRecommendationRequestDto(homecareRoutineId);
 	}
 
