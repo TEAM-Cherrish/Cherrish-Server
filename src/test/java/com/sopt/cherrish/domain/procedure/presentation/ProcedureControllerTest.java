@@ -119,35 +119,6 @@ class ProcedureControllerTest {
 	}
 
 	@Test
-	@DisplayName("시술 목록 조회 성공 - 키워드와 피부 고민 ID로 동시 검색")
-	void searchProceduresByKeywordAndWorryId() throws Exception {
-		// given
-		String keyword = "레이저";
-		Long worryId = 1L;
-
-		ProcedureResponseDto procedure = ProcedureResponseDto.builder()
-			.id(1L)
-			.name("레이저 토닝")
-			.category("레이저")
-			.minDowntimeDays(0)
-			.maxDowntimeDays(1)
-			.build();
-
-		ProcedureListResponseDto response = ProcedureListResponseDto.of(Collections.singletonList(procedure));
-
-		given(procedureService.searchProcedures(any(), any())).willReturn(response);
-
-		// when & then
-		mockMvc.perform(get("/api/procedures")
-				.param("keyword", keyword)
-				.param("worryId", "1"))
-			.andExpect(status().isOk())
-			.andExpect(jsonPath("$.data.procedures").isArray())
-			.andExpect(jsonPath("$.data.procedures.length()").value(1))
-			.andExpect(jsonPath("$.data.procedures[0].name").value("레이저 토닝"));
-	}
-
-	@Test
 	@DisplayName("시술 목록 조회 성공 - 검색 결과 없음")
 	void searchProceduresWithNoResults() throws Exception {
 		// given
