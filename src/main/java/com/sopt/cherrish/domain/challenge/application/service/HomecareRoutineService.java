@@ -14,7 +14,6 @@ import lombok.RequiredArgsConstructor;
  * 홈케어 루틴 조회 서비스
  */
 @Service
-@RequiredArgsConstructor
 public class HomecareRoutineService {
 
 	/**
