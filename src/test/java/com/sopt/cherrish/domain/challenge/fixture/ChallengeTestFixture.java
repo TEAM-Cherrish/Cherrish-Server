@@ -10,6 +10,10 @@ import com.sopt.cherrish.domain.challenge.presentation.dto.response.AiRecommenda
 
 public class ChallengeTestFixture {
 
+	private ChallengeTestFixture() {
+		// Utility class
+	}
+
 	public static List<HomecareRoutineResponseDto> homecareRoutineList() {
 		return Arrays.stream(HomecareRoutine.values())
 			.map(HomecareRoutineResponseDto::from)
