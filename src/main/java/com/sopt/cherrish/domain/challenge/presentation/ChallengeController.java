@@ -8,11 +8,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.sopt.cherrish.domain.challenge.application.dto.response.HomecareRoutineResponseDto;
 import com.sopt.cherrish.domain.challenge.application.service.AiChallengeRecommendationService;
 import com.sopt.cherrish.domain.challenge.application.service.HomecareRoutineService;
 import com.sopt.cherrish.domain.challenge.presentation.dto.request.AiRecommendationRequestDto;
 import com.sopt.cherrish.domain.challenge.presentation.dto.response.AiRecommendationResponseDto;
-import com.sopt.cherrish.domain.challenge.presentation.dto.response.HomecareRoutineResponseDto;
 import com.sopt.cherrish.global.response.CommonApiResponse;
 import com.sopt.cherrish.global.response.success.SuccessCode;
 

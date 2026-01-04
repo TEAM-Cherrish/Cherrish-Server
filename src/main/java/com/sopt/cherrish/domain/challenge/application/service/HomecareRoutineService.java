@@ -6,8 +6,8 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.sopt.cherrish.domain.challenge.application.dto.response.HomecareRoutineResponseDto;
 import com.sopt.cherrish.domain.challenge.domain.model.HomecareRoutine;
-import com.sopt.cherrish.domain.challenge.presentation.dto.response.HomecareRoutineResponseDto;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
