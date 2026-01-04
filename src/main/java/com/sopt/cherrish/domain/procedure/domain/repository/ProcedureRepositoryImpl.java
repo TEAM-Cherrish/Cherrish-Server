@@ -21,10 +21,9 @@ public class ProcedureRepositoryImpl implements ProcedureRepositoryCustom {
 		return queryFactory
 			.selectFrom(procedure)
 			.distinct()
-			.leftJoin(procedureWorry).on(procedureWorry.procedure.eq(procedure)).fetchJoin()
 			.where(
 				containsKeyword(keyword),
-				eqWorryId(worryId)
+				hasWorryId(worryId)
 			)
 			.orderBy(procedure.name.asc())
 			.fetch();
@@ -34,13 +33,24 @@ public class ProcedureRepositoryImpl implements ProcedureRepositoryCustom {
 	 * 키워드 포함 조건
 	 */
 	private BooleanExpression containsKeyword(String keyword) {
-		return keyword != null ? procedure.name.contains(keyword) : null;
+		return keyword != null && !keyword.isBlank() ? procedure.name.contains(keyword) : null;
 	}
 
 	/**
-	 * 피부 고민 ID 조건
+	 * 피부 고민 ID 조건 (exists 서브쿼리 사용)
 	 */
-	private BooleanExpression eqWorryId(Long worryId) {
-		return worryId != null ? procedureWorry.worry.id.eq(worryId) : null;
+	private BooleanExpression hasWorryId(Long worryId) {
+		if (worryId == null) {
+			return null;
+		}
+
+		return queryFactory
+			.selectOne()
+			.from(procedureWorry)
+			.where(
+				procedureWorry.procedure.eq(procedure),
+				procedureWorry.worry.id.eq(worryId)
+			)
+			.exists();
 	}
 }
