@@ -10,6 +10,7 @@ import com.sopt.cherrish.domain.ai.AiClient;
 import com.sopt.cherrish.domain.ai.exception.AiClientException;
 import com.sopt.cherrish.domain.ai.exception.AiErrorCode;
 
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -21,6 +22,16 @@ import lombok.RequiredArgsConstructor;
 public class OpenAiClient implements AiClient {
 
 	private final ChatClient.Builder chatClientBuilder;
+	private ChatClient chatClient;
+
+	/**
+	 * ChatClient 초기화
+	 * 의존성 주입 후 한 번만 빌드하여 모든 요청에서 재사용
+	 */
+	@PostConstruct
+	private void initializeChatClient() {
+		this.chatClient = chatClientBuilder.build();
+	}
 
 	@Override
 	public <T> T call(String promptTemplate, Map<String, Object> variables, Class<T> responseType) {
@@ -35,8 +46,6 @@ public class OpenAiClient implements AiClient {
 
 		// AI 호출 및 응답 파싱
 		try {
-			ChatClient chatClient = chatClientBuilder.build();
-
 			T response;
 			try {
 				response = chatClient.prompt()
