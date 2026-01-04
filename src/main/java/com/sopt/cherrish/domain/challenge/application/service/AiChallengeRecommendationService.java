@@ -5,8 +5,8 @@ import java.util.Map;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.sopt.cherrish.domain.challenge.application.dto.AiChallengeRecommendation;
 import com.sopt.cherrish.domain.challenge.domain.model.HomecareRoutine;
+import com.sopt.cherrish.domain.challenge.infrastructure.ai.response.AiChallengeRecommendationDto;
 import com.sopt.cherrish.domain.challenge.exception.ChallengeErrorCode;
 import com.sopt.cherrish.domain.challenge.exception.ChallengeException;
 import com.sopt.cherrish.domain.challenge.infrastructure.prompt.ChallengePromptTemplate;
@@ -43,10 +43,10 @@ public class AiChallengeRecommendationService {
 		}
 
 		try {
-			AiChallengeRecommendation aiResponse = aiClient.call(
+			AiChallengeRecommendationDto aiResponse = aiClient.call(
 				challengePromptTemplate.getChallengeRecommendationTemplate(),
 				Map.of("homecareContent", routine.getDescription()),
-				AiChallengeRecommendation.class
+				AiChallengeRecommendationDto.class
 			);
 
 			log.info("AI 챌린지 추천 생성 완료: title={}", aiResponse.challengeTitle());

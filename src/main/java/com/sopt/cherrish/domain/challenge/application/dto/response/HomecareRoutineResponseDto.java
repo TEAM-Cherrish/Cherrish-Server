@@ -1,4 +1,4 @@
-package com.sopt.cherrish.domain.challenge.presentation.dto.response;
+package com.sopt.cherrish.domain.challenge.application.dto.response;
 
 import com.sopt.cherrish.domain.challenge.domain.model.HomecareRoutine;
 
