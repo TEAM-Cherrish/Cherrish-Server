@@ -3,10 +3,8 @@ package com.sopt.cherrish.domain.challenge.application.service;
 import java.util.Map;
 
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.sopt.cherrish.domain.ai.AiClient;
-import com.sopt.cherrish.domain.ai.exception.AiClientException;
 import com.sopt.cherrish.domain.challenge.domain.model.HomecareRoutine;
 import com.sopt.cherrish.domain.challenge.exception.ChallengeErrorCode;
 import com.sopt.cherrish.domain.challenge.exception.ChallengeException;
@@ -20,7 +18,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
 public class AiChallengeRecommendationService {
 
 	private final AiClient aiClient;
@@ -43,22 +40,17 @@ public class AiChallengeRecommendationService {
 			throw new ChallengeException(ChallengeErrorCode.INVALID_HOMECARE_ROUTINE_ID);
 		}
 
-		try {
-			OpenAiChallengeRecommendationResponseDto aiResponse = aiClient.call(
-				challengePromptTemplate.getChallengeRecommendationTemplate(),
-				Map.of("homecareContent", routine.getDescription()),
-				OpenAiChallengeRecommendationResponseDto.class
-			);
+		OpenAiChallengeRecommendationResponseDto aiResponse = aiClient.call(
+			challengePromptTemplate.getChallengeRecommendationTemplate(),
+			Map.of("homecareContent", routine.getDescription()),
+			OpenAiChallengeRecommendationResponseDto.class
+		);
 
-			log.info("AI 챌린지 추천 생성 완료: title={}", aiResponse.challengeTitle());
+		log.info("AI 챌린지 추천 생성 완료: title={}", aiResponse.challengeTitle());
 
-			return AiRecommendationResponseDto.of(
-				aiResponse.challengeTitle(),
-				aiResponse.routines()
-			);
-
-		} catch (AiClientException e) {
-			throw e;
-		}
+		return AiRecommendationResponseDto.of(
+			aiResponse.challengeTitle(),
+			aiResponse.routines()
+		);
 	}
 }
