@@ -26,4 +26,4 @@ spring:
 
   ai:
     openai:
-      api-key: ${OPENAI_API_KEY}
+      api-key: test-dummy-api-key-for-unit-tests
