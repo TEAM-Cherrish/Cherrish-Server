@@ -1,6 +1,6 @@
 package com.sopt.cherrish.domain.challenge.application.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.*;
 
 import java.util.List;
 

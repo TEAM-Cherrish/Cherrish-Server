@@ -1,17 +1,9 @@
 package com.sopt.cherrish.domain.challenge.presentation;
 
-import static com.sopt.cherrish.domain.challenge.fixture.ChallengeTestFixture.emptyRoutinesRecommendation;
-import static com.sopt.cherrish.domain.challenge.fixture.ChallengeTestFixture.homecareRoutineList;
-import static com.sopt.cherrish.domain.challenge.fixture.ChallengeTestFixture.skinMoisturizingRecommendation;
-import static com.sopt.cherrish.domain.challenge.fixture.ChallengeTestFixture.skinMoisturizingRequest;
-import static com.sopt.cherrish.domain.challenge.fixture.ChallengeTestFixture.wrinkleCareRecommendation;
-import static com.sopt.cherrish.domain.challenge.fixture.ChallengeTestFixture.wrinkleCareRequest;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static com.sopt.cherrish.domain.challenge.fixture.ChallengeTestFixture.*;
+import static org.mockito.BDDMockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import java.util.List;
 
@@ -27,7 +19,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sopt.cherrish.domain.challenge.application.service.AiChallengeRecommendationService;
 import com.sopt.cherrish.domain.challenge.application.service.HomecareRoutineService;
-import com.sopt.cherrish.domain.challenge.presentation.dto.request.AiRecommendationRequestDto;
 
 @WebMvcTest(ChallengeController.class)
 @DisplayName("ChallengeController 통합 테스트")
@@ -100,7 +91,7 @@ class ChallengeControllerTest {
 				// when & then
 				mockMvc.perform(post("/api/challenges/ai-recommendations")
 						.contentType(MediaType.APPLICATION_JSON)
-						.content(objectMapper.writeValueAsString(skinMoisturizingRequest())))
+						.content(objectMapper.writeValueAsString(recommendationRequest(1L))))
 					.andExpect(status().isOk())
 					.andExpect(jsonPath("$.data.challengeTitle").value("피부 보습 7일 챌린지"))
 					.andExpect(jsonPath("$.data.routines").isArray())
@@ -118,7 +109,7 @@ class ChallengeControllerTest {
 				// when & then
 				mockMvc.perform(post("/api/challenges/ai-recommendations")
 						.contentType(MediaType.APPLICATION_JSON)
-						.content(objectMapper.writeValueAsString(wrinkleCareRequest())))
+						.content(objectMapper.writeValueAsString(recommendationRequest(3L))))
 					.andExpect(status().isOk())
 					.andExpect(jsonPath("$.data.challengeTitle").value("주름 개선 7일 챌린지"))
 					.andExpect(jsonPath("$.data.routines.length()").value(2));
@@ -134,7 +125,7 @@ class ChallengeControllerTest {
 				// when & then
 				mockMvc.perform(post("/api/challenges/ai-recommendations")
 						.contentType(MediaType.APPLICATION_JSON)
-						.content(objectMapper.writeValueAsString(skinMoisturizingRequest())))
+						.content(objectMapper.writeValueAsString(recommendationRequest(1L))))
 					.andExpect(status().isOk())
 					.andExpect(jsonPath("$.data.challengeTitle").value("테스트 챌린지"))
 					.andExpect(jsonPath("$.data.routines").isArray())

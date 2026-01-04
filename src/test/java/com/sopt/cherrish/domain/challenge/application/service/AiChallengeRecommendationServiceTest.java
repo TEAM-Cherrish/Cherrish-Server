@@ -1,14 +1,8 @@
 package com.sopt.cherrish.domain.challenge.application.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyMap;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.assertj.core.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.BDDMockito.*;
 
 import java.util.List;
 
@@ -36,16 +30,13 @@ import com.sopt.cherrish.domain.challenge.presentation.dto.response.AiRecommenda
 @DisplayName("AiChallengeRecommendationService 단위 테스트")
 class AiChallengeRecommendationServiceTest {
 
+	private static final String TEST_PROMPT_TEMPLATE = "test prompt template";
 	@InjectMocks
 	private AiChallengeRecommendationService aiChallengeRecommendationService;
-
 	@Mock
 	private AiClient aiClient;
-
 	@Mock
 	private ChallengePromptTemplate challengePromptTemplate;
-
-	private static final String TEST_PROMPT_TEMPLATE = "test prompt template";
 
 	@BeforeEach
 	void setUp() {
@@ -55,6 +46,11 @@ class AiChallengeRecommendationServiceTest {
 	private void givenAiClientReturns(OpenAiChallengeRecommendationResponseDto response) {
 		given(aiClient.call(anyString(), anyMap(), eq(OpenAiChallengeRecommendationResponseDto.class)))
 			.willReturn(response);
+	}
+
+	// Fixture helper method
+	private OpenAiChallengeRecommendationResponseDto createMockResponse(String title, List<String> routines) {
+		return new OpenAiChallengeRecommendationResponseDto(title, routines);
 	}
 
 	@Nested
@@ -187,10 +183,5 @@ class AiChallengeRecommendationServiceTest {
 
 			verify(aiClient, times(1)).call(anyString(), anyMap(), any());
 		}
-	}
-
-	// Fixture helper method
-	private OpenAiChallengeRecommendationResponseDto createMockResponse(String title, List<String> routines) {
-		return new OpenAiChallengeRecommendationResponseDto(title, routines);
 	}
 }
