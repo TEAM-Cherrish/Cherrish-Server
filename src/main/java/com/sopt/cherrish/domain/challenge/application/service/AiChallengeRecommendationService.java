@@ -32,6 +32,11 @@ public class AiChallengeRecommendationService {
 	public AiRecommendationResponseDto generateRecommendation(Integer homecareRoutineId) {
 		log.info("AI 챌린지 추천 생성 시작: homecareRoutineId={}", homecareRoutineId);
 
+		if (homecareRoutineId == null) {
+			log.warn("홈케어 루틴 ID가 null입니다");
+			throw new ChallengeException(ChallengeErrorCode.INVALID_HOMECARE_ROUTINE_ID);
+		}
+
 		HomecareRoutine routine;
 		try {
 			routine = HomecareRoutine.fromId(homecareRoutineId);
