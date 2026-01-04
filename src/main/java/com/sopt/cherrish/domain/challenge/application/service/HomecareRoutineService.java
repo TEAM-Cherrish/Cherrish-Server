@@ -8,8 +8,6 @@ import org.springframework.stereotype.Service;
 import com.sopt.cherrish.domain.challenge.application.dto.response.HomecareRoutineResponseDto;
 import com.sopt.cherrish.domain.challenge.domain.model.HomecareRoutine;
 
-import lombok.RequiredArgsConstructor;
-
 /**
  * 홈케어 루틴 조회 서비스
  */
