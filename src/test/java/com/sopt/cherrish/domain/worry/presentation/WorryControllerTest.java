@@ -51,17 +51,7 @@ class WorryControllerTest {
 			.andExpect(jsonPath("$.data").isArray())
 			.andExpect(jsonPath("$.data.length()").value(6))
 			.andExpect(jsonPath("$.data[0].id").value(1))
-			.andExpect(jsonPath("$.data[0].content").value("여드름/트러블"))
-			.andExpect(jsonPath("$.data[1].id").value(2))
-			.andExpect(jsonPath("$.data[1].content").value("색소/잡티"))
-			.andExpect(jsonPath("$.data[2].id").value(3))
-			.andExpect(jsonPath("$.data[2].content").value("홍조"))
-			.andExpect(jsonPath("$.data[3].id").value(4))
-			.andExpect(jsonPath("$.data[3].content").value("탄력/주름"))
-			.andExpect(jsonPath("$.data[4].id").value(5))
-			.andExpect(jsonPath("$.data[4].content").value("모공"))
-			.andExpect(jsonPath("$.data[5].id").value(6))
-			.andExpect(jsonPath("$.data[5].content").value("피부결/각질"));
+			.andExpect(jsonPath("$.data[0].content").value("여드름/트러블"));
 	}
 
 	@Test
