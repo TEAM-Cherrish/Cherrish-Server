@@ -58,7 +58,6 @@ public class AiChallengeRecommendationService {
 			);
 
 		} catch (AiClientException e) {
-			log.error("AI 호출 실패: homecareRoutineId={}, error={}", homecareRoutineId, e.getMessage(), e);
 			throw e;
 		}
 	}
