@@ -24,16 +24,30 @@ public class OpenAiClient implements AiClient {
 
 	@Override
 	public <T> T call(String promptTemplate, Map<String, Object> variables, Class<T> responseType) {
+		// 프롬프트 템플릿 파싱 및 렌더링 (template-related errors)
+		String prompt;
 		try {
 			PromptTemplate template = new PromptTemplate(promptTemplate);
-			String prompt = template.render(variables);
+			prompt = template.render(variables);
+		} catch (IllegalArgumentException e) {
+			throw new AiClientException(AiErrorCode.INVALID_PROMPT_TEMPLATE);
+		}
 
+		// AI 호출 및 응답 파싱
+		try {
 			ChatClient chatClient = chatClientBuilder.build();
 
-			T response = chatClient.prompt()
-				.user(prompt)
-				.call()
-				.entity(responseType);
+			T response;
+			try {
+				response = chatClient.prompt()
+					.user(prompt)
+					.call()
+					.entity(responseType);
+			} catch (IllegalArgumentException e) {
+				// entity(responseType) 호출 시 발생하는 IllegalArgumentException
+				// (응답 파싱, 타입 변환, 메타데이터 검증 실패 등)
+				throw new AiClientException(AiErrorCode.AI_RESPONSE_PARSING_FAILED);
+			}
 
 			if (response == null) {
 				throw new AiClientException(AiErrorCode.AI_RESPONSE_PARSING_FAILED);
@@ -41,8 +55,6 @@ public class OpenAiClient implements AiClient {
 
 			return response;
 
-		} catch (IllegalArgumentException e) {
-			throw new AiClientException(AiErrorCode.INVALID_PROMPT_TEMPLATE);
 		} catch (AiClientException e) {
 			throw e;
 		} catch (Exception e) {
