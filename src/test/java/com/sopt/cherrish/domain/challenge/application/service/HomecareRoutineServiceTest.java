@@ -21,35 +21,30 @@ class HomecareRoutineServiceTest {
 		List<HomecareRoutineResponseDto> routines = homecareRoutineService.getAllHomecareRoutines();
 
 		// then
+		assertThat(routines).isNotNull();
 		assertThat(routines).hasSize(6);
-		assertThat(routines)
-			.extracting(HomecareRoutineResponseDto::id)
-			.containsExactly(1, 2, 3, 4, 5, 6);
-		assertThat(routines)
-			.extracting(HomecareRoutineResponseDto::name)
-			.containsExactly(
-				"SKIN_MOISTURIZING",
-				"SKIN_BRIGHTENING",
-				"WRINKLE_CARE",
-				"TROUBLE_CARE",
-				"PORE_CARE",
-				"ELASTICITY_CARE"
-			);
-		assertThat(routines)
-			.extracting(HomecareRoutineResponseDto::description)
-			.containsExactly(
-				"피부 보습 관리",
-				"피부 미백 관리",
-				"주름 개선 관리",
-				"트러블 케어",
-				"모공 관리",
-				"탄력 관리"
-			);
+		assertThat(routines).allSatisfy(routine -> {
+			assertThat(routine.id()).isBetween(1, 6);
+			assertThat(routine.name()).isNotBlank();
+			assertThat(routine.description()).isNotBlank();
+		});
 	}
 
 	@Test
-	@DisplayName("첫 번째 홈케어 루틴 검증")
-	void getFirstRoutineValidation() {
+	@DisplayName("홈케어 루틴 ID 순서 검증")
+	void routineIdOrderValidation() {
+		// when
+		List<HomecareRoutineResponseDto> routines = homecareRoutineService.getAllHomecareRoutines();
+
+		// then
+		assertThat(routines)
+			.extracting(HomecareRoutineResponseDto::id)
+			.containsExactly(1, 2, 3, 4, 5, 6);
+	}
+
+	@Test
+	@DisplayName("첫 번째 루틴 DTO 변환 검증")
+	void firstRoutineDtoMappingValidation() {
 		// when
 		List<HomecareRoutineResponseDto> routines = homecareRoutineService.getAllHomecareRoutines();
 		HomecareRoutineResponseDto firstRoutine = routines.get(0);

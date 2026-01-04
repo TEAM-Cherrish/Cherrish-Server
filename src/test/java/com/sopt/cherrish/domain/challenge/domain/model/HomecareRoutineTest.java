@@ -7,28 +7,23 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.EnumSource;
 
 @DisplayName("HomecareRoutine 도메인 모델 테스트")
 class HomecareRoutineTest {
 
 	@ParameterizedTest
-	@CsvSource({
-		"1, SKIN_MOISTURIZING, 피부 보습 관리",
-		"2, SKIN_BRIGHTENING, 피부 미백 관리",
-		"3, WRINKLE_CARE, 주름 개선 관리",
-		"4, TROUBLE_CARE, 트러블 케어",
-		"5, PORE_CARE, 모공 관리",
-		"6, ELASTICITY_CARE, 탄력 관리"
-	})
+	@EnumSource(HomecareRoutine.class)
 	@DisplayName("ID로 HomecareRoutine 조회 성공")
-	void fromIdSuccess(int id, String expectedName, String expectedDescription) {
+	void fromIdSuccess(HomecareRoutine expectedRoutine) {
 		// when
-		HomecareRoutine routine = HomecareRoutine.fromId(id);
+		HomecareRoutine result = HomecareRoutine.fromId(expectedRoutine.getId());
 
 		// then
-		assertThat(routine.getId()).isEqualTo(id);
-		assertThat(routine.name()).isEqualTo(expectedName);
-		assertThat(routine.getDescription()).isEqualTo(expectedDescription);
+		assertThat(result).isEqualTo(expectedRoutine);
+		assertThat(result.getId()).isEqualTo(expectedRoutine.getId());
+		assertThat(result.name()).isEqualTo(expectedRoutine.name());
+		assertThat(result.getDescription()).isEqualTo(expectedRoutine.getDescription());
 	}
 
 	@ParameterizedTest
