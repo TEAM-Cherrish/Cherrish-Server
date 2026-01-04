@@ -12,12 +12,10 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "procedures")
-@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Procedure extends BaseTimeEntity {
 
@@ -60,5 +58,25 @@ public class Procedure extends BaseTimeEntity {
 		if (minDowntimeDays > maxDowntimeDays) {
 			throw new ProcedureException(ProcedureErrorCode.INVALID_DOWNTIME_RANGE);
 		}
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public String getCategory() {
+		return category;
+	}
+
+	public int getMinDowntimeDays() {
+		return minDowntimeDays;
+	}
+
+	public int getMaxDowntimeDays() {
+		return maxDowntimeDays;
 	}
 }

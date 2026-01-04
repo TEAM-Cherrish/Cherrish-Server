@@ -19,12 +19,10 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "procedure_worries")
-@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EntityListeners(AuditingEntityListener.class)
 public class ProcedureWorry {
@@ -49,5 +47,21 @@ public class ProcedureWorry {
 	private ProcedureWorry(Procedure procedure, Worry worry) {
 		this.procedure = procedure;
 		this.worry = worry;
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public Procedure getProcedure() {
+		return procedure;
+	}
+
+	public Worry getWorry() {
+		return worry;
+	}
+
+	public LocalDateTime getCreatedAt() {
+		return createdAt;
 	}
 }
