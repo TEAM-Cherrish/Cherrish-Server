@@ -11,8 +11,8 @@ import com.sopt.cherrish.domain.challenge.exception.ChallengeException;
 import com.sopt.cherrish.domain.challenge.infrastructure.ai.response.AiChallengeRecommendationDto;
 import com.sopt.cherrish.domain.challenge.infrastructure.prompt.ChallengePromptTemplate;
 import com.sopt.cherrish.domain.challenge.presentation.dto.response.AiRecommendationResponseDto;
-import com.sopt.cherrish.domain.openai.AiClient;
-import com.sopt.cherrish.domain.openai.exception.AiClientException;
+import com.sopt.cherrish.domain.ai.AiClient;
+import com.sopt.cherrish.domain.ai.exception.AiClientException;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

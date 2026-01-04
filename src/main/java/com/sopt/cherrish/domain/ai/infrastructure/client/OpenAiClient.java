@@ -1,4 +1,4 @@
-package com.sopt.cherrish.domain.openai.infrastructure.client;
+package com.sopt.cherrish.domain.ai.infrastructure.client;
 
 import java.util.Map;
 
@@ -6,9 +6,9 @@ import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.prompt.PromptTemplate;
 import org.springframework.stereotype.Component;
 
-import com.sopt.cherrish.domain.openai.AiClient;
-import com.sopt.cherrish.domain.openai.exception.AiClientException;
-import com.sopt.cherrish.domain.openai.exception.AiErrorCode;
+import com.sopt.cherrish.domain.ai.AiClient;
+import com.sopt.cherrish.domain.ai.exception.AiClientException;
+import com.sopt.cherrish.domain.ai.exception.AiErrorCode;
 
 import lombok.RequiredArgsConstructor;
 

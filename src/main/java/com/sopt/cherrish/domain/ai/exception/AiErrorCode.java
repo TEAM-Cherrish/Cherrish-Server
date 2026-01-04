@@ -1,4 +1,4 @@
-package com.sopt.cherrish.domain.openai.exception;
+package com.sopt.cherrish.domain.ai.exception;
 
 import com.sopt.cherrish.global.response.error.ErrorType;
 

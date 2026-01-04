@@ -11,9 +11,13 @@ import org.springframework.web.bind.annotation.RestController;
 import com.sopt.cherrish.domain.challenge.application.dto.response.HomecareRoutineResponseDto;
 import com.sopt.cherrish.domain.challenge.application.service.AiChallengeRecommendationService;
 import com.sopt.cherrish.domain.challenge.application.service.HomecareRoutineService;
+import com.sopt.cherrish.domain.challenge.exception.ChallengeErrorCode;
 import com.sopt.cherrish.domain.challenge.presentation.dto.request.AiRecommendationRequestDto;
 import com.sopt.cherrish.domain.challenge.presentation.dto.response.AiRecommendationResponseDto;
+import com.sopt.cherrish.domain.ai.exception.AiErrorCode;
+import com.sopt.cherrish.global.annotation.ApiExceptions;
 import com.sopt.cherrish.global.response.CommonApiResponse;
+import com.sopt.cherrish.global.response.error.ErrorCode;
 import com.sopt.cherrish.global.response.success.SuccessCode;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -44,6 +48,7 @@ public class ChallengeController {
 		summary = "AI 챌린지 추천",
 		description = "홈케어 루틴 ID를 입력받아 AI가 맞춤 챌린지 타이틀과 루틴 리스트를 생성합니다."
 	)
+	@ApiExceptions({ChallengeErrorCode.class, AiErrorCode.class, ErrorCode.class})
 	@PostMapping("/ai-recommendations")
 	public CommonApiResponse<AiRecommendationResponseDto> generateAiRecommendation(
 		@Valid @RequestBody AiRecommendationRequestDto request

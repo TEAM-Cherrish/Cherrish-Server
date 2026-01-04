@@ -1,4 +1,4 @@
-package com.sopt.cherrish.domain.openai;
+package com.sopt.cherrish.domain.ai;
 
 import java.util.Map;
 
