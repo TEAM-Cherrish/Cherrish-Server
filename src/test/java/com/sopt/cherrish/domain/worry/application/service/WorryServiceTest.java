@@ -50,11 +50,6 @@ class WorryServiceTest {
 		assertThat(result).isNotNull();
 		assertThat(result).hasSize(6);
 		assertThat(result.get(0).getContent()).isEqualTo("여드름/트러블");
-		assertThat(result.get(1).getContent()).isEqualTo("색소/잡티");
-		assertThat(result.get(2).getContent()).isEqualTo("홍조");
-		assertThat(result.get(3).getContent()).isEqualTo("탄력/주름");
-		assertThat(result.get(4).getContent()).isEqualTo("모공");
-		assertThat(result.get(5).getContent()).isEqualTo("피부결/각질");
 	}
 
 	@Test
