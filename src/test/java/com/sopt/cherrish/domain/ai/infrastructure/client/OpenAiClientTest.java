@@ -41,6 +41,7 @@ class OpenAiClientTest {
 	@Mock
 	private CallResponseSpec responseSpec;
 
+	@SuppressWarnings("unchecked")
 	private void givenChatClientReturns(Object response) {
 		given(chatClientBuilder.build()).willReturn(chatClient);
 		given(chatClient.prompt()).willReturn(requestSpec);
