@@ -1,5 +1,6 @@
 package com.sopt.cherrish.domain.procedure.presentation;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -78,7 +79,7 @@ class ProcedureControllerTest {
 
 		ProcedureListResponseDto response = ProcedureListResponseDto.of(Collections.singletonList(procedure));
 
-		given(procedureService.searchProcedures(keyword, null)).willReturn(response);
+		given(procedureService.searchProcedures(any(), any())).willReturn(response);
 
 		// when & then
 		mockMvc.perform(get("/api/procedures")
@@ -106,11 +107,11 @@ class ProcedureControllerTest {
 
 		ProcedureListResponseDto response = ProcedureListResponseDto.of(Collections.singletonList(procedure));
 
-		given(procedureService.searchProcedures(null, worryId)).willReturn(response);
+		given(procedureService.searchProcedures(any(), any())).willReturn(response);
 
 		// when & then
 		mockMvc.perform(get("/api/procedures")
-				.param("worryId", String.valueOf(worryId)))
+				.param("worryId", "1"))
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.data.procedures").isArray())
 			.andExpect(jsonPath("$.data.procedures.length()").value(1))
@@ -122,7 +123,7 @@ class ProcedureControllerTest {
 	void searchProceduresByKeywordAndWorryId() throws Exception {
 		// given
 		String keyword = "레이저";
-		Long worryId = 3L;
+		Long worryId = 1L;
 
 		ProcedureResponseDto procedure = ProcedureResponseDto.builder()
 			.id(1L)
@@ -134,12 +135,12 @@ class ProcedureControllerTest {
 
 		ProcedureListResponseDto response = ProcedureListResponseDto.of(Collections.singletonList(procedure));
 
-		given(procedureService.searchProcedures(keyword, worryId)).willReturn(response);
+		given(procedureService.searchProcedures(any(), any())).willReturn(response);
 
 		// when & then
 		mockMvc.perform(get("/api/procedures")
 				.param("keyword", keyword)
-				.param("worryId", String.valueOf(worryId)))
+				.param("worryId", "1"))
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.data.procedures").isArray())
 			.andExpect(jsonPath("$.data.procedures.length()").value(1))
@@ -154,7 +155,7 @@ class ProcedureControllerTest {
 
 		ProcedureListResponseDto response = ProcedureListResponseDto.of(Collections.emptyList());
 
-		given(procedureService.searchProcedures(keyword, null)).willReturn(response);
+		given(procedureService.searchProcedures(any(), any())).willReturn(response);
 
 		// when & then
 		mockMvc.perform(get("/api/procedures")

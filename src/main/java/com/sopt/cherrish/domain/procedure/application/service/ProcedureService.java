@@ -22,10 +22,10 @@ public class ProcedureService {
 	public ProcedureListResponseDto searchProcedures(String keyword, Long worryId) {
 		List<Procedure> procedures = procedureRepository.searchProcedures(keyword, worryId);
 
-		List<ProcedureResponseDto> procedureDtos = procedures.stream()
-			.map(ProcedureResponseDto::from)
-			.toList();
-
-		return ProcedureListResponseDto.of(procedureDtos);
+		return ProcedureListResponseDto.of(
+			procedures.stream()
+				.map(ProcedureResponseDto::from)
+				.toList()
+		);
 	}
 }

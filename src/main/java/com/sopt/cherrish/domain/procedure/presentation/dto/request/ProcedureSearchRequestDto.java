@@ -1,7 +1,5 @@
 package com.sopt.cherrish.domain.procedure.presentation.dto.request;
 
-import java.util.List;
-
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -15,6 +13,6 @@ public class ProcedureSearchRequestDto {
 	@Schema(description = "검색 키워드 (시술명 검색)", example = "레이저")
 	private String keyword;
 
-	@Schema(description = "피부 고민 ID 목록", example = "[1, 2, 3]")
-	private List<Long> worryIds;
+	@Schema(description = "피부 고민 ID", example = "1")
+	private Long worryId;
 }

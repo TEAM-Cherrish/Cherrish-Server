@@ -21,12 +21,12 @@ public class ProcedureRepositoryImpl implements ProcedureRepositoryCustom {
 		return queryFactory
 			.selectFrom(procedure)
 			.distinct()
-			.leftJoin(procedureWorry).on(procedureWorry.procedure.eq(procedure))
+			.leftJoin(procedureWorry).on(procedureWorry.procedure.eq(procedure)).fetchJoin()
 			.where(
 				containsKeyword(keyword),
 				eqWorryId(worryId)
 			)
-			.orderBy(procedure.maxDowntimeDays.desc())
+			.orderBy(procedure.name.asc())
 			.fetch();
 	}
 
@@ -38,7 +38,7 @@ public class ProcedureRepositoryImpl implements ProcedureRepositoryCustom {
 	}
 
 	/**
-	 * 피부 고민 ID 일치 조건
+	 * 피부 고민 ID 조건
 	 */
 	private BooleanExpression eqWorryId(Long worryId) {
 		return worryId != null ? procedureWorry.worry.id.eq(worryId) : null;

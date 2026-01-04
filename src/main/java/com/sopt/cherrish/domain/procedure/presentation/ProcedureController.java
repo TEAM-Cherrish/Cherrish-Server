@@ -29,7 +29,7 @@ public class ProcedureController {
 
 	@Operation(
 		summary = "시술 목록 조회",
-		description = "검색 키워드 또는 피부 고민 목록으로 시술 목록을 조회합니다. 파라미터를 제공하지 않으면 전체 시술 목록을 반환합니다."
+		description = "검색 키워드 또는 피부 고민으로 시술 목록을 조회합니다. 파라미터를 제공하지 않으면 전체 시술 목록을 반환합니다."
 	)
 	@ApiExceptions({ProcedureErrorCode.class, ErrorCode.class})
 	@GetMapping
@@ -38,7 +38,7 @@ public class ProcedureController {
 	) {
 		ProcedureListResponseDto response = procedureService.searchProcedures(
 			request.getKeyword(),
-			request.getWorryIds()
+			request.getWorryId()
 		);
 		return CommonApiResponse.success(SuccessCode.SUCCESS, response);
 	}

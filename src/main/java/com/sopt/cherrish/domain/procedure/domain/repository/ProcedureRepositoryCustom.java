@@ -11,6 +11,7 @@ public interface ProcedureRepositoryCustom {
 	 * - keyword가 null이면 전체 시술 대상
 	 * - worryId가 null이면 피부 고민 필터링 안 함
 	 * - DISTINCT로 중복 제거 (한 시술이 여러 고민과 매핑되는 경우)
+	 * - 시술명 기준 오름차순 정렬 (ㄱㄴㄷ순)
 	 */
 	List<Procedure> searchProcedures(String keyword, Long worryId);
 }
