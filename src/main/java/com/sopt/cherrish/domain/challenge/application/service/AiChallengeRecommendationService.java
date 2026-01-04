@@ -5,14 +5,14 @@ import java.util.Map;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.sopt.cherrish.domain.ai.AiClient;
+import com.sopt.cherrish.domain.ai.exception.AiClientException;
 import com.sopt.cherrish.domain.challenge.domain.model.HomecareRoutine;
 import com.sopt.cherrish.domain.challenge.exception.ChallengeErrorCode;
 import com.sopt.cherrish.domain.challenge.exception.ChallengeException;
 import com.sopt.cherrish.domain.challenge.infrastructure.openai.response.OpenAiChallengeRecommendationResponseDto;
 import com.sopt.cherrish.domain.challenge.infrastructure.prompt.ChallengePromptTemplate;
 import com.sopt.cherrish.domain.challenge.presentation.dto.response.AiRecommendationResponseDto;
-import com.sopt.cherrish.domain.ai.AiClient;
-import com.sopt.cherrish.domain.ai.exception.AiClientException;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

@@ -1,6 +1,7 @@
 package com.sopt.cherrish.domain.challenge.exception;
 
 import com.sopt.cherrish.global.response.error.ErrorType;
+
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
