@@ -1,4 +1,7 @@
 spring:
+  config:
+    import: optional:file:.env[.properties]
+
   datasource:
     url: jdbc:h2:mem:testdb
     driver-class-name: org.h2.Driver
@@ -20,3 +23,7 @@ spring:
 
   swagger:
     base-url: http://localhost:8080
+
+  ai:
+    openai:
+      api-key: ${OPENAI_API_KEY}

@@ -47,7 +47,7 @@ class HomecareRoutineServiceTest {
 	void firstRoutineDtoMappingValidation() {
 		// when
 		List<HomecareRoutineResponseDto> routines = homecareRoutineService.getAllHomecareRoutines();
-		HomecareRoutineResponseDto firstRoutine = routines.get(0);
+		HomecareRoutineResponseDto firstRoutine = routines.getFirst();
 
 		// then
 		assertThat(firstRoutine.id()).isEqualTo(1);
