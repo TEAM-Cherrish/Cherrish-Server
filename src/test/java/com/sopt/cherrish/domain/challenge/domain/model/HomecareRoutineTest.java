@@ -9,6 +9,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.EnumSource;
 
+import com.sopt.cherrish.domain.challenge.exception.ChallengeException;
+
 @DisplayName("HomecareRoutine 도메인 모델 테스트")
 class HomecareRoutineTest {
 
@@ -34,8 +36,8 @@ class HomecareRoutineTest {
 	void fromIdInvalidId(int invalidId) {
 		// when & then
 		assertThatThrownBy(() -> HomecareRoutine.fromId(invalidId))
-			.isInstanceOf(IllegalArgumentException.class)
-			.hasMessageContaining("존재하지 않는 홈케어 루틴 ID입니다");
+			.isInstanceOf(ChallengeException.class)
+			.hasMessageContaining("유효하지 않은 홈케어 루틴 ID입니다");
 	}
 
 	@Test
