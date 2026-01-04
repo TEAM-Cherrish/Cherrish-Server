@@ -21,9 +21,6 @@ class HomecareRoutineTest {
 
 		// then
 		assertThat(result).isEqualTo(expectedRoutine);
-		assertThat(result.getId()).isEqualTo(expectedRoutine.getId());
-		assertThat(result.name()).isEqualTo(expectedRoutine.name());
-		assertThat(result.getDescription()).isEqualTo(expectedRoutine.getDescription());
 	}
 
 	@ParameterizedTest
@@ -42,14 +39,14 @@ class HomecareRoutineTest {
 	}
 
 	@Test
-	@DisplayName("모든 HomecareRoutine enum 값 확인")
-	void allValuesTest() {
+	@DisplayName("HomecareRoutine ID 순차 증가 검증")
+	void routineIdsAreSequential() {
 		// when
 		HomecareRoutine[] routines = HomecareRoutine.values();
 
 		// then
-		assertThat(routines).hasSize(6);
 		assertThat(routines)
+			.hasSize(6)
 			.extracting(HomecareRoutine::getId)
 			.containsExactly(1, 2, 3, 4, 5, 6);
 	}
