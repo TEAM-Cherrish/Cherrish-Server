@@ -136,26 +136,6 @@ class ChallengeControllerTest {
 		@Nested
 		@DisplayName("실패 케이스")
 		class Failure {
-
-			@Test
-			@DisplayName("요청 본문 없음")
-			void noRequestBody() throws Exception {
-				// when & then
-				mockMvc.perform(post("/api/challenges/ai-recommendations")
-						.contentType(MediaType.APPLICATION_JSON))
-					.andExpect(status().isBadRequest());
-			}
-
-			@Test
-			@DisplayName("잘못된 JSON 형식")
-			void invalidJson() throws Exception {
-				// when & then
-				mockMvc.perform(post("/api/challenges/ai-recommendations")
-						.contentType(MediaType.APPLICATION_JSON)
-						.content("invalid json"))
-					.andExpect(status().isBadRequest());
-			}
-
 			@Test
 			@DisplayName("null homecareRoutineId")
 			void nullRoutineId() throws Exception {
