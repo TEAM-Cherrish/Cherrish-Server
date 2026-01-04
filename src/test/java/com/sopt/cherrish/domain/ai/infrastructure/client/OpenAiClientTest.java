@@ -18,6 +18,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.ChatClient.CallResponseSpec;
 import org.springframework.ai.chat.client.ChatClient.ChatClientRequestSpec;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import com.sopt.cherrish.domain.ai.exception.AiClientException;
 import com.sopt.cherrish.domain.ai.exception.AiErrorCode;
@@ -30,9 +31,6 @@ class OpenAiClientTest {
 	private OpenAiClient openAiClient;
 
 	@Mock
-	private ChatClient.Builder chatClientBuilder;
-
-	@Mock
 	private ChatClient chatClient;
 
 	@Mock
@@ -43,7 +41,7 @@ class OpenAiClientTest {
 
 	@SuppressWarnings("unchecked")
 	private void givenChatClientReturns(Object response) {
-		given(chatClientBuilder.build()).willReturn(chatClient);
+		ReflectionTestUtils.setField(openAiClient, "chatClient", chatClient);
 		given(chatClient.prompt()).willReturn(requestSpec);
 		given(requestSpec.user(anyString())).willReturn(requestSpec);
 		given(requestSpec.call()).willReturn(responseSpec);
@@ -102,7 +100,7 @@ class OpenAiClientTest {
 			String promptTemplate = "테스트 프롬프트";
 			Map<String, Object> variables = Map.of();
 
-			given(chatClientBuilder.build()).willReturn(chatClient);
+			ReflectionTestUtils.setField(openAiClient, "chatClient", chatClient);
 			given(chatClient.prompt()).willReturn(requestSpec);
 			given(requestSpec.user(anyString())).willReturn(requestSpec);
 			given(requestSpec.call()).willThrow(new RuntimeException("AI 서비스 오류"));
