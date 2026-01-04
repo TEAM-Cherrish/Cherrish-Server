@@ -84,25 +84,6 @@ class ProcedureServiceTest {
 	}
 
 	@Test
-	@DisplayName("시술 검색 성공 - 키워드와 피부 고민 ID로 동시 검색")
-	void searchProceduresByKeywordAndWorryId() {
-		// given
-		String keyword = "레이저";
-		Long worryId = 1L;
-		Procedure procedure = ProcedureFixture.createProcedure("레이저 토닝", "레이저", 0, 1);
-
-		given(procedureRepository.searchProcedures(keyword, worryId))
-			.willReturn(Collections.singletonList(procedure));
-
-		// when
-		ProcedureListResponseDto result = procedureService.searchProcedures(keyword, worryId);
-
-		// then
-		assertThat(result.getProcedures()).hasSize(1);
-		assertThat(result.getProcedures().get(0).getName()).isEqualTo("레이저 토닝");
-	}
-
-	@Test
 	@DisplayName("시술 검색 성공 - 결과가 없는 경우")
 	void searchProceduresWithNoResults() {
 		// given

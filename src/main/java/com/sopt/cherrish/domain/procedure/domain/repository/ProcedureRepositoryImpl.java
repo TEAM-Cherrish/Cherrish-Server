@@ -18,14 +18,22 @@ public class ProcedureRepositoryImpl implements ProcedureRepositoryCustom {
 
 	@Override
 	public List<Procedure> searchProcedures(String keyword, Long worryId) {
+		// worryId가 있으면 inner join, 없으면 일반 조회
+		if (worryId != null) {
+			return queryFactory
+				.selectDistinct(procedure)
+				.from(procedure)
+				.innerJoin(procedureWorry).on(procedureWorry.procedure.eq(procedure))
+				.where(
+					procedureWorry.worry.id.eq(worryId),
+					containsKeyword(keyword)
+				)
+				.fetch();
+		}
+
 		return queryFactory
 			.selectFrom(procedure)
-			.distinct()
-			.where(
-				containsKeyword(keyword),
-				hasWorryId(worryId)
-			)
-			.orderBy(procedure.name.asc())
+			.where(containsKeyword(keyword))
 			.fetch();
 	}
 
@@ -34,23 +42,5 @@ public class ProcedureRepositoryImpl implements ProcedureRepositoryCustom {
 	 */
 	private BooleanExpression containsKeyword(String keyword) {
 		return keyword != null && !keyword.isBlank() ? procedure.name.contains(keyword) : null;
-	}
-
-	/**
-	 * 피부 고민 ID 조건 (exists 서브쿼리 사용)
-	 */
-	private BooleanExpression hasWorryId(Long worryId) {
-		if (worryId == null) {
-			return null;
-		}
-
-		return queryFactory
-			.selectOne()
-			.from(procedureWorry)
-			.where(
-				procedureWorry.procedure.eq(procedure),
-				procedureWorry.worry.id.eq(worryId)
-			)
-			.exists();
 	}
 }

@@ -22,9 +22,11 @@ public class ProcedureService {
 	public ProcedureListResponseDto searchProcedures(String keyword, Long worryId) {
 		List<Procedure> procedures = procedureRepository.searchProcedures(keyword, worryId);
 
+		// DB의 한글 collation 설정과 무관하게 정확한 한글 정렬을 보장하기 위해 Java에서 정렬
 		return ProcedureListResponseDto.of(
 			procedures.stream()
 				.map(ProcedureResponseDto::from)
+				.sorted((p1, p2) -> p1.getName().compareTo(p2.getName()))
 				.toList()
 		);
 	}
