@@ -1,9 +1,15 @@
 package com.sopt.cherrish.domain.challenge.presentation;
 
-import static com.sopt.cherrish.domain.challenge.fixture.ChallengeTestFixture.*;
-import static org.mockito.BDDMockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static com.sopt.cherrish.domain.challenge.fixture.ChallengeTestFixture.emptyRoutinesRecommendation;
+import static com.sopt.cherrish.domain.challenge.fixture.ChallengeTestFixture.homecareRoutineList;
+import static com.sopt.cherrish.domain.challenge.fixture.ChallengeTestFixture.recommendationRequest;
+import static com.sopt.cherrish.domain.challenge.fixture.ChallengeTestFixture.skinMoisturizingRecommendation;
+import static com.sopt.cherrish.domain.challenge.fixture.ChallengeTestFixture.wrinkleCareRecommendation;
+import static org.mockito.BDDMockito.given;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.List;
 
