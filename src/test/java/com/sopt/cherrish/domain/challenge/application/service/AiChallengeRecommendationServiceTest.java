@@ -6,7 +6,6 @@ import static org.mockito.BDDMockito.*;
 
 import java.util.List;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -38,12 +37,8 @@ class AiChallengeRecommendationServiceTest {
 	@Mock
 	private ChallengePromptTemplate challengePromptTemplate;
 
-	@BeforeEach
-	void setUp() {
-		given(challengePromptTemplate.getChallengeRecommendationTemplate()).willReturn(TEST_PROMPT_TEMPLATE);
-	}
-
 	private void givenAiClientReturns(OpenAiChallengeRecommendationResponseDto response) {
+		given(challengePromptTemplate.getChallengeRecommendationTemplate()).willReturn(TEST_PROMPT_TEMPLATE);
 		given(aiClient.call(anyString(), anyMap(), eq(OpenAiChallengeRecommendationResponseDto.class)))
 			.willReturn(response);
 	}
@@ -157,6 +152,7 @@ class AiChallengeRecommendationServiceTest {
 		void aiServiceError() {
 			// given
 			Long homecareRoutineId = 1L;
+			given(challengePromptTemplate.getChallengeRecommendationTemplate()).willReturn(TEST_PROMPT_TEMPLATE);
 			given(aiClient.call(anyString(), anyMap(), any()))
 				.willThrow(new AiClientException(AiErrorCode.AI_SERVICE_UNAVAILABLE));
 
@@ -173,6 +169,7 @@ class AiChallengeRecommendationServiceTest {
 		void parsingError() {
 			// given
 			Long homecareRoutineId = 1L;
+			given(challengePromptTemplate.getChallengeRecommendationTemplate()).willReturn(TEST_PROMPT_TEMPLATE);
 			given(aiClient.call(anyString(), anyMap(), any()))
 				.willThrow(new AiClientException(AiErrorCode.AI_RESPONSE_PARSING_FAILED));
 
