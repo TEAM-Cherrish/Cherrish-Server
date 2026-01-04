@@ -6,12 +6,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.sopt.cherrish.domain.challenge.domain.model.HomecareRoutine;
-import com.sopt.cherrish.domain.challenge.infrastructure.ai.response.AiChallengeRecommendationDto;
 import com.sopt.cherrish.domain.challenge.exception.ChallengeErrorCode;
 import com.sopt.cherrish.domain.challenge.exception.ChallengeException;
+import com.sopt.cherrish.domain.challenge.infrastructure.ai.response.AiChallengeRecommendationDto;
 import com.sopt.cherrish.domain.challenge.infrastructure.prompt.ChallengePromptTemplate;
 import com.sopt.cherrish.domain.challenge.presentation.dto.response.AiRecommendationResponseDto;
 import com.sopt.cherrish.domain.openai.AiClient;
+import com.sopt.cherrish.domain.openai.exception.AiClientException;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -56,9 +57,9 @@ public class AiChallengeRecommendationService {
 				aiResponse.routines()
 			);
 
-		} catch (Exception e) {
+		} catch (AiClientException e) {
 			log.error("AI 호출 실패: homecareRoutineId={}, error={}", homecareRoutineId, e.getMessage(), e);
-			throw new ChallengeException(ChallengeErrorCode.AI_SERVICE_UNAVAILABLE);
+			throw e;
 		}
 	}
 }

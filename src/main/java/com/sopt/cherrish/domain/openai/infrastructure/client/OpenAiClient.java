@@ -7,6 +7,8 @@ import org.springframework.ai.chat.prompt.PromptTemplate;
 import org.springframework.stereotype.Component;
 
 import com.sopt.cherrish.domain.openai.AiClient;
+import com.sopt.cherrish.domain.openai.exception.AiClientException;
+import com.sopt.cherrish.domain.openai.exception.AiErrorCode;
 
 import lombok.RequiredArgsConstructor;
 
@@ -22,14 +24,29 @@ public class OpenAiClient implements AiClient {
 
 	@Override
 	public <T> T call(String promptTemplate, Map<String, Object> variables, Class<T> responseType) {
-		PromptTemplate template = new PromptTemplate(promptTemplate);
-		String prompt = template.render(variables);
+		try {
+			PromptTemplate template = new PromptTemplate(promptTemplate);
+			String prompt = template.render(variables);
 
-		ChatClient chatClient = chatClientBuilder.build();
+			ChatClient chatClient = chatClientBuilder.build();
 
-		return chatClient.prompt()
-			.user(prompt)
-			.call()
-			.entity(responseType);
+			T response = chatClient.prompt()
+				.user(prompt)
+				.call()
+				.entity(responseType);
+
+			if (response == null) {
+				throw new AiClientException(AiErrorCode.AI_RESPONSE_PARSING_FAILED);
+			}
+
+			return response;
+
+		} catch (IllegalArgumentException e) {
+			throw new AiClientException(AiErrorCode.INVALID_PROMPT_TEMPLATE);
+		} catch (AiClientException e) {
+			throw e;
+		} catch (Exception e) {
+			throw new AiClientException(AiErrorCode.AI_SERVICE_UNAVAILABLE);
+		}
 	}
 }
