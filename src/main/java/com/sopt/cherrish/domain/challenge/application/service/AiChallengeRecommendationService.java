@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.sopt.cherrish.domain.challenge.domain.model.HomecareRoutine;
 import com.sopt.cherrish.domain.challenge.exception.ChallengeErrorCode;
 import com.sopt.cherrish.domain.challenge.exception.ChallengeException;
-import com.sopt.cherrish.domain.challenge.infrastructure.ai.response.AiChallengeRecommendationDto;
+import com.sopt.cherrish.domain.challenge.infrastructure.openai.response.OpenAiChallengeRecommendationResponseDto;
 import com.sopt.cherrish.domain.challenge.infrastructure.prompt.ChallengePromptTemplate;
 import com.sopt.cherrish.domain.challenge.presentation.dto.response.AiRecommendationResponseDto;
 import com.sopt.cherrish.domain.ai.AiClient;
@@ -44,10 +44,10 @@ public class AiChallengeRecommendationService {
 		}
 
 		try {
-			AiChallengeRecommendationDto aiResponse = aiClient.call(
+			OpenAiChallengeRecommendationResponseDto aiResponse = aiClient.call(
 				challengePromptTemplate.getChallengeRecommendationTemplate(),
 				Map.of("homecareContent", routine.getDescription()),
-				AiChallengeRecommendationDto.class
+				OpenAiChallengeRecommendationResponseDto.class
 			);
 
 			log.info("AI 챌린지 추천 생성 완료: title={}", aiResponse.challengeTitle());
