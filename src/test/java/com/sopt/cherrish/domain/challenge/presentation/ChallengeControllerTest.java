@@ -23,8 +23,10 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sopt.cherrish.domain.challenge.application.service.AiChallengeRecommendationService;
-import com.sopt.cherrish.domain.challenge.application.service.HomecareRoutineService;
+import com.sopt.cherrish.domain.challenge.core.application.facade.ChallengeCreationFacade;
+import com.sopt.cherrish.domain.challenge.core.presentation.ChallengeController;
+import com.sopt.cherrish.domain.challenge.homecare.application.service.HomecareRoutineService;
+import com.sopt.cherrish.domain.challenge.recommendation.application.service.AiChallengeRecommendationService;
 
 @WebMvcTest(ChallengeController.class)
 @DisplayName("ChallengeController 통합 테스트")
@@ -41,6 +43,9 @@ class ChallengeControllerTest {
 
 	@MockitoBean
 	private AiChallengeRecommendationService aiRecommendationService;
+
+	@MockitoBean
+	private ChallengeCreationFacade challengeCreationFacade;
 
 	@Nested
 	@DisplayName("GET /api/challenges/homecare-routines - 홈케어 루틴 목록 조회")

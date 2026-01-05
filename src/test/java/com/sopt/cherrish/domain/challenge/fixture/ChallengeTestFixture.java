@@ -3,10 +3,10 @@ package com.sopt.cherrish.domain.challenge.fixture;
 import java.util.Arrays;
 import java.util.List;
 
-import com.sopt.cherrish.domain.challenge.application.dto.response.HomecareRoutineResponseDto;
-import com.sopt.cherrish.domain.challenge.domain.model.HomecareRoutine;
-import com.sopt.cherrish.domain.challenge.presentation.dto.request.AiRecommendationRequestDto;
-import com.sopt.cherrish.domain.challenge.presentation.dto.response.AiRecommendationResponseDto;
+import com.sopt.cherrish.domain.challenge.homecare.domain.model.HomecareRoutine;
+import com.sopt.cherrish.domain.challenge.homecare.presentation.dto.response.HomecareRoutineResponseDto;
+import com.sopt.cherrish.domain.challenge.recommendation.presentation.dto.request.AiRecommendationRequestDto;
+import com.sopt.cherrish.domain.challenge.recommendation.presentation.dto.response.AiRecommendationResponseDto;
 
 public class ChallengeTestFixture {
 

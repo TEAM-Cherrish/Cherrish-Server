@@ -7,7 +7,8 @@ import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import com.sopt.cherrish.domain.challenge.application.dto.response.HomecareRoutineResponseDto;
+import com.sopt.cherrish.domain.challenge.homecare.application.service.HomecareRoutineService;
+import com.sopt.cherrish.domain.challenge.homecare.presentation.dto.response.HomecareRoutineResponseDto;
 
 @DisplayName("HomecareRoutineService 단위 테스트")
 class HomecareRoutineServiceTest {
