@@ -1,4 +1,4 @@
-package com.sopt.cherrish.domain.challenge.application.service;
+package com.sopt.cherrish.domain.challenge.homecare.application.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -7,7 +7,6 @@ import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import com.sopt.cherrish.domain.challenge.homecare.application.service.HomecareRoutineService;
 import com.sopt.cherrish.domain.challenge.homecare.presentation.dto.response.HomecareRoutineResponseDto;
 
 @DisplayName("HomecareRoutineService 단위 테스트")

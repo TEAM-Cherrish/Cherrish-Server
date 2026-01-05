@@ -1,9 +1,9 @@
 package com.sopt.cherrish.domain.challenge.recommendation.presentation;
 
-import static com.sopt.cherrish.domain.challenge.fixture.ChallengeTestFixture.emptyRoutinesRecommendation;
-import static com.sopt.cherrish.domain.challenge.fixture.ChallengeTestFixture.recommendationRequest;
-import static com.sopt.cherrish.domain.challenge.fixture.ChallengeTestFixture.skinMoisturizingRecommendation;
-import static com.sopt.cherrish.domain.challenge.fixture.ChallengeTestFixture.wrinkleCareRecommendation;
+import static com.sopt.cherrish.domain.challenge.recommendation.fixture.ChallengeRecommendationTestFixture.emptyRoutinesRecommendation;
+import static com.sopt.cherrish.domain.challenge.recommendation.fixture.ChallengeRecommendationTestFixture.recommendationRequest;
+import static com.sopt.cherrish.domain.challenge.recommendation.fixture.ChallengeRecommendationTestFixture.skinMoisturizingRecommendation;
+import static com.sopt.cherrish.domain.challenge.recommendation.fixture.ChallengeRecommendationTestFixture.wrinkleCareRecommendation;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
