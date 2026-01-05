@@ -49,34 +49,6 @@ public class ChallengeTestFixture {
 		);
 	}
 
-	/**
-	 * ID가 설정된 Challenge 생성 (Mock 테스트용)
-	 * 참고: 실제 ID 필드는 private이므로 이 메서드로는 설정할 수 없습니다.
-	 * Mock 객체를 사용하거나, 통합 테스트에서 실제 DB 저장 후 조회하세요.
-	 *
-	 * @deprecated Use mock objects with when().thenReturn() or integration tests
-	 */
-	@Deprecated
-	public static Challenge createChallenge(Long challengeId, Long userId) {
-		return createChallengeWithStartDate(userId, LocalDate.of(2024, 1, 1));
-	}
-
-	/**
-	 * Mock 테스트용: ID를 포함한 Challenge Mock 응답 생성
-	 * Mockito의 when().thenReturn()과 함께 사용
-	 */
-	public static Challenge createMockChallengeWithId(Long challengeId, Long userId, LocalDate startDate) {
-
-		// Mock을 사용하는 테스트에서는 when().thenReturn()으로 이 객체를 반환하되,
-		// getId()를 호출할 때 challengeId를 반환하도록 설정해야 합니다.
-		// 또는 통합 테스트에서 실제 저장된 객체를 사용하세요.
-		return Challenge.builder()
-			.userId(userId)
-			.homecareRoutine(HomecareRoutine.SKIN_MOISTURIZING)
-			.title("7일 챌린지")
-			.startDate(startDate)
-			.build();
-	}
 
 	/**
 	 * 특정 시작일로 Challenge 생성
