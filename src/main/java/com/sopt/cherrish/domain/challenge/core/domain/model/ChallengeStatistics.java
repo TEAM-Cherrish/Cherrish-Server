@@ -57,6 +57,6 @@ public class ChallengeStatistics extends BaseTimeEntity {
 		if (totalRoutineCount == 0) {
 			return 0.0;
 		}
-		return (double)completedCount / totalRoutineCount * 100;
+		return (double) completedCount / totalRoutineCount * 100;
 	}
 }
