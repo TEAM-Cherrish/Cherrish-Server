@@ -49,54 +49,72 @@ public class ChallengeTestFixture {
 		);
 	}
 
+	/**
+	 * ID가 설정된 Challenge 생성 (Mock 테스트용)
+	 * 참고: 실제 ID 필드는 private이므로 이 메서드로는 설정할 수 없습니다.
+	 * Mock 객체를 사용하거나, 통합 테스트에서 실제 DB 저장 후 조회하세요.
+	 *
+	 * @deprecated Use mock objects with when().thenReturn() or integration tests
+	 */
+	@Deprecated
 	public static Challenge createChallenge(Long challengeId, Long userId) {
-		Challenge challenge = Challenge.builder()
+		return createChallengeWithStartDate(userId, LocalDate.of(2024, 1, 1));
+	}
+
+	/**
+	 * Mock 테스트용: ID를 포함한 Challenge Mock 응답 생성
+	 * Mockito의 when().thenReturn()과 함께 사용
+	 */
+	public static Challenge createMockChallengeWithId(Long challengeId, Long userId, LocalDate startDate) {
+
+		// Mock을 사용하는 테스트에서는 when().thenReturn()으로 이 객체를 반환하되,
+		// getId()를 호출할 때 challengeId를 반환하도록 설정해야 합니다.
+		// 또는 통합 테스트에서 실제 저장된 객체를 사용하세요.
+		return Challenge.builder()
 			.userId(userId)
 			.homecareRoutine(HomecareRoutine.SKIN_MOISTURIZING)
 			.title("7일 챌린지")
-			.startDate(LocalDate.now())
+			.startDate(startDate)
 			.build();
-
-		// Reflection을 통한 ID 설정 (테스트용)
-		try {
-			var idField = Challenge.class.getDeclaredField("id");
-			idField.setAccessible(true);
-			idField.set(challenge, challengeId);
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-
-		return challenge;
 	}
 
+	/**
+	 * 특정 시작일로 Challenge 생성
+	 */
+	public static Challenge createChallengeWithStartDate(Long userId, LocalDate startDate) {
+		return Challenge.builder()
+			.userId(userId)
+			.homecareRoutine(HomecareRoutine.SKIN_MOISTURIZING)
+			.title("7일 챌린지")
+			.startDate(startDate)
+			.build();
+	}
+
+	/**
+	 * 기본 Challenge 생성 (ID 없음)
+	 * 테스트 안정성을 위해 고정된 시작일(2024-01-01) 사용
+	 */
+	public static Challenge createDefaultChallenge(Long userId) {
+		return createChallengeWithStartDate(userId, LocalDate.of(2024, 1, 1));
+	}
+
+	/**
+	 * ChallengeRoutine 리스트 생성
+	 * Challenge의 팩토리 메서드를 활용하여 생성
+	 */
 	public static List<ChallengeRoutine> createChallengeRoutines(Challenge challenge, List<String> routineNames) {
-		List<ChallengeRoutine> routines = new ArrayList<>();
-		long routineId = 1L;
+		return challenge.createChallengeRoutines(routineNames);
+	}
 
-		for (int day = 0; day < 7; day++) {
-			LocalDate scheduledDate = challenge.getStartDate().plusDays(day);
-
-			for (String routineName : routineNames) {
-				ChallengeRoutine routine = ChallengeRoutine.builder()
-					.challenge(challenge)
-					.name(routineName)
-					.scheduledDate(scheduledDate)
-					.build();
-
-				// Reflection을 통한 ID 설정 (테스트용)
-				try {
-					var idField = ChallengeRoutine.class.getDeclaredField("id");
-					idField.setAccessible(true);
-					idField.set(routine, routineId++);
-				} catch (Exception e) {
-					throw new RuntimeException(e);
-				}
-
-				routines.add(routine);
-			}
-		}
-
-		return routines;
+	/**
+	 * 특정 날짜에 예정된 ChallengeRoutine 생성
+	 */
+	public static ChallengeRoutine createRoutine(Challenge challenge, String name, LocalDate scheduledDate) {
+		return ChallengeRoutine.builder()
+			.challenge(challenge)
+			.name(name)
+			.scheduledDate(scheduledDate)
+			.build();
 	}
 
 	public static ChallengeCreateResponseDto createChallengeResponse(Challenge challenge, List<ChallengeRoutine> routines) {

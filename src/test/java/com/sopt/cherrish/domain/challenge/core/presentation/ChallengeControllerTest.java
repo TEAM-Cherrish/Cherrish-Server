@@ -27,6 +27,7 @@ import com.sopt.cherrish.domain.challenge.core.exception.ChallengeErrorCode;
 import com.sopt.cherrish.domain.challenge.core.exception.ChallengeException;
 import com.sopt.cherrish.domain.challenge.core.presentation.dto.request.ChallengeCreateRequestDto;
 import com.sopt.cherrish.domain.challenge.core.presentation.dto.response.ChallengeCreateResponseDto;
+import com.sopt.cherrish.domain.challenge.core.presentation.dto.response.ChallengeRoutineResponseDto;
 import com.sopt.cherrish.domain.user.exception.UserErrorCode;
 import com.sopt.cherrish.domain.user.exception.UserException;
 
@@ -52,11 +53,26 @@ class ChallengeControllerTest {
 		void success() throws Exception {
 			// given
 			Long userId = 1L;
+			Long challengeId = 1L;
 			ChallengeCreateRequestDto request = createValidChallengeRequest();
 
-			Challenge challenge = createChallenge(1L, userId);
+			// Response 직접 생성 (Mock 테스트용)
+			Challenge challenge = createDefaultChallenge(userId);
 			List<ChallengeRoutine> routines = createChallengeRoutines(challenge, request.routineNames());
-			ChallengeCreateResponseDto response = createChallengeResponse(challenge, routines);
+
+			List<ChallengeRoutineResponseDto> routineDtos = routines.stream()
+				.map(ChallengeRoutineResponseDto::from)
+				.toList();
+
+			ChallengeCreateResponseDto response = new ChallengeCreateResponseDto(
+				challengeId,  // 명시적으로 ID 설정
+				challenge.getTitle(),
+				challenge.getTotalDays(),
+				challenge.getStartDate(),
+				challenge.getEndDate(),
+				routines.size(),
+				routineDtos
+			);
 
 			given(challengeCreationFacade.createChallenge(eq(userId), any(ChallengeCreateRequestDto.class)))
 				.willReturn(response);
