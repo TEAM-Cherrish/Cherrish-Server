@@ -1,6 +1,7 @@
 package com.sopt.cherrish.domain.challenge.core.domain.model;
 
-import static com.sopt.cherrish.domain.challenge.core.fixture.ChallengeTestFixture.*;
+import static com.sopt.cherrish.domain.challenge.core.fixture.ChallengeTestFixture.DEFAULT_CHALLENGE_TITLE;
+import static com.sopt.cherrish.domain.challenge.core.fixture.ChallengeTestFixture.DEFAULT_USER_ID;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDate;
@@ -26,7 +27,7 @@ class ChallengeRoutineTest {
 
 	@Test
 	@DisplayName("루틴 완료 - isComplete가 true로 변경")
-	void complete_setsIsCompleteToTrue() {
+	void completeSetsIsCompleteToTrue() {
 		// given
 		Challenge challenge = createTestChallenge();
 
@@ -47,7 +48,7 @@ class ChallengeRoutineTest {
 
 	@Test
 	@DisplayName("특정 날짜에 예정된 루틴인지 확인 - 일치하는 경우")
-	void isScheduledFor_matchingDate_returnsTrue() {
+	void isScheduledForMatchingDateReturnsTrue() {
 		// given
 		Challenge challenge = createTestChallenge();
 
@@ -63,7 +64,7 @@ class ChallengeRoutineTest {
 
 	@Test
 	@DisplayName("특정 날짜에 예정된 루틴인지 확인 - 일치하지 않는 경우")
-	void isScheduledFor_differentDate_returnsFalse() {
+	void isScheduledForDifferentDateReturnsFalse() {
 		// given
 		Challenge challenge = createTestChallenge();
 

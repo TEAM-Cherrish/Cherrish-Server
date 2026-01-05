@@ -1,9 +1,9 @@
 package com.sopt.cherrish.domain.challenge.core.domain.model;
 
-import static com.sopt.cherrish.domain.challenge.core.fixture.ChallengeTestFixture.*;
+import static com.sopt.cherrish.domain.challenge.core.fixture.ChallengeTestFixture.DEFAULT_CHALLENGE_TITLE;
+import static com.sopt.cherrish.domain.challenge.core.fixture.ChallengeTestFixture.DEFAULT_USER_ID;
+import static com.sopt.cherrish.domain.challenge.core.fixture.ChallengeTestFixture.FIXED_START_DATE;
 import static org.assertj.core.api.Assertions.assertThat;
-
-import java.time.LocalDate;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -24,7 +24,7 @@ class ChallengeStatisticsTest {
 
 	@Test
 	@DisplayName("통계 초기화 - completedCount는 0")
-	void initialize_completedCountIsZero() {
+	void initializeCompletedCountIsZero() {
 		// given
 		Challenge challenge = createTestChallenge();
 
@@ -41,7 +41,7 @@ class ChallengeStatisticsTest {
 
 	@Test
 	@DisplayName("완료 개수 증가")
-	void incrementCompletedCount_increasesCountByOne() {
+	void incrementCompletedCountIncreasesCountByOne() {
 		// given
 		Challenge challenge = createTestChallenge();
 
@@ -59,7 +59,7 @@ class ChallengeStatisticsTest {
 
 	@Test
 	@DisplayName("완료 개수 감소")
-	void decrementCompletedCount_decreasesCountByOne() {
+	void decrementCompletedCountDecreasesCountByOne() {
 		// given
 		Challenge challenge = createTestChallenge();
 
@@ -81,7 +81,7 @@ class ChallengeStatisticsTest {
 
 	@Test
 	@DisplayName("완료 개수 감소 - 0 이하로 내려가지 않음")
-	void decrementCompletedCount_doesNotGoBelowZero() {
+	void decrementCompletedCountDoesNotGoBelowZero() {
 		// given
 		Challenge challenge = createTestChallenge();
 
@@ -101,7 +101,7 @@ class ChallengeStatisticsTest {
 
 	@Test
 	@DisplayName("진행률 계산 - 0%")
-	void getProgressPercentage_zeroCompleted_returns0() {
+	void getProgressPercentageZeroCompletedReturns0() {
 		// given
 		Challenge challenge = createTestChallenge();
 
@@ -119,7 +119,7 @@ class ChallengeStatisticsTest {
 
 	@Test
 	@DisplayName("진행률 계산 - 50%")
-	void getProgressPercentage_halfCompleted_returns50() {
+	void getProgressPercentageHalfCompletedReturns50() {
 		// given
 		Challenge challenge = createTestChallenge();
 
@@ -141,7 +141,7 @@ class ChallengeStatisticsTest {
 
 	@Test
 	@DisplayName("진행률 계산 - 100%")
-	void getProgressPercentage_allCompleted_returns100() {
+	void getProgressPercentageAllCompletedReturns100() {
 		// given
 		Challenge challenge = createTestChallenge();
 
@@ -163,7 +163,7 @@ class ChallengeStatisticsTest {
 
 	@Test
 	@DisplayName("진행률 계산 - 총 개수가 0인 경우 0% 반환")
-	void getProgressPercentage_totalCountZero_returns0() {
+	void getProgressPercentageTotalCountZeroReturns0() {
 		// given
 		Challenge challenge = createTestChallenge();
 

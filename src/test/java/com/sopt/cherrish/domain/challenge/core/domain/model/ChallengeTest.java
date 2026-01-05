@@ -1,6 +1,8 @@
 package com.sopt.cherrish.domain.challenge.core.domain.model;
 
-import static com.sopt.cherrish.domain.challenge.core.fixture.ChallengeTestFixture.*;
+import static com.sopt.cherrish.domain.challenge.core.fixture.ChallengeTestFixture.DEFAULT_CHALLENGE_TITLE;
+import static com.sopt.cherrish.domain.challenge.core.fixture.ChallengeTestFixture.DEFAULT_USER_ID;
+import static com.sopt.cherrish.domain.challenge.core.fixture.ChallengeTestFixture.FIXED_START_DATE;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDate;
@@ -25,7 +27,7 @@ class ChallengeTest {
 
 	@Test
 	@DisplayName("챌린지 생성 시 종료일은 시작일로부터 6일 후")
-	void createChallenge_endDateIs6DaysAfterStartDate() {
+	void createChallengeEndDateIs6DaysAfterStartDate() {
 		// given & when
 		Challenge challenge = createTestChallenge();
 
@@ -36,7 +38,7 @@ class ChallengeTest {
 
 	@Test
 	@DisplayName("챌린지 루틴 생성 - 3개 루틴명 × 7일 = 21개 생성")
-	void createChallengeRoutines_3routines_creates21routines() {
+	void createChallengeRoutines3routinesCreates21routines() {
 		// given
 		Challenge challenge = createTestChallenge();
 		List<String> routineNames = List.of("아침 세안", "토너 바르기", "크림 바르기");
@@ -50,7 +52,7 @@ class ChallengeTest {
 
 	@Test
 	@DisplayName("챌린지 루틴 생성 - 첫날부터 마지막날까지 순차적으로 생성")
-	void createChallengeRoutines_createsRoutinesSequentially() {
+	void createChallengeRoutinesCreatesRoutinesSequentially() {
 		// given
 		Challenge challenge = createTestChallenge();
 		List<String> routineNames = List.of("세안", "토너");
@@ -72,7 +74,7 @@ class ChallengeTest {
 
 	@Test
 	@DisplayName("챌린지 루틴 생성 - 각 루틴은 미완료 상태로 생성")
-	void createChallengeRoutines_allRoutinesAreIncomplete() {
+	void createChallengeRoutinesAllRoutinesAreIncomplete() {
 		// given
 		Challenge challenge = createTestChallenge();
 
@@ -85,7 +87,7 @@ class ChallengeTest {
 
 	@Test
 	@DisplayName("챌린지 루틴 생성 - 단일 루틴명 × 7일 = 7개 생성")
-	void createChallengeRoutines_singleRoutine_creates7routines() {
+	void createChallengeRoutinesSingleRoutineCreates7routines() {
 		// given
 		Challenge challenge = createTestChallenge();
 
@@ -98,7 +100,7 @@ class ChallengeTest {
 
 	@Test
 	@DisplayName("챌린지 완료 - isActive가 false로 변경")
-	void complete_setsIsActiveToFalse() {
+	void completeSetsIsActiveToFalse() {
 		// given
 		Challenge challenge = createTestChallenge();
 		assertThat(challenge.getIsActive()).isTrue();
