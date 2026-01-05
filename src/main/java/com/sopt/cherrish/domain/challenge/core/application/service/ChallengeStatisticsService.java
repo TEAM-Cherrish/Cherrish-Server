@@ -1,9 +1,12 @@
 package com.sopt.cherrish.domain.challenge.core.application.service;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.sopt.cherrish.domain.challenge.core.domain.model.Challenge;
+import com.sopt.cherrish.domain.challenge.core.domain.model.ChallengeRoutine;
 import com.sopt.cherrish.domain.challenge.core.domain.model.ChallengeStatistics;
 import com.sopt.cherrish.domain.challenge.core.domain.repository.ChallengeStatisticsRepository;
 import com.sopt.cherrish.domain.challenge.core.exception.ChallengeErrorCode;
@@ -21,10 +24,11 @@ public class ChallengeStatisticsService {
 	/**
 	 * 챌린지 통계 초기화
 	 * @param challenge 챌린지
-	 * @param totalRoutineCount 전체 루틴 개수
+	 * @param routines 생성된 루틴 리스트
 	 * @return 생성된 통계
 	 */
-	public ChallengeStatistics initializeStatistics(Challenge challenge, int totalRoutineCount) {
+	public ChallengeStatistics initializeStatistics(Challenge challenge, List<ChallengeRoutine> routines) {
+		int totalRoutineCount = routines.size();
 
 		ChallengeStatistics statistics = ChallengeStatistics.builder()
 			.challenge(challenge)
