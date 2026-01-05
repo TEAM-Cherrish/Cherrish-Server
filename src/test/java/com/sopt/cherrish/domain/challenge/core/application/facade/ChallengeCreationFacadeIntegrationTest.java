@@ -57,14 +57,18 @@ class ChallengeCreationFacadeIntegrationTest {
 	@Autowired
 	private UserRepository userRepository;
 
+	private User createTestUser() {
+		return userRepository.save(User.builder()
+			.name("테스트 유저")
+			.age(25)
+			.build());
+	}
+
 	@Test
 	@DisplayName("성공 - 챌린지 생성 전체 플로우 (DB 저장 확인)")
 	void createChallenge_success_savesToDatabase() {
 		// given
-		User user = userRepository.save(User.builder()
-			.name("테스트 유저")
-			.age(25)
-			.build());
+		User user = createTestUser();
 
 		ChallengeCreateRequestDto request = new ChallengeCreateRequestDto(
 			1, // SKIN_MOISTURIZING
@@ -102,10 +106,7 @@ class ChallengeCreationFacadeIntegrationTest {
 	@DisplayName("성공 - 단일 루틴명으로 챌린지 생성 (1개 × 7일 = 7개)")
 	void createChallenge_singleRoutine_creates7routines() {
 		// given
-		User user = userRepository.save(User.builder()
-			.name("테스트 유저")
-			.age(25)
-			.build());
+		User user = createTestUser();
 
 		ChallengeCreateRequestDto request = new ChallengeCreateRequestDto(
 			2, // SKIN_BRIGHTENING
@@ -147,10 +148,7 @@ class ChallengeCreationFacadeIntegrationTest {
 	@DisplayName("실패 - 이미 활성 챌린지가 존재함")
 	void createChallenge_duplicateActiveChallenge_throwsException() {
 		// given
-		User user = userRepository.save(User.builder()
-			.name("테스트 유저")
-			.age(25)
-			.build());
+		User user = createTestUser();
 
 		// 이미 활성 챌린지가 존재
 		challengeRepository.save(Challenge.builder()
@@ -179,10 +177,7 @@ class ChallengeCreationFacadeIntegrationTest {
 	@DisplayName("실패 - 잘못된 홈케어 루틴 ID")
 	void createChallenge_invalidHomecareRoutineId_throwsException() {
 		// given
-		User user = userRepository.save(User.builder()
-			.name("테스트 유저")
-			.age(25)
-			.build());
+		User user = createTestUser();
 
 		ChallengeCreateRequestDto request = new ChallengeCreateRequestDto(
 			999, // 존재하지 않는 ID
@@ -200,10 +195,7 @@ class ChallengeCreationFacadeIntegrationTest {
 	@DisplayName("트랜잭션 롤백 - 예외 발생 시 모든 변경사항 롤백")
 	void createChallenge_exceptionOccurs_rollbacksAllChanges() {
 		// given
-		User user = userRepository.save(User.builder()
-			.name("테스트 유저")
-			.age(25)
-			.build());
+		User user = createTestUser();
 
 		// 이미 활성 챌린지 존재
 		challengeRepository.save(Challenge.builder()
