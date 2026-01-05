@@ -1,5 +1,6 @@
 package com.sopt.cherrish.domain.challenge.core.domain.model;
 
+import static com.sopt.cherrish.domain.challenge.core.fixture.ChallengeTestFixture.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDate;
@@ -13,13 +14,12 @@ import com.sopt.cherrish.domain.challenge.homecare.domain.model.HomecareRoutine;
 class ChallengeRoutineTest {
 
 	private static final LocalDate TEST_DATE = LocalDate.of(2024, 1, 15);
-	private static final Long TEST_USER_ID = 1L;
 
 	private Challenge createTestChallenge() {
 		return Challenge.builder()
-			.userId(TEST_USER_ID)
+			.userId(DEFAULT_USER_ID)
 			.homecareRoutine(HomecareRoutine.SKIN_MOISTURIZING)
-			.title("7일 챌린지")
+			.title(DEFAULT_CHALLENGE_TITLE)
 			.startDate(TEST_DATE)
 			.build();
 	}
