@@ -25,11 +25,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import com.sopt.cherrish.domain.ai.AiClient;
 import com.sopt.cherrish.domain.ai.exception.AiClientException;
 import com.sopt.cherrish.domain.ai.exception.AiErrorCode;
-import com.sopt.cherrish.domain.challenge.exception.ChallengeErrorCode;
-import com.sopt.cherrish.domain.challenge.exception.ChallengeException;
-import com.sopt.cherrish.domain.challenge.infrastructure.openai.response.OpenAiChallengeRecommendationResponseDto;
-import com.sopt.cherrish.domain.challenge.infrastructure.prompt.ChallengePromptTemplate;
-import com.sopt.cherrish.domain.challenge.presentation.dto.response.AiRecommendationResponseDto;
+import com.sopt.cherrish.domain.challenge.core.exception.ChallengeErrorCode;
+import com.sopt.cherrish.domain.challenge.core.exception.ChallengeException;
+import com.sopt.cherrish.domain.challenge.recommendation.application.service.AiChallengeRecommendationService;
+import com.sopt.cherrish.domain.challenge.recommendation.infrastructure.openai.OpenAiChallengeRecommendationResponseDto;
+import com.sopt.cherrish.domain.challenge.recommendation.infrastructure.prompt.ChallengePromptTemplate;
+import com.sopt.cherrish.domain.challenge.recommendation.presentation.dto.response.AiRecommendationResponseDto;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("AiChallengeRecommendationService 단위 테스트")

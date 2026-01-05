@@ -9,7 +9,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.EnumSource;
 
-import com.sopt.cherrish.domain.challenge.exception.ChallengeException;
+import com.sopt.cherrish.domain.challenge.core.exception.ChallengeException;
+import com.sopt.cherrish.domain.challenge.homecare.domain.model.HomecareRoutine;
 
 @DisplayName("HomecareRoutine 도메인 모델 테스트")
 class HomecareRoutineTest {
