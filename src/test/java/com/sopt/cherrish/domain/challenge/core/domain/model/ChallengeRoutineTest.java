@@ -15,16 +15,20 @@ class ChallengeRoutineTest {
 	private static final LocalDate TEST_DATE = LocalDate.of(2024, 1, 15);
 	private static final Long TEST_USER_ID = 1L;
 
-	@Test
-	@DisplayName("루틴 완료 - isComplete가 true로 변경")
-	void complete_setsIsCompleteToTrue() {
-		// given
-		Challenge challenge = Challenge.builder()
+	private Challenge createTestChallenge() {
+		return Challenge.builder()
 			.userId(TEST_USER_ID)
 			.homecareRoutine(HomecareRoutine.SKIN_MOISTURIZING)
 			.title("7일 챌린지")
 			.startDate(TEST_DATE)
 			.build();
+	}
+
+	@Test
+	@DisplayName("루틴 완료 - isComplete가 true로 변경")
+	void complete_setsIsCompleteToTrue() {
+		// given
+		Challenge challenge = createTestChallenge();
 
 		ChallengeRoutine routine = ChallengeRoutine.builder()
 			.challenge(challenge)
@@ -45,12 +49,7 @@ class ChallengeRoutineTest {
 	@DisplayName("특정 날짜에 예정된 루틴인지 확인 - 일치하는 경우")
 	void isScheduledFor_matchingDate_returnsTrue() {
 		// given
-		Challenge challenge = Challenge.builder()
-			.userId(TEST_USER_ID)
-			.homecareRoutine(HomecareRoutine.SKIN_MOISTURIZING)
-			.title("7일 챌린지")
-			.startDate(TEST_DATE)
-			.build();
+		Challenge challenge = createTestChallenge();
 
 		ChallengeRoutine routine = ChallengeRoutine.builder()
 			.challenge(challenge)
@@ -66,12 +65,7 @@ class ChallengeRoutineTest {
 	@DisplayName("특정 날짜에 예정된 루틴인지 확인 - 일치하지 않는 경우")
 	void isScheduledFor_differentDate_returnsFalse() {
 		// given
-		Challenge challenge = Challenge.builder()
-			.userId(TEST_USER_ID)
-			.homecareRoutine(HomecareRoutine.SKIN_MOISTURIZING)
-			.title("7일 챌린지")
-			.startDate(TEST_DATE)
-			.build();
+		Challenge challenge = createTestChallenge();
 
 		ChallengeRoutine routine = ChallengeRoutine.builder()
 			.challenge(challenge)
