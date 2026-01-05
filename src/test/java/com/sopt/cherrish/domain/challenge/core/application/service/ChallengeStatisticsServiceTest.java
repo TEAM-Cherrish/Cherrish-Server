@@ -36,7 +36,7 @@ class ChallengeStatisticsServiceTest {
 
 	@Test
 	@DisplayName("성공 - 챌린지 통계 초기화")
-	void initializeStatistics_success() {
+	void initializeStatisticsSuccess() {
 		// given
 		Challenge challenge = ChallengeTestFixture.createDefaultChallenge(1L);
 		List<ChallengeRoutine> routines = challenge.createChallengeRoutines(
@@ -59,7 +59,7 @@ class ChallengeStatisticsServiceTest {
 
 	@Test
 	@DisplayName("성공 - 완료 개수 증가")
-	void incrementCompletedCount_success() {
+	void incrementCompletedCountSuccess() {
 		// given
 		Long challengeId = 1L;
 		Challenge challenge = ChallengeTestFixture.createDefaultChallenge(1L);
@@ -82,7 +82,7 @@ class ChallengeStatisticsServiceTest {
 
 	@Test
 	@DisplayName("실패 - 완료 개수 증가 시 챌린지 통계를 찾을 수 없음")
-	void incrementCompletedCount_statisticsNotFound_throwsException() {
+	void incrementCompletedCountStatisticsNotFoundThrowsException() {
 		// given
 		Long challengeId = 999L;
 		when(statisticsRepository.findByChallengeId(challengeId))
@@ -96,7 +96,7 @@ class ChallengeStatisticsServiceTest {
 
 	@Test
 	@DisplayName("성공 - 완료 개수 감소")
-	void decrementCompletedCount_success() {
+	void decrementCompletedCountSuccess() {
 		// given
 		Long challengeId = 1L;
 		Challenge challenge = ChallengeTestFixture.createDefaultChallenge(1L);
@@ -123,7 +123,7 @@ class ChallengeStatisticsServiceTest {
 
 	@Test
 	@DisplayName("실패 - 완료 개수 감소 시 챌린지 통계를 찾을 수 없음")
-	void decrementCompletedCount_statisticsNotFound_throwsException() {
+	void decrementCompletedCountStatisticsNotFoundThrowsException() {
 		// given
 		Long challengeId = 999L;
 		when(statisticsRepository.findByChallengeId(challengeId))
@@ -137,7 +137,7 @@ class ChallengeStatisticsServiceTest {
 
 	@Test
 	@DisplayName("성공 - 챌린지 통계 조회")
-	void getStatistics_success() {
+	void getStatisticsSuccess() {
 		// given
 		Long challengeId = 1L;
 		Challenge challenge = ChallengeTestFixture.createDefaultChallenge(1L);
@@ -162,7 +162,7 @@ class ChallengeStatisticsServiceTest {
 
 	@Test
 	@DisplayName("실패 - 챌린지 통계 조회 시 통계를 찾을 수 없음")
-	void getStatistics_statisticsNotFound_throwsException() {
+	void getStatisticsStatisticsNotFoundThrowsException() {
 		// given
 		Long challengeId = 999L;
 		when(statisticsRepository.findByChallengeId(challengeId))

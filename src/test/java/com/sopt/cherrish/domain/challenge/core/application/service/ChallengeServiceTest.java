@@ -35,7 +35,7 @@ class ChallengeServiceTest {
 
 	@Test
 	@DisplayName("성공 - 활성 챌린지가 없을 때 중복 검증 통과")
-	void validateNoDuplicateActiveChallenge_success() {
+	void validateNoDuplicateActiveChallengeSuccess() {
 		// given
 		Long userId = 1L;
 		when(challengeRepository.existsByUserIdAndIsActiveTrue(userId))
@@ -49,7 +49,7 @@ class ChallengeServiceTest {
 
 	@Test
 	@DisplayName("실패 - 이미 활성 챌린지가 있을 때 중복 검증 실패")
-	void validateNoDuplicateActiveChallenge_duplicateExists_throwsException() {
+	void validateNoDuplicateActiveChallengeDuplicateExistsThrowsException() {
 		// given
 		Long userId = 1L;
 		when(challengeRepository.existsByUserIdAndIsActiveTrue(userId))
@@ -63,7 +63,7 @@ class ChallengeServiceTest {
 
 	@Test
 	@DisplayName("성공 - 챌린지 생성 및 저장")
-	void createChallenge_success() {
+	void createChallengeSuccess() {
 		// given
 		Long userId = 1L;
 		HomecareRoutine routine = HomecareRoutine.SKIN_MOISTURIZING;
@@ -94,7 +94,7 @@ class ChallengeServiceTest {
 
 	@Test
 	@DisplayName("성공 - 활성 챌린지 조회")
-	void getActiveChallenge_success() {
+	void getActiveChallengeSuccess() {
 		// given
 		Long userId = 1L;
 		Challenge activeChallenge = ChallengeTestFixture.createDefaultChallenge(userId);
@@ -114,7 +114,7 @@ class ChallengeServiceTest {
 
 	@Test
 	@DisplayName("실패 - 활성 챌린지가 없을 때 조회 실패")
-	void getActiveChallenge_notFound_throwsException() {
+	void getActiveChallengeNotFoundThrowsException() {
 		// given
 		Long userId = 999L;
 		when(challengeRepository.findByUserIdAndIsActiveTrue(userId))
@@ -128,7 +128,7 @@ class ChallengeServiceTest {
 
 	@Test
 	@DisplayName("성공 - ID로 챌린지 조회")
-	void getChallengeById_success() {
+	void getChallengeByIdSuccess() {
 		// given
 		Long challengeId = 1L;
 		Long userId = 1L;
@@ -150,7 +150,7 @@ class ChallengeServiceTest {
 
 	@Test
 	@DisplayName("실패 - ID로 챌린지 조회 시 챌린지를 찾을 수 없음")
-	void getChallengeById_notFound_throwsException() {
+	void getChallengeByIdNotFoundThrowsException() {
 		// given
 		Long challengeId = 999L;
 		when(challengeRepository.findById(challengeId))

@@ -66,7 +66,7 @@ class ChallengeCreationFacadeIntegrationTest {
 
 	@Test
 	@DisplayName("성공 - 챌린지 생성 전체 플로우 (DB 저장 확인)")
-	void createChallenge_success_savesToDatabase() {
+	void createChallengeSuccessSavesToDatabase() {
 		// given
 		User user = createTestUser();
 
@@ -104,7 +104,7 @@ class ChallengeCreationFacadeIntegrationTest {
 
 	@Test
 	@DisplayName("성공 - 단일 루틴명으로 챌린지 생성 (1개 × 7일 = 7개)")
-	void createChallenge_singleRoutine_creates7routines() {
+	void createChallengeSingleRoutineCreates7routines() {
 		// given
 		User user = createTestUser();
 
@@ -124,7 +124,7 @@ class ChallengeCreationFacadeIntegrationTest {
 
 	@Test
 	@DisplayName("실패 - 존재하지 않는 사용자")
-	void createChallenge_userNotFound_throwsException() {
+	void createChallengeUserNotFoundThrowsException() {
 		// given
 		Long nonExistentUserId = 999L;
 		ChallengeCreateRequestDto request = new ChallengeCreateRequestDto(
@@ -146,7 +146,7 @@ class ChallengeCreationFacadeIntegrationTest {
 
 	@Test
 	@DisplayName("실패 - 이미 활성 챌린지가 존재함")
-	void createChallenge_duplicateActiveChallenge_throwsException() {
+	void createChallengeDuplicateActiveChallengeThrowsException() {
 		// given
 		User user = createTestUser();
 
@@ -175,7 +175,7 @@ class ChallengeCreationFacadeIntegrationTest {
 
 	@Test
 	@DisplayName("실패 - 잘못된 홈케어 루틴 ID")
-	void createChallenge_invalidHomecareRoutineId_throwsException() {
+	void createChallengeInvalidHomecareRoutineIdThrowsException() {
 		// given
 		User user = createTestUser();
 
@@ -193,7 +193,7 @@ class ChallengeCreationFacadeIntegrationTest {
 
 	@Test
 	@DisplayName("트랜잭션 롤백 - 예외 발생 시 모든 변경사항 롤백")
-	void createChallenge_exceptionOccurs_rollbacksAllChanges() {
+	void createChallengeExceptionOccursRollbacksAllChanges() {
 		// given
 		User user = createTestUser();
 

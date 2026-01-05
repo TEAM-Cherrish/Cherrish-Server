@@ -1,7 +1,6 @@
 package com.sopt.cherrish.domain.challenge.core.application.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -33,7 +32,7 @@ class ChallengeRoutineServiceTest {
 
 	@Test
 	@DisplayName("성공 - 챌린지 루틴 생성 및 Batch Insert")
-	void createAndSaveRoutines_success() {
+	void createAndSaveRoutinesSuccess() {
 		// given
 		Challenge challenge = ChallengeTestFixture.createDefaultChallenge(1L);
 		List<String> routineNames = List.of("아침 세안", "토너 바르기", "크림 바르기");
@@ -55,7 +54,7 @@ class ChallengeRoutineServiceTest {
 
 	@Test
 	@DisplayName("성공 - 오늘의 루틴 조회")
-	void getTodayRoutines_success() {
+	void getTodayRoutinesSuccess() {
 		// given
 		Long challengeId = 1L;
 		Challenge challenge = ChallengeTestFixture.createDefaultChallenge(1L);
@@ -80,7 +79,7 @@ class ChallengeRoutineServiceTest {
 
 	@Test
 	@DisplayName("성공 - 특정 날짜의 루틴 조회")
-	void getRoutinesByDate_success() {
+	void getRoutinesByDateSuccess() {
 		// given
 		Long challengeId = 1L;
 		Challenge challenge = ChallengeTestFixture.createDefaultChallenge(1L);
@@ -106,7 +105,7 @@ class ChallengeRoutineServiceTest {
 
 	@Test
 	@DisplayName("성공 - 특정 날짜에 루틴이 없을 때 빈 리스트 반환")
-	void getRoutinesByDate_noRoutines_returnsEmptyList() {
+	void getRoutinesByDateNoRoutinesReturnsEmptyList() {
 		// given
 		Long challengeId = 1L;
 		LocalDate scheduledDate = LocalDate.now().plusDays(10);

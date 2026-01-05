@@ -60,7 +60,8 @@ public class ChallengeTestFixture {
 	/**
 	 * Mock 테스트용 Response 생성 (ID 명시적 지정)
 	 */
-	public static ChallengeCreateResponseDto createChallengeResponse(Challenge challenge, List<ChallengeRoutine> routines, Long challengeId) {
+	public static ChallengeCreateResponseDto createChallengeResponse(
+		Challenge challenge, List<ChallengeRoutine> routines, Long challengeId) {
 		List<ChallengeRoutineResponseDto> routineDtos = routines.stream()
 			.map(ChallengeRoutineResponseDto::from)
 			.toList();
