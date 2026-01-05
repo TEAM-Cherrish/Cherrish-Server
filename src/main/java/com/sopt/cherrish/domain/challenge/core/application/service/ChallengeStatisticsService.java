@@ -27,7 +27,7 @@ public class ChallengeStatisticsService {
 	 * @param routines 생성된 루틴 리스트
 	 * @return 생성된 통계
 	 */
-	public ChallengeStatistics initializeStatistics(Challenge challenge, List<ChallengeRoutine> routines) {
+	public void initializeStatistics(Challenge challenge, List<ChallengeRoutine> routines) {
 		int totalRoutineCount = routines.size();
 
 		ChallengeStatistics statistics = ChallengeStatistics.builder()
@@ -35,7 +35,7 @@ public class ChallengeStatisticsService {
 			.totalRoutineCount(totalRoutineCount)
 			.build();
 
-		return statisticsRepository.save(statistics);
+		statisticsRepository.save(statistics);
 	}
 
 	/**

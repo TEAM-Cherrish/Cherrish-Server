@@ -58,8 +58,6 @@ public class Challenge extends BaseTimeEntity {
 		this.userId = userId;
 		this.homecareRoutine = homecareRoutine;
 		this.title = title;
-		this.isActive = true;
-		this.totalDays = 7;
 		this.startDate = startDate;
 		this.endDate = startDate.plusDays(6); // 7일 챌린지
 	}
