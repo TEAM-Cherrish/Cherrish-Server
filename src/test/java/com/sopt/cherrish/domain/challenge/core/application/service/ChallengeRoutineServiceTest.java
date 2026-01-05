@@ -35,7 +35,7 @@ class ChallengeRoutineServiceTest {
 	@DisplayName("성공 - 챌린지 루틴 생성 및 Batch Insert")
 	void createAndSaveRoutines_success() {
 		// given
-		Challenge challenge = ChallengeTestFixture.createChallenge(1L, 1L);
+		Challenge challenge = ChallengeTestFixture.createDefaultChallenge(1L);
 		List<String> routineNames = List.of("아침 세안", "토너 바르기", "크림 바르기");
 
 		List<ChallengeRoutine> expectedRoutines = ChallengeTestFixture.createChallengeRoutines(
@@ -59,7 +59,7 @@ class ChallengeRoutineServiceTest {
 	void getTodayRoutines_success() {
 		// given
 		Long challengeId = 1L;
-		Challenge challenge = ChallengeTestFixture.createChallenge(challengeId, 1L);
+		Challenge challenge = ChallengeTestFixture.createDefaultChallenge(1L);
 		LocalDate today = LocalDate.now();
 
 		List<ChallengeRoutine> expectedRoutines = ChallengeTestFixture.createChallengeRoutines(
@@ -84,7 +84,7 @@ class ChallengeRoutineServiceTest {
 	void getRoutinesByDate_success() {
 		// given
 		Long challengeId = 1L;
-		Challenge challenge = ChallengeTestFixture.createChallenge(challengeId, 1L);
+		Challenge challenge = ChallengeTestFixture.createDefaultChallenge(1L);
 		LocalDate scheduledDate = LocalDate.now().plusDays(3);
 
 		List<ChallengeRoutine> expectedRoutines = ChallengeTestFixture.createChallengeRoutines(

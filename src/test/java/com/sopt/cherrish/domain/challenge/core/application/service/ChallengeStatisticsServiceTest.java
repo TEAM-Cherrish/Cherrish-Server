@@ -38,7 +38,7 @@ class ChallengeStatisticsServiceTest {
 	@DisplayName("성공 - 챌린지 통계 초기화")
 	void initializeStatistics_success() {
 		// given
-		Challenge challenge = ChallengeTestFixture.createChallenge(1L, 1L);
+		Challenge challenge = ChallengeTestFixture.createDefaultChallenge(1L);
 		List<ChallengeRoutine> routines = ChallengeTestFixture.createChallengeRoutines(
 			challenge, List.of("루틴1", "루틴2", "루틴3"));
 
@@ -62,7 +62,7 @@ class ChallengeStatisticsServiceTest {
 	void incrementCompletedCount_success() {
 		// given
 		Long challengeId = 1L;
-		Challenge challenge = ChallengeTestFixture.createChallenge(challengeId, 1L);
+		Challenge challenge = ChallengeTestFixture.createDefaultChallenge(1L);
 
 		ChallengeStatistics statistics = ChallengeStatistics.builder()
 			.challenge(challenge)
@@ -99,7 +99,7 @@ class ChallengeStatisticsServiceTest {
 	void decrementCompletedCount_success() {
 		// given
 		Long challengeId = 1L;
-		Challenge challenge = ChallengeTestFixture.createChallenge(challengeId, 1L);
+		Challenge challenge = ChallengeTestFixture.createDefaultChallenge(1L);
 
 		ChallengeStatistics statistics = ChallengeStatistics.builder()
 			.challenge(challenge)
@@ -140,7 +140,7 @@ class ChallengeStatisticsServiceTest {
 	void getStatistics_success() {
 		// given
 		Long challengeId = 1L;
-		Challenge challenge = ChallengeTestFixture.createChallenge(challengeId, 1L);
+		Challenge challenge = ChallengeTestFixture.createDefaultChallenge(1L);
 
 		ChallengeStatistics statistics = ChallengeStatistics.builder()
 			.challenge(challenge)

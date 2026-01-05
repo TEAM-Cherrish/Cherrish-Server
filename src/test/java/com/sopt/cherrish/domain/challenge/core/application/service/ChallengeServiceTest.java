@@ -97,7 +97,7 @@ class ChallengeServiceTest {
 	void getActiveChallenge_success() {
 		// given
 		Long userId = 1L;
-		Challenge activeChallenge = ChallengeTestFixture.createChallenge(1L, userId);
+		Challenge activeChallenge = ChallengeTestFixture.createDefaultChallenge(userId);
 
 		when(challengeRepository.findByUserIdAndIsActiveTrue(userId))
 			.thenReturn(Optional.of(activeChallenge));
