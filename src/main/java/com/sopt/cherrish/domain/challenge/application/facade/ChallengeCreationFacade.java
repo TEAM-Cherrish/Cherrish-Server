@@ -56,11 +56,10 @@ public class ChallengeCreationFacade {
 			challenge, request.routineNames());
 
 		// 5. 통계 초기화
-		int totalRoutineCount = request.routineNames().size() * 7;
+		int totalRoutineCount = routines.size();
 		statisticsService.initializeStatistics(challenge, totalRoutineCount);
 
 		// 6. Response DTO 변환
-		return ChallengeCreateResponseDto.from(
-			challenge, request.routineNames(), totalRoutineCount);
+		return ChallengeCreateResponseDto.from(challenge, routines, totalRoutineCount);
 	}
 }

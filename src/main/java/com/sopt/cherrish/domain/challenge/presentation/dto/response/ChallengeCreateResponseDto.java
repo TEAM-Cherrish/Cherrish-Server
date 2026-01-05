@@ -2,9 +2,11 @@ package com.sopt.cherrish.domain.challenge.presentation.dto.response;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.sopt.cherrish.domain.challenge.domain.model.Challenge;
+import com.sopt.cherrish.domain.challenge.domain.model.ChallengeRoutine;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
@@ -30,11 +32,15 @@ public record ChallengeCreateResponseDto(
 	@Schema(description = "전체 루틴 개수", example = "21")
 	int totalRoutineCount,
 
-	@Schema(description = "루틴명 리스트")
-	List<String> routineNames
+	@Schema(description = "생성된 루틴 리스트")
+	List<ChallengeRoutineResponseDto> routines
 ) {
 	public static ChallengeCreateResponseDto from(
-		Challenge challenge, List<String> routineNames, int totalRoutineCount) {
+		Challenge challenge, List<ChallengeRoutine> routines, int totalRoutineCount) {
+		List<ChallengeRoutineResponseDto> routineDtos = routines.stream()
+			.map(ChallengeRoutineResponseDto::from)
+			.collect(Collectors.toList());
+
 		return new ChallengeCreateResponseDto(
 			challenge.getId(),
 			challenge.getTitle(),
@@ -42,7 +48,7 @@ public record ChallengeCreateResponseDto(
 			challenge.getStartDate(),
 			challenge.getEndDate(),
 			totalRoutineCount,
-			routineNames
+			routineDtos
 		);
 	}
 }
