@@ -1,7 +1,6 @@
 package com.sopt.cherrish.domain.challenge.core.fixture;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
 import com.sopt.cherrish.domain.challenge.core.domain.model.Challenge;
@@ -30,14 +29,6 @@ public class ChallengeTestFixture {
 		);
 	}
 
-	public static ChallengeCreateRequestDto createRequestWithInvalidHomecareRoutineId() {
-		return new ChallengeCreateRequestDto(
-			999,
-			"7일 챌린지",
-			List.of("아침 세안")
-		);
-	}
-
 	public static ChallengeCreateRequestDto createRequestWithEmptyTitle() {
 		return new ChallengeCreateRequestDto(
 			1,
@@ -46,15 +37,6 @@ public class ChallengeTestFixture {
 		);
 	}
 
-	public static ChallengeCreateRequestDto createRequestWithEmptyRoutineNames() {
-		return new ChallengeCreateRequestDto(
-			1,
-			"7일 챌린지",
-			List.of()
-		);
-	}
-
-
 	/**
 	 * 특정 시작일로 Challenge 생성
 	 */
@@ -62,7 +44,7 @@ public class ChallengeTestFixture {
 		return Challenge.builder()
 			.userId(userId)
 			.homecareRoutine(HomecareRoutine.SKIN_MOISTURIZING)
-			.title("7일 챌린지")
+			.title(DEFAULT_CHALLENGE_TITLE)
 			.startDate(startDate)
 			.build();
 	}
@@ -73,17 +55,6 @@ public class ChallengeTestFixture {
 	 */
 	public static Challenge createDefaultChallenge(Long userId) {
 		return createChallengeWithStartDate(userId, FIXED_START_DATE);
-	}
-
-	/**
-	 * 특정 날짜에 예정된 ChallengeRoutine 생성
-	 */
-	public static ChallengeRoutine createRoutine(Challenge challenge, String name, LocalDate scheduledDate) {
-		return ChallengeRoutine.builder()
-			.challenge(challenge)
-			.name(name)
-			.scheduledDate(scheduledDate)
-			.build();
 	}
 
 	/**
