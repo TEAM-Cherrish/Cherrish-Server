@@ -13,6 +13,11 @@ import com.sopt.cherrish.domain.challenge.homecare.domain.model.HomecareRoutine;
 
 public class ChallengeTestFixture {
 
+	// 공통 테스트 상수
+	public static final LocalDate FIXED_START_DATE = LocalDate.of(2024, 1, 1);
+	public static final Long DEFAULT_USER_ID = 1L;
+	public static final String DEFAULT_CHALLENGE_TITLE = "7일 챌린지";
+
 	private ChallengeTestFixture() {
 		// Utility class
 	}
@@ -64,10 +69,10 @@ public class ChallengeTestFixture {
 
 	/**
 	 * 기본 Challenge 생성 (ID 없음)
-	 * 테스트 안정성을 위해 고정된 시작일(2024-01-01) 사용
+	 * 테스트 안정성을 위해 고정된 시작일 사용
 	 */
 	public static Challenge createDefaultChallenge(Long userId) {
-		return createChallengeWithStartDate(userId, LocalDate.of(2024, 1, 1));
+		return createChallengeWithStartDate(userId, FIXED_START_DATE);
 	}
 
 	/**
