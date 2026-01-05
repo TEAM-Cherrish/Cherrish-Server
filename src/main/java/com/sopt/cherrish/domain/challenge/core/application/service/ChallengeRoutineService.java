@@ -25,7 +25,6 @@ public class ChallengeRoutineService {
 	 * @param routineNames 루틴명 리스트
 	 * @return 생성된 루틴 리스트
 	 */
-	@Transactional
 	public List<ChallengeRoutine> createAndSaveRoutines(
 		Challenge challenge, List<String> routineNames) {
 

@@ -44,7 +44,6 @@ public class ChallengeService {
 	 * @return 생성된 챌린지
 	 * @throws UserException 사용자를 찾을 수 없는 경우
 	 */
-	@Transactional
 	public Challenge createChallenge(Long userId, HomecareRoutine routine,
 		String title, LocalDate startDate) {
 		// User 존재 확인
