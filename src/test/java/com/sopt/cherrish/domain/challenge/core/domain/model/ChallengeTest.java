@@ -13,18 +13,20 @@ import com.sopt.cherrish.domain.challenge.homecare.domain.model.HomecareRoutine;
 @DisplayName("Challenge 도메인 단위 테스트")
 class ChallengeTest {
 
+	private static final LocalDate TEST_START_DATE = LocalDate.of(2024, 1, 1);
+	private static final Long TEST_USER_ID = 1L;
+
 	@Test
 	@DisplayName("챌린지 생성 시 종료일은 시작일로부터 6일 후")
 	void createChallenge_endDateIs6DaysAfterStartDate() {
 		// given
-		LocalDate startDate = LocalDate.of(2024, 1, 1);
 
 		// when
 		Challenge challenge = Challenge.builder()
 			.userId(1L)
 			.homecareRoutine(HomecareRoutine.SKIN_MOISTURIZING)
 			.title("7일 챌린지")
-			.startDate(startDate)
+			.startDate(TEST_START_DATE)
 			.build();
 
 		// then
@@ -36,12 +38,11 @@ class ChallengeTest {
 	@DisplayName("챌린지 루틴 생성 - 3개 루틴명 × 7일 = 21개 생성")
 	void createChallengeRoutines_3routines_creates21routines() {
 		// given
-		LocalDate startDate = LocalDate.of(2024, 1, 1);
 		Challenge challenge = Challenge.builder()
-			.userId(1L)
+			.userId(TEST_USER_ID)
 			.homecareRoutine(HomecareRoutine.SKIN_MOISTURIZING)
 			.title("7일 챌린지")
-			.startDate(startDate)
+			.startDate(TEST_START_DATE)
 			.build();
 
 		List<String> routineNames = List.of("아침 세안", "토너 바르기", "크림 바르기");
@@ -57,12 +58,11 @@ class ChallengeTest {
 	@DisplayName("챌린지 루틴 생성 - 첫날부터 마지막날까지 순차적으로 생성")
 	void createChallengeRoutines_createsRoutinesSequentially() {
 		// given
-		LocalDate startDate = LocalDate.of(2024, 1, 1);
 		Challenge challenge = Challenge.builder()
-			.userId(1L)
+			.userId(TEST_USER_ID)
 			.homecareRoutine(HomecareRoutine.SKIN_MOISTURIZING)
 			.title("7일 챌린지")
-			.startDate(startDate)
+			.startDate(TEST_START_DATE)
 			.build();
 
 		List<String> routineNames = List.of("세안", "토너");
@@ -87,10 +87,10 @@ class ChallengeTest {
 	void createChallengeRoutines_allRoutinesAreIncomplete() {
 		// given
 		Challenge challenge = Challenge.builder()
-			.userId(1L)
+			.userId(TEST_USER_ID)
 			.homecareRoutine(HomecareRoutine.SKIN_MOISTURIZING)
 			.title("7일 챌린지")
-			.startDate(LocalDate.now())
+			.startDate(TEST_START_DATE)
 			.build();
 
 		// when
@@ -105,10 +105,10 @@ class ChallengeTest {
 	void createChallengeRoutines_singleRoutine_creates7routines() {
 		// given
 		Challenge challenge = Challenge.builder()
-			.userId(1L)
+			.userId(TEST_USER_ID)
 			.homecareRoutine(HomecareRoutine.SKIN_MOISTURIZING)
 			.title("7일 챌린지")
-			.startDate(LocalDate.now())
+			.startDate(TEST_START_DATE)
 			.build();
 
 		// when
@@ -123,10 +123,10 @@ class ChallengeTest {
 	void complete_setsIsActiveToFalse() {
 		// given
 		Challenge challenge = Challenge.builder()
-			.userId(1L)
+			.userId(TEST_USER_ID)
 			.homecareRoutine(HomecareRoutine.SKIN_MOISTURIZING)
 			.title("7일 챌린지")
-			.startDate(LocalDate.now())
+			.startDate(TEST_START_DATE)
 			.build();
 
 		assertThat(challenge.getIsActive()).isTrue();

@@ -12,16 +12,23 @@ import com.sopt.cherrish.domain.challenge.homecare.domain.model.HomecareRoutine;
 @DisplayName("ChallengeStatistics 도메인 단위 테스트")
 class ChallengeStatisticsTest {
 
+	private static final LocalDate TEST_START_DATE = LocalDate.of(2024, 1, 1);
+	private static final Long TEST_USER_ID = 1L;
+
+	private Challenge createTestChallenge() {
+		return Challenge.builder()
+			.userId(TEST_USER_ID)
+			.homecareRoutine(HomecareRoutine.SKIN_MOISTURIZING)
+			.title("7일 챌린지")
+			.startDate(TEST_START_DATE)
+			.build();
+	}
+
 	@Test
 	@DisplayName("통계 초기화 - completedCount는 0")
 	void initialize_completedCountIsZero() {
 		// given
-		Challenge challenge = Challenge.builder()
-			.userId(1L)
-			.homecareRoutine(HomecareRoutine.SKIN_MOISTURIZING)
-			.title("7일 챌린지")
-			.startDate(LocalDate.now())
-			.build();
+		Challenge challenge = createTestChallenge();
 
 		// when
 		ChallengeStatistics statistics = ChallengeStatistics.builder()
@@ -38,12 +45,7 @@ class ChallengeStatisticsTest {
 	@DisplayName("완료 개수 증가")
 	void incrementCompletedCount_increasesCountByOne() {
 		// given
-		Challenge challenge = Challenge.builder()
-			.userId(1L)
-			.homecareRoutine(HomecareRoutine.SKIN_MOISTURIZING)
-			.title("7일 챌린지")
-			.startDate(LocalDate.now())
-			.build();
+		Challenge challenge = createTestChallenge();
 
 		ChallengeStatistics statistics = ChallengeStatistics.builder()
 			.challenge(challenge)
@@ -61,12 +63,7 @@ class ChallengeStatisticsTest {
 	@DisplayName("완료 개수 감소")
 	void decrementCompletedCount_decreasesCountByOne() {
 		// given
-		Challenge challenge = Challenge.builder()
-			.userId(1L)
-			.homecareRoutine(HomecareRoutine.SKIN_MOISTURIZING)
-			.title("7일 챌린지")
-			.startDate(LocalDate.now())
-			.build();
+		Challenge challenge = createTestChallenge();
 
 		ChallengeStatistics statistics = ChallengeStatistics.builder()
 			.challenge(challenge)
@@ -88,12 +85,7 @@ class ChallengeStatisticsTest {
 	@DisplayName("완료 개수 감소 - 0 이하로 내려가지 않음")
 	void decrementCompletedCount_doesNotGoBelowZero() {
 		// given
-		Challenge challenge = Challenge.builder()
-			.userId(1L)
-			.homecareRoutine(HomecareRoutine.SKIN_MOISTURIZING)
-			.title("7일 챌린지")
-			.startDate(LocalDate.now())
-			.build();
+		Challenge challenge = createTestChallenge();
 
 		ChallengeStatistics statistics = ChallengeStatistics.builder()
 			.challenge(challenge)
@@ -113,12 +105,7 @@ class ChallengeStatisticsTest {
 	@DisplayName("진행률 계산 - 0%")
 	void getProgressPercentage_zeroCompleted_returns0() {
 		// given
-		Challenge challenge = Challenge.builder()
-			.userId(1L)
-			.homecareRoutine(HomecareRoutine.SKIN_MOISTURIZING)
-			.title("7일 챌린지")
-			.startDate(LocalDate.now())
-			.build();
+		Challenge challenge = createTestChallenge();
 
 		ChallengeStatistics statistics = ChallengeStatistics.builder()
 			.challenge(challenge)
@@ -136,12 +123,7 @@ class ChallengeStatisticsTest {
 	@DisplayName("진행률 계산 - 50%")
 	void getProgressPercentage_halfCompleted_returns50() {
 		// given
-		Challenge challenge = Challenge.builder()
-			.userId(1L)
-			.homecareRoutine(HomecareRoutine.SKIN_MOISTURIZING)
-			.title("7일 챌린지")
-			.startDate(LocalDate.now())
-			.build();
+		Challenge challenge = createTestChallenge();
 
 		ChallengeStatistics statistics = ChallengeStatistics.builder()
 			.challenge(challenge)
@@ -163,12 +145,7 @@ class ChallengeStatisticsTest {
 	@DisplayName("진행률 계산 - 100%")
 	void getProgressPercentage_allCompleted_returns100() {
 		// given
-		Challenge challenge = Challenge.builder()
-			.userId(1L)
-			.homecareRoutine(HomecareRoutine.SKIN_MOISTURIZING)
-			.title("7일 챌린지")
-			.startDate(LocalDate.now())
-			.build();
+		Challenge challenge = createTestChallenge();
 
 		ChallengeStatistics statistics = ChallengeStatistics.builder()
 			.challenge(challenge)
@@ -190,12 +167,7 @@ class ChallengeStatisticsTest {
 	@DisplayName("진행률 계산 - 총 개수가 0인 경우 0% 반환")
 	void getProgressPercentage_totalCountZero_returns0() {
 		// given
-		Challenge challenge = Challenge.builder()
-			.userId(1L)
-			.homecareRoutine(HomecareRoutine.SKIN_MOISTURIZING)
-			.title("7일 챌린지")
-			.startDate(LocalDate.now())
-			.build();
+		Challenge challenge = createTestChallenge();
 
 		ChallengeStatistics statistics = ChallengeStatistics.builder()
 			.challenge(challenge)

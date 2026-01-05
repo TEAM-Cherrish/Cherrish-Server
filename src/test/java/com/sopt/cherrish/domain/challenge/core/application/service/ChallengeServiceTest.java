@@ -131,7 +131,8 @@ class ChallengeServiceTest {
 	void getChallengeById_success() {
 		// given
 		Long challengeId = 1L;
-		Challenge challenge = ChallengeTestFixture.createChallenge(challengeId, 1L);
+		Long userId = 1L;
+		Challenge challenge = ChallengeTestFixture.createDefaultChallenge(userId);
 
 		when(challengeRepository.findById(challengeId))
 			.thenReturn(Optional.of(challenge));
@@ -141,7 +142,9 @@ class ChallengeServiceTest {
 
 		// then
 		assertThat(result).isNotNull();
-		assertThat(result.getId()).isEqualTo(challengeId);
+		assertThat(result.getUserId()).isEqualTo(userId);
+		assertThat(result.getTitle()).isEqualTo("7일 챌린지");
+		assertThat(result.getIsActive()).isTrue();
 		verify(challengeRepository).findById(challengeId);
 	}
 
