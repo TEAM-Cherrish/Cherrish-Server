@@ -53,11 +53,10 @@ public class ChallengeCreationFacade {
 		HomecareRoutine routine = HomecareRoutine.fromId(request.homecareRoutineId());
 
 		// 4. 챌린지 생성
-		String title = "7일 챌린지"; // 고정값
 		LocalDate startDate = LocalDate.now();
 
 		Challenge challenge = challengeService.createChallenge(
-			userId, routine, title, startDate);
+			userId, routine, request.title(), startDate);
 
 		// 5. 챌린지 루틴 Batch Insert (routineNames × 7일)
 		List<ChallengeRoutine> routines = routineService.createAndSaveRoutines(
