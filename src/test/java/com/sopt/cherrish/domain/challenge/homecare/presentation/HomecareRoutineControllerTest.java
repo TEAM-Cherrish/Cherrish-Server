@@ -1,6 +1,6 @@
 package com.sopt.cherrish.domain.challenge.homecare.presentation;
 
-import static com.sopt.cherrish.domain.challenge.fixture.ChallengeTestFixture.homecareRoutineList;
+import static com.sopt.cherrish.domain.challenge.homecare.fixture.HomecareRoutineTestFixture.homecareRoutineList;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;

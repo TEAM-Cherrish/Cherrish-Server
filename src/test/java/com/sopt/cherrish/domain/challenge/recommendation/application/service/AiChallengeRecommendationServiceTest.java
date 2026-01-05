@@ -1,4 +1,4 @@
-package com.sopt.cherrish.domain.challenge.application.service;
+package com.sopt.cherrish.domain.challenge.recommendation.application.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -27,7 +27,6 @@ import com.sopt.cherrish.domain.ai.exception.AiClientException;
 import com.sopt.cherrish.domain.ai.exception.AiErrorCode;
 import com.sopt.cherrish.domain.challenge.core.exception.ChallengeErrorCode;
 import com.sopt.cherrish.domain.challenge.core.exception.ChallengeException;
-import com.sopt.cherrish.domain.challenge.recommendation.application.service.AiChallengeRecommendationService;
 import com.sopt.cherrish.domain.challenge.recommendation.infrastructure.openai.OpenAiChallengeRecommendationResponseDto;
 import com.sopt.cherrish.domain.challenge.recommendation.infrastructure.prompt.ChallengePromptTemplate;
 import com.sopt.cherrish.domain.challenge.recommendation.presentation.dto.response.AiRecommendationResponseDto;
