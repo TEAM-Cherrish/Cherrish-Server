@@ -39,8 +39,8 @@ class ChallengeStatisticsServiceTest {
 	void initializeStatistics_success() {
 		// given
 		Challenge challenge = ChallengeTestFixture.createDefaultChallenge(1L);
-		List<ChallengeRoutine> routines = ChallengeTestFixture.createChallengeRoutines(
-			challenge, List.of("루틴1", "루틴2", "루틴3"));
+		List<ChallengeRoutine> routines = challenge.createChallengeRoutines(
+			List.of("루틴1", "루틴2", "루틴3"));
 
 		ChallengeStatistics savedStatistics = ChallengeStatistics.builder()
 			.challenge(challenge)

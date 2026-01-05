@@ -76,14 +76,6 @@ public class ChallengeTestFixture {
 	}
 
 	/**
-	 * ChallengeRoutine 리스트 생성
-	 * Challenge의 팩토리 메서드를 활용하여 생성
-	 */
-	public static List<ChallengeRoutine> createChallengeRoutines(Challenge challenge, List<String> routineNames) {
-		return challenge.createChallengeRoutines(routineNames);
-	}
-
-	/**
 	 * 특정 날짜에 예정된 ChallengeRoutine 생성
 	 */
 	public static ChallengeRoutine createRoutine(Challenge challenge, String name, LocalDate scheduledDate) {
@@ -94,13 +86,16 @@ public class ChallengeTestFixture {
 			.build();
 	}
 
-	public static ChallengeCreateResponseDto createChallengeResponse(Challenge challenge, List<ChallengeRoutine> routines) {
+	/**
+	 * Mock 테스트용 Response 생성 (ID 명시적 지정)
+	 */
+	public static ChallengeCreateResponseDto createChallengeResponse(Challenge challenge, List<ChallengeRoutine> routines, Long challengeId) {
 		List<ChallengeRoutineResponseDto> routineDtos = routines.stream()
 			.map(ChallengeRoutineResponseDto::from)
 			.toList();
 
 		return new ChallengeCreateResponseDto(
-			challenge.getId(),
+			challengeId,
 			challenge.getTitle(),
 			challenge.getTotalDays(),
 			challenge.getStartDate(),
@@ -108,5 +103,12 @@ public class ChallengeTestFixture {
 			routines.size(),
 			routineDtos
 		);
+	}
+
+	/**
+	 * 통합 테스트용 Response 생성 (Challenge의 ID 사용)
+	 */
+	public static ChallengeCreateResponseDto createChallengeResponse(Challenge challenge, List<ChallengeRoutine> routines) {
+		return createChallengeResponse(challenge, routines, challenge.getId());
 	}
 }

@@ -56,23 +56,11 @@ class ChallengeControllerTest {
 			Long challengeId = 1L;
 			ChallengeCreateRequestDto request = createValidChallengeRequest();
 
-			// Response 직접 생성 (Mock 테스트용)
+			// Response 생성 (Mock 테스트용)
 			Challenge challenge = createDefaultChallenge(userId);
-			List<ChallengeRoutine> routines = createChallengeRoutines(challenge, request.routineNames());
+			List<ChallengeRoutine> routines = challenge.createChallengeRoutines(request.routineNames());
 
-			List<ChallengeRoutineResponseDto> routineDtos = routines.stream()
-				.map(ChallengeRoutineResponseDto::from)
-				.toList();
-
-			ChallengeCreateResponseDto response = new ChallengeCreateResponseDto(
-				challengeId,  // 명시적으로 ID 설정
-				challenge.getTitle(),
-				challenge.getTotalDays(),
-				challenge.getStartDate(),
-				challenge.getEndDate(),
-				routines.size(),
-				routineDtos
-			);
+			ChallengeCreateResponseDto response = createChallengeResponse(challenge, routines, challengeId);
 
 			given(challengeCreationFacade.createChallenge(eq(userId), any(ChallengeCreateRequestDto.class)))
 				.willReturn(response);
