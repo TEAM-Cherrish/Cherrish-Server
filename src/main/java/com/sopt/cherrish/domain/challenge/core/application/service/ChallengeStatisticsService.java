@@ -24,7 +24,6 @@ public class ChallengeStatisticsService {
 	 * @param totalRoutineCount 전체 루틴 개수
 	 * @return 생성된 통계
 	 */
-	@Transactional
 	public ChallengeStatistics initializeStatistics(Challenge challenge, int totalRoutineCount) {
 
 		ChallengeStatistics statistics = ChallengeStatistics.builder()
