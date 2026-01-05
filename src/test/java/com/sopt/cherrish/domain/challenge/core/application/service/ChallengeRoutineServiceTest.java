@@ -38,8 +38,7 @@ class ChallengeRoutineServiceTest {
 		Challenge challenge = ChallengeTestFixture.createDefaultChallenge(1L);
 		List<String> routineNames = List.of("아침 세안", "토너 바르기", "크림 바르기");
 
-		List<ChallengeRoutine> expectedRoutines = ChallengeTestFixture.createChallengeRoutines(
-			challenge, routineNames);
+		List<ChallengeRoutine> expectedRoutines = challenge.createChallengeRoutines(routineNames);
 
 		when(routineRepository.saveAll(anyList()))
 			.thenReturn(expectedRoutines);
@@ -62,8 +61,8 @@ class ChallengeRoutineServiceTest {
 		Challenge challenge = ChallengeTestFixture.createDefaultChallenge(1L);
 		LocalDate today = LocalDate.now();
 
-		List<ChallengeRoutine> expectedRoutines = ChallengeTestFixture.createChallengeRoutines(
-			challenge, List.of("루틴1", "루틴2")).stream()
+		List<ChallengeRoutine> expectedRoutines = challenge.createChallengeRoutines(
+			List.of("루틴1", "루틴2")).stream()
 			.filter(routine -> routine.getScheduledDate().equals(today))
 			.toList();
 
@@ -87,8 +86,8 @@ class ChallengeRoutineServiceTest {
 		Challenge challenge = ChallengeTestFixture.createDefaultChallenge(1L);
 		LocalDate scheduledDate = LocalDate.now().plusDays(3);
 
-		List<ChallengeRoutine> expectedRoutines = ChallengeTestFixture.createChallengeRoutines(
-			challenge, List.of("루틴1", "루틴2")).stream()
+		List<ChallengeRoutine> expectedRoutines = challenge.createChallengeRoutines(
+			List.of("루틴1", "루틴2")).stream()
 			.filter(routine -> routine.getScheduledDate().equals(scheduledDate))
 			.toList();
 
