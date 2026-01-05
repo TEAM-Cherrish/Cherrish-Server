@@ -10,9 +10,6 @@ import com.sopt.cherrish.domain.challenge.core.domain.repository.ChallengeReposi
 import com.sopt.cherrish.domain.challenge.core.exception.ChallengeErrorCode;
 import com.sopt.cherrish.domain.challenge.core.exception.ChallengeException;
 import com.sopt.cherrish.domain.challenge.homecare.domain.model.HomecareRoutine;
-import com.sopt.cherrish.domain.user.domain.repository.UserRepository;
-import com.sopt.cherrish.domain.user.exception.UserErrorCode;
-import com.sopt.cherrish.domain.user.exception.UserException;
 
 import lombok.RequiredArgsConstructor;
 
@@ -22,7 +19,6 @@ import lombok.RequiredArgsConstructor;
 public class ChallengeService {
 
 	private final ChallengeRepository challengeRepository;
-	private final UserRepository userRepository;
 
 	/**
 	 * 활성 챌린지 중복 검증
@@ -42,14 +38,9 @@ public class ChallengeService {
 	 * @param title 챌린지 제목
 	 * @param startDate 시작일
 	 * @return 생성된 챌린지
-	 * @throws UserException 사용자를 찾을 수 없는 경우
 	 */
 	public Challenge createChallenge(Long userId, HomecareRoutine routine,
 		String title, LocalDate startDate) {
-		// User 존재 확인
-		userRepository.findById(userId)
-			.orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
-
 		Challenge challenge = Challenge.builder()
 			.userId(userId)
 			.homecareRoutine(routine)
