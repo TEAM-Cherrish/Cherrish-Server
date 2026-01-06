@@ -57,8 +57,8 @@ class ChallengeRoutineServiceTest {
 	void getTodayRoutinesSuccess() {
 		// given
 		Long challengeId = 1L;
-		Challenge challenge = ChallengeTestFixture.createDefaultChallenge(1L);
 		LocalDate today = LocalDate.now();
+		Challenge challenge = ChallengeTestFixture.createChallengeWithStartDate(1L, today);
 
 		List<ChallengeRoutine> expectedRoutines = challenge.createChallengeRoutines(
 			List.of("루틴1", "루틴2")).stream()
@@ -82,8 +82,8 @@ class ChallengeRoutineServiceTest {
 	void getRoutinesByDateSuccess() {
 		// given
 		Long challengeId = 1L;
-		Challenge challenge = ChallengeTestFixture.createDefaultChallenge(1L);
 		LocalDate scheduledDate = LocalDate.now().plusDays(3);
+		Challenge challenge = ChallengeTestFixture.createChallengeWithStartDate(1L, LocalDate.now());
 
 		List<ChallengeRoutine> expectedRoutines = challenge.createChallengeRoutines(
 			List.of("루틴1", "루틴2")).stream()
