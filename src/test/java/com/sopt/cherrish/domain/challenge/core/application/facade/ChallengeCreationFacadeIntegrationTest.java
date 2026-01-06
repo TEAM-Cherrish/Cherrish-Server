@@ -29,6 +29,7 @@ import com.sopt.cherrish.domain.user.domain.model.User;
 import com.sopt.cherrish.domain.user.domain.repository.UserRepository;
 import com.sopt.cherrish.domain.user.exception.UserErrorCode;
 import com.sopt.cherrish.domain.user.exception.UserException;
+import com.sopt.cherrish.global.config.QueryDslConfig;
 import com.sopt.cherrish.global.config.TestClockConfig;
 import com.sopt.cherrish.global.config.TestJpaAuditConfig;
 
@@ -36,6 +37,7 @@ import com.sopt.cherrish.global.config.TestJpaAuditConfig;
 @Import({
 	TestJpaAuditConfig.class,
 	TestClockConfig.class,
+	QueryDslConfig.class,
 	ChallengeCreationFacade.class,
 	ChallengeService.class,
 	ChallengeRoutineService.class,
