@@ -5,7 +5,9 @@ import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.time.Clock;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.List;
 
 import org.junit.jupiter.api.DisplayName;
@@ -26,6 +28,9 @@ class ChallengeRoutineServiceTest {
 
 	@Mock
 	private ChallengeRoutineRepository routineRepository;
+
+	@Mock
+	private Clock clock;
 
 	@InjectMocks
 	private ChallengeRoutineService challengeRoutineService;
@@ -57,8 +62,16 @@ class ChallengeRoutineServiceTest {
 	void getTodayRoutinesSuccess() {
 		// given
 		Long challengeId = 1L;
-		LocalDate today = LocalDate.now();
-		Challenge challenge = ChallengeTestFixture.createChallengeWithStartDate(1L, today);
+		Challenge challenge = ChallengeTestFixture.createDefaultChallenge(1L);
+		LocalDate today = challenge.getStartDate();
+
+		// Clock Mock 설정 - fixture의 시작 날짜로 고정
+		Clock fixedClock = Clock.fixed(
+			today.atStartOfDay(ZoneId.systemDefault()).toInstant(),
+			ZoneId.systemDefault()
+		);
+		when(clock.instant()).thenReturn(fixedClock.instant());
+		when(clock.getZone()).thenReturn(fixedClock.getZone());
 
 		List<ChallengeRoutine> expectedRoutines = challenge.createChallengeRoutines(
 			List.of("루틴1", "루틴2")).stream()
@@ -82,8 +95,8 @@ class ChallengeRoutineServiceTest {
 	void getRoutinesByDateSuccess() {
 		// given
 		Long challengeId = 1L;
-		LocalDate scheduledDate = LocalDate.now().plusDays(3);
-		Challenge challenge = ChallengeTestFixture.createChallengeWithStartDate(1L, LocalDate.now());
+		Challenge challenge = ChallengeTestFixture.createDefaultChallenge(1L);
+		LocalDate scheduledDate = challenge.getStartDate().plusDays(3);
 
 		List<ChallengeRoutine> expectedRoutines = challenge.createChallengeRoutines(
 			List.of("루틴1", "루틴2")).stream()

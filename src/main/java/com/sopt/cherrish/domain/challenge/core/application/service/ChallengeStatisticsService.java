@@ -26,6 +26,7 @@ public class ChallengeStatisticsService {
 	 * @param challenge 챌린지
 	 * @param routines 생성된 루틴 리스트
 	 */
+	@Transactional
 	public void initializeStatistics(Challenge challenge, List<ChallengeRoutine> routines) {
 		int totalRoutineCount = routines.size();
 
