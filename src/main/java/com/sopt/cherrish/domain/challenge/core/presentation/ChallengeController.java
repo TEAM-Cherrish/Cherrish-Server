@@ -1,15 +1,22 @@
 package com.sopt.cherrish.domain.challenge.core.presentation;
 
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.sopt.cherrish.domain.challenge.core.application.facade.ChallengeCompletionFacade;
 import com.sopt.cherrish.domain.challenge.core.application.facade.ChallengeCreationFacade;
+import com.sopt.cherrish.domain.challenge.core.application.facade.ChallengeQueryFacade;
 import com.sopt.cherrish.domain.challenge.core.exception.ChallengeErrorCode;
 import com.sopt.cherrish.domain.challenge.core.presentation.dto.request.ChallengeCreateRequestDto;
 import com.sopt.cherrish.domain.challenge.core.presentation.dto.response.ChallengeCreateResponseDto;
+import com.sopt.cherrish.domain.challenge.core.presentation.dto.response.ChallengeDetailResponseDto;
+import com.sopt.cherrish.domain.challenge.core.presentation.dto.response.RoutineCompletionResponseDto;
 import com.sopt.cherrish.domain.user.exception.UserErrorCode;
 import com.sopt.cherrish.global.annotation.ApiExceptions;
 import com.sopt.cherrish.global.response.CommonApiResponse;
@@ -29,6 +36,8 @@ import lombok.RequiredArgsConstructor;
 public class ChallengeController {
 
 	private final ChallengeCreationFacade challengeCreationFacade;
+	private final ChallengeQueryFacade challengeQueryFacade;
+	private final ChallengeCompletionFacade challengeCompletionFacade;
 
 	@Operation(
 		summary = "챌린지 생성",
@@ -42,6 +51,37 @@ public class ChallengeController {
 		@Valid @RequestBody ChallengeCreateRequestDto request
 	) {
 		ChallengeCreateResponseDto response = challengeCreationFacade.createChallenge(userId, request);
+		return CommonApiResponse.success(SuccessCode.SUCCESS, response);
+	}
+
+	@Operation(
+		summary = "활성 챌린지 조회",
+		description = "사용자의 활성 챌린지와 진행 상황, 오늘의 루틴을 조회합니다."
+	)
+	@ApiExceptions({ChallengeErrorCode.class, UserErrorCode.class, ErrorCode.class})
+	@GetMapping
+	public CommonApiResponse<ChallengeDetailResponseDto> getActiveChallenge(
+		@Parameter(description = "사용자 ID", required = true, example = "1")
+		@RequestParam Long userId
+	) {
+		ChallengeDetailResponseDto response = challengeQueryFacade.getActiveChallengeDetail(userId);
+		return CommonApiResponse.success(SuccessCode.SUCCESS, response);
+	}
+
+	@Operation(
+		summary = "루틴 완료 토글",
+		description = "루틴의 완료 상태를 토글합니다. 완료 시 통계와 체리 레벨이 자동 업데이트됩니다."
+	)
+	@ApiExceptions({ChallengeErrorCode.class, UserErrorCode.class, ErrorCode.class})
+	@PatchMapping("/routines/{routineId}")
+	public CommonApiResponse<RoutineCompletionResponseDto> toggleRoutineCompletion(
+		@Parameter(description = "사용자 ID", required = true, example = "1")
+		@RequestParam Long userId,
+		@Parameter(description = "루틴 ID", required = true, example = "1")
+		@PathVariable Long routineId
+	) {
+		RoutineCompletionResponseDto response =
+			challengeCompletionFacade.toggleRoutineCompletion(userId, routineId);
 		return CommonApiResponse.success(SuccessCode.SUCCESS, response);
 	}
 }

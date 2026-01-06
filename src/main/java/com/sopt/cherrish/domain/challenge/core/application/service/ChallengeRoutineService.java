@@ -10,6 +10,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.sopt.cherrish.domain.challenge.core.domain.model.Challenge;
 import com.sopt.cherrish.domain.challenge.core.domain.model.ChallengeRoutine;
 import com.sopt.cherrish.domain.challenge.core.domain.repository.ChallengeRoutineRepository;
+import com.sopt.cherrish.domain.challenge.core.exception.ChallengeErrorCode;
+import com.sopt.cherrish.domain.challenge.core.exception.ChallengeException;
 
 import lombok.RequiredArgsConstructor;
 
@@ -56,5 +58,15 @@ public class ChallengeRoutineService {
 	 */
 	public List<ChallengeRoutine> getRoutinesByDate(Long challengeId, LocalDate scheduledDate) {
 		return routineRepository.findByChallengeIdAndScheduledDate(challengeId, scheduledDate);
+	}
+
+	/**
+	 * 루틴 조회 (Challenge와 함께)
+	 * @param routineId 루틴 ID
+	 * @return 루틴
+	 */
+	public ChallengeRoutine getRoutineById(Long routineId) {
+		return routineRepository.findByIdWithChallenge(routineId)
+			.orElseThrow(() -> new ChallengeException(ChallengeErrorCode.ROUTINE_NOT_FOUND));
 	}
 }
