@@ -43,8 +43,9 @@ public class ChallengeCreationFacade {
 		Long userId, ChallengeCreateRequestDto request) {
 
 		// 1. User 존재 확인 (Fail-Fast)
-		userRepository.findById(userId)
-			.orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
+		if (!userRepository.existsById(userId)) {
+			throw new UserException(UserErrorCode.USER_NOT_FOUND);
+		}
 
 		// 2. 활성 챌린지 중복 확인
 		challengeService.validateNoDuplicateActiveChallenge(userId);
