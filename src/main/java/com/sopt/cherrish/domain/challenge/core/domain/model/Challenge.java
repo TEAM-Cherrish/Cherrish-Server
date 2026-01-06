@@ -96,6 +96,16 @@ public class Challenge extends BaseTimeEntity {
 	 * @return 현재 일차 (1부터 시작)
 	 */
 	public int getCurrentDay(LocalDate today) {
+		// 챌린지 시작 전: 0 반환
+		if (today.isBefore(startDate)) {
+			return 0;
+		}
+
+		// 챌린지 종료 후: 최대 일차 반환
+		if (today.isAfter(endDate)) {
+			return totalDays;
+		}
+
 		return (int)ChronoUnit.DAYS.between(startDate, today) + 1;
 	}
 }
