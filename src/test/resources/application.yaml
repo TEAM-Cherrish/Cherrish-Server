@@ -1,4 +1,5 @@
 spring:
+
   datasource:
     url: jdbc:h2:mem:testdb
     driver-class-name: org.h2.Driver
@@ -20,3 +21,7 @@ spring:
 
   swagger:
     base-url: http://localhost:8080
+
+  ai:
+    openai:
+      api-key: test-dummy-api-key-for-unit-tests
