@@ -78,16 +78,13 @@ public class ChallengeStatistics extends BaseTimeEntity {
 
 		int levelSize = totalRoutineCount / 4;  // 각 레벨의 크기
 
-		if (completedCount <= levelSize) {
-			return 1;
+		// 레벨 크기가 0이면 모든 구간을 채운 것으로 간주
+		if (levelSize == 0) {
+			return 4;
 		}
-		if (completedCount <= levelSize * 2) {
-			return 2;
-		}
-		if (completedCount <= levelSize * 3) {
-			return 3;
-		}
-		return 4;
+
+		// 수식으로 단순화: (completedCount / levelSize) + 1, 최대 4
+		return Math.min(4, (completedCount / levelSize) + 1);
 	}
 
 	/**
@@ -107,7 +104,7 @@ public class ChallengeStatistics extends BaseTimeEntity {
 			return 0.0;
 		}
 
-		int currentLevel = calculateCherryLevel();
+		int currentLevel = this.cherryLevel;
 		int levelSize = totalRoutineCount / 4;  // 각 레벨의 크기
 
 		// 최대 레벨이면 100% 반환
@@ -115,16 +112,16 @@ public class ChallengeStatistics extends BaseTimeEntity {
 			return 100.0;
 		}
 
+		// 레벨 구간 크기가 0이면 0% 반환
+		if (levelSize == 0) {
+			return 0.0;
+		}
+
 		// 현재 레벨의 시작점 (개수)
 		int levelStart = (currentLevel - 1) * levelSize;
 
 		// 현재 레벨 구간 내에서 완료한 개수
 		int progressInLevel = completedCount - levelStart;
-
-		// 레벨 구간 크기가 0이면 0% 반환
-		if (levelSize == 0) {
-			return 0.0;
-		}
 
 		double percentage = ((double)progressInLevel / levelSize) * 100.0;
 		return Math.round(percentage * 10.0) / 10.0;  // 소수점 1자리까지 반올림
