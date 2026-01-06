@@ -65,18 +65,25 @@ public class ChallengeStatistics extends BaseTimeEntity {
 	}
 
 	/**
-	 * 진행률 기반 체리 레벨 계산
+	 * 완료한 루틴 개수 기반 체리 레벨 계산
+	 * 총 루틴을 4등분하여 각 레벨 할당
+	 * 예: 총 200개 → 레벨1(0~50), 레벨2(51~100), 레벨3(101~150), 레벨4(151~200)
 	 * @return 체리 레벨 (1-4)
 	 */
 	public int calculateCherryLevel() {
-		double progress = getProgressPercentage();
-		if (progress <= 25.0) {
+		if (totalRoutineCount == 0) {
 			return 1;
 		}
-		if (progress <= 50.0) {
+
+		int levelSize = totalRoutineCount / 4;  // 각 레벨의 크기
+
+		if (completedCount <= levelSize) {
+			return 1;
+		}
+		if (completedCount <= levelSize * 2) {
 			return 2;
 		}
-		if (progress <= 75.0) {
+		if (completedCount <= levelSize * 3) {
 			return 3;
 		}
 		return 4;
@@ -87,5 +94,37 @@ public class ChallengeStatistics extends BaseTimeEntity {
 	 */
 	public void updateCherryLevel() {
 		this.cherryLevel = calculateCherryLevel();
+	}
+
+	/**
+	 * 현재 레벨 구간 내에서의 진척도 계산 (0-100%)
+	 * 예: 총 200개 중 75개 완료 시 레벨2(51~100)에서 50% 진척
+	 * @return 현재 레벨 내 진척도 (%)
+	 */
+	public double getProgressToNextLevel() {
+		if (totalRoutineCount == 0) {
+			return 0.0;
+		}
+
+		int currentLevel = calculateCherryLevel();
+		int levelSize = totalRoutineCount / 4;  // 각 레벨의 크기
+
+		// 최대 레벨이면 100% 반환
+		if (currentLevel >= 4) {
+			return 100.0;
+		}
+
+		// 현재 레벨의 시작점 (개수)
+		int levelStart = (currentLevel - 1) * levelSize;
+
+		// 현재 레벨 구간 내에서 완료한 개수
+		int progressInLevel = completedCount - levelStart;
+
+		// 레벨 구간 크기가 0이면 0% 반환
+		if (levelSize == 0) {
+			return 0.0;
+		}
+
+		return ((double)progressInLevel / levelSize) * 100.0;
 	}
 }

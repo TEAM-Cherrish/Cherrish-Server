@@ -19,11 +19,14 @@ public record ChallengeDetailResponseDto(
 	@Schema(description = "현재 일차", example = "3")
 	int currentDay,
 
-	@Schema(description = "진행률 (%)", example = "42.5")
+	@Schema(description = "전체 진행률 (%)", example = "37.5")
 	double progressPercentage,
 
 	@Schema(description = "체리 레벨 (1-4)", example = "2")
 	int cherryLevel,
+
+	@Schema(description = "현재 레벨 내 진척도 (%)", example = "50.0")
+	double progressToNextLevel,
 
 	@Schema(description = "오늘의 루틴 리스트")
 	List<ChallengeRoutineResponseDto> todayRoutines,
@@ -48,6 +51,7 @@ public record ChallengeDetailResponseDto(
 			currentDay,
 			statistics.getProgressPercentage(),
 			statistics.getCherryLevel(),
+			statistics.getProgressToNextLevel(),
 			routineDtos,
 			cheeringMessage
 		);
