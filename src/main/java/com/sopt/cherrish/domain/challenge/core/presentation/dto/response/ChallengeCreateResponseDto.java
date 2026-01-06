@@ -2,7 +2,6 @@ package com.sopt.cherrish.domain.challenge.core.presentation.dto.response;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.sopt.cherrish.domain.challenge.core.domain.model.Challenge;
@@ -39,7 +38,7 @@ public record ChallengeCreateResponseDto(
 		Challenge challenge, List<ChallengeRoutine> routines, int totalRoutineCount) {
 		List<ChallengeRoutineResponseDto> routineDtos = routines.stream()
 			.map(ChallengeRoutineResponseDto::from)
-			.collect(Collectors.toList());
+			.toList();
 
 		return new ChallengeCreateResponseDto(
 			challenge.getId(),
