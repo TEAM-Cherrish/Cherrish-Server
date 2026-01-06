@@ -23,10 +23,4 @@ public interface ChallengeRepository extends JpaRepository<Challenge, Long> {
 	 */
 	Optional<Challenge> findByUserIdAndIsActiveTrue(Long userId);
 
-	/**
-	 * 사용자의 모든 챌린지 조회 (최신순)
-	 * @param userId 사용자 ID
-	 * @return 챌린지 리스트
-	 */
-	List<Challenge> findByUserIdOrderByCreatedAtDesc(Long userId);
 }

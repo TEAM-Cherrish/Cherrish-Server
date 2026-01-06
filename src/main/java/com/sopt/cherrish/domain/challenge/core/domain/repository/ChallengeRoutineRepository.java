@@ -21,20 +21,6 @@ public interface ChallengeRoutineRepository extends JpaRepository<ChallengeRouti
 	List<ChallengeRoutine> findByChallengeIdAndScheduledDate(Long challengeId, LocalDate scheduledDate);
 
 	/**
-	 * 챌린지의 미완료 루틴 조회
-	 * @param challengeId 챌린지 ID
-	 * @return 미완료 루틴 리스트
-	 */
-	List<ChallengeRoutine> findByChallengeIdAndIsCompleteFalse(Long challengeId);
-
-	/**
-	 * 챌린지의 완료 루틴 개수 조회
-	 * @param challengeId 챌린지 ID
-	 * @return 완료 개수
-	 */
-	long countByChallengeIdAndIsCompleteTrue(Long challengeId);
-
-	/**
 	 * 루틴 조회 (Challenge와 함께 fetch)
 	 * @param id 루틴 ID
 	 * @return 루틴 (Challenge 포함)
