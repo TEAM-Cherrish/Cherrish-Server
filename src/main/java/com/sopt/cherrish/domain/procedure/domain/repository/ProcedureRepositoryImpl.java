@@ -22,8 +22,8 @@ public class ProcedureRepositoryImpl implements ProcedureRepositoryCustom {
 		if (worryId != null) {
 			return queryFactory
 				.selectDistinct(procedure)
-				.from(procedure)
-				.innerJoin(procedureWorry).on(procedureWorry.procedure.eq(procedure))
+				.from(procedureWorry)
+				.join(procedureWorry.procedure, procedure)
 				.where(
 					procedureWorry.worry.id.eq(worryId),
 					containsKeyword(keyword)
