@@ -1,6 +1,8 @@
 package com.sopt.cherrish.domain.procedure.application.service;
 
+import java.text.Collator;
 import java.util.List;
+import java.util.Locale;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 @Transactional(readOnly = true)
 public class ProcedureService {
 
+    private static final Collator KOREAN_COLLATOR = Collator.getInstance(Locale.KOREAN);
 	private final ProcedureRepository procedureRepository;
 
 	public ProcedureListResponseDto searchProcedures(String keyword, Long worryId) {
@@ -26,7 +29,7 @@ public class ProcedureService {
 		return ProcedureListResponseDto.of(
 			procedures.stream()
 				.map(ProcedureResponseDto::from)
-				.sorted((p1, p2) -> p1.getName().compareTo(p2.getName()))
+                .sorted((p1, p2) -> KOREAN_COLLATOR.compare(p1.getName(), p2.getName()))
 				.toList()
 		);
 	}
