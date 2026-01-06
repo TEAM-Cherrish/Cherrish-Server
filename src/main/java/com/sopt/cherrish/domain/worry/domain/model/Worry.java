@@ -10,12 +10,10 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "worries")
-@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Worry extends BaseTimeEntity {
 
@@ -29,5 +27,13 @@ public class Worry extends BaseTimeEntity {
 	@Builder
 	private Worry(String content) {
 		this.content = content;
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public String getContent() {
+		return content;
 	}
 }
