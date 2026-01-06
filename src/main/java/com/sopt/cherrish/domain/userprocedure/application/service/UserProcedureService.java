@@ -1,12 +1,13 @@
 package com.sopt.cherrish.domain.userprocedure.application.service;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
+import com.sopt.cherrish.domain.procedure.domain.model.Procedure;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.sopt.cherrish.domain.procedure.domain.model.Procedure;
 import com.sopt.cherrish.domain.procedure.domain.repository.ProcedureRepository;
 import com.sopt.cherrish.domain.procedure.exception.ProcedureErrorCode;
 import com.sopt.cherrish.domain.procedure.exception.ProcedureException;
@@ -17,7 +18,7 @@ import com.sopt.cherrish.domain.userprocedure.domain.model.UserProcedure;
 import com.sopt.cherrish.domain.userprocedure.domain.repository.UserProcedureRepository;
 import com.sopt.cherrish.domain.userprocedure.presentation.dto.request.UserProcedureCreateRequestDto;
 import com.sopt.cherrish.domain.userprocedure.presentation.dto.request.UserProcedureCreateRequestItemDto;
-import com.sopt.cherrish.domain.userprocedure.presentation.dto.response.UserProcedureListResponseDto;
+import com.sopt.cherrish.domain.userprocedure.presentation.dto.response.UserProcedureCreateResponseDto;
 
 import lombok.RequiredArgsConstructor;
 
@@ -31,31 +32,31 @@ public class UserProcedureService {
 	private final UserProcedureRepository userProcedureRepository;
 
 	@Transactional
-	public UserProcedureListResponseDto createUserProcedures(Long userId, UserProcedureCreateRequestDto request) {
+	public UserProcedureCreateResponseDto createUserProcedures(Long userId, UserProcedureCreateRequestDto request) {
 		validateUserExists(userId);
 
-		List<UserProcedure> userProcedures = new ArrayList<>();
-
-		for (UserProcedureCreateRequestItemDto item : request.getProcedures()) {
-			Procedure procedure = procedureRepository.findById(item.getProcedureId())
-				.orElseThrow(() -> new ProcedureException(ProcedureErrorCode.PROCEDURE_NOT_FOUND));
-
-			UserProcedure userProcedure = UserProcedure.builder()
-				.userId(userId)
-				.procedure(procedure)
-				.scheduledAt(request.getScheduledAt())
-				.downtimeDays(item.getDowntimeDays())
-				.build();
-			userProcedures.add(userProcedure);
-		}
-
+		List<Procedure> procedures = getProceduresOrThrow(request.getProcedures());
+		List<UserProcedure> userProcedures = request.toEntities(userId, procedures);
 		List<UserProcedure> savedProcedures = userProcedureRepository.saveAll(userProcedures);
-		return UserProcedureListResponseDto.from(savedProcedures);
+		return UserProcedureCreateResponseDto.from(savedProcedures);
 	}
 
 	private void validateUserExists(Long userId) {
 		if (!userRepository.existsById(userId)) {
 			throw new UserException(UserErrorCode.USER_NOT_FOUND);
 		}
+	}
+
+	private List<Procedure> getProceduresOrThrow(List<UserProcedureCreateRequestItemDto> items) {
+		Set<Long> procedureIds = items.stream()
+			.map(UserProcedureCreateRequestItemDto::getProcedureId)
+			.collect(Collectors.toSet());
+
+		List<Procedure> procedures = procedureRepository.findAllById(procedureIds);
+		if (procedures.size() != procedureIds.size()) {
+			throw new ProcedureException(ProcedureErrorCode.PROCEDURE_NOT_FOUND);
+		}
+
+		return procedures;
 	}
 }
