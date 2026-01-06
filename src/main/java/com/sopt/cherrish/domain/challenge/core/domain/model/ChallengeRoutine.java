@@ -56,6 +56,15 @@ public class ChallengeRoutine extends BaseTimeEntity {
 		this.isComplete = true;
 	}
 
+	/**
+	 * 완료 상태 토글
+	 * @return 새로운 완료 상태 (true: 완료, false: 미완료)
+	 */
+	public boolean toggleCompletion() {
+		this.isComplete = !this.isComplete;
+		return this.isComplete;
+	}
+
 	public boolean isScheduledFor(LocalDate date) {
 		return this.scheduledDate.equals(date);
 	}

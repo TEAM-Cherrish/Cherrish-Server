@@ -1,6 +1,7 @@
 package com.sopt.cherrish.domain.challenge.core.domain.model;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -87,5 +88,14 @@ public class Challenge extends BaseTimeEntity {
 
 	public void complete() {
 		this.isActive = false;
+	}
+
+	/**
+	 * 현재 챌린지 진행 일차 계산 (1-indexed)
+	 * @param today 현재 날짜
+	 * @return 현재 일차 (1부터 시작)
+	 */
+	public int getCurrentDay(LocalDate today) {
+		return (int)ChronoUnit.DAYS.between(startDate, today) + 1;
 	}
 }

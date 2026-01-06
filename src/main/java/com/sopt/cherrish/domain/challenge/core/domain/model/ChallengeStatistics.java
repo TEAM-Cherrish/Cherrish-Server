@@ -36,11 +36,15 @@ public class ChallengeStatistics extends BaseTimeEntity {
 	@Column(nullable = false, name = "total_routine_count")
 	private Integer totalRoutineCount;
 
+	@Column(nullable = false, name = "cherry_level")
+	private Integer cherryLevel = 1;
+
 	@Builder
 	private ChallengeStatistics(Challenge challenge, Integer totalRoutineCount) {
 		this.challenge = challenge;
 		this.completedCount = 0;
 		this.totalRoutineCount = totalRoutineCount;
+		this.cherryLevel = 1;
 	}
 
 	public void incrementCompletedCount() {
@@ -58,5 +62,30 @@ public class ChallengeStatistics extends BaseTimeEntity {
 			return 0.0;
 		}
 		return (double) completedCount / totalRoutineCount * 100;
+	}
+
+	/**
+	 * 진행률 기반 체리 레벨 계산
+	 * @return 체리 레벨 (1-4)
+	 */
+	public int calculateCherryLevel() {
+		double progress = getProgressPercentage();
+		if (progress <= 25.0) {
+			return 1;
+		}
+		if (progress <= 50.0) {
+			return 2;
+		}
+		if (progress <= 75.0) {
+			return 3;
+		}
+		return 4;
+	}
+
+	/**
+	 * 현재 진행률에 따라 체리 레벨 업데이트
+	 */
+	public void updateCherryLevel() {
+		this.cherryLevel = calculateCherryLevel();
 	}
 }

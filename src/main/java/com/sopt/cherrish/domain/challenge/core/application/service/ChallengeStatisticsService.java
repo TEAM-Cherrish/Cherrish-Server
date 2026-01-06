@@ -49,6 +49,7 @@ public class ChallengeStatisticsService {
 			.orElseThrow(() -> new ChallengeException(ChallengeErrorCode.CHALLENGE_NOT_FOUND));
 
 		statistics.incrementCompletedCount();
+		statistics.updateCherryLevel();
 	}
 
 	/**
@@ -62,6 +63,7 @@ public class ChallengeStatisticsService {
 			.orElseThrow(() -> new ChallengeException(ChallengeErrorCode.CHALLENGE_NOT_FOUND));
 
 		statistics.decrementCompletedCount();
+		statistics.updateCherryLevel();
 	}
 
 	/**
