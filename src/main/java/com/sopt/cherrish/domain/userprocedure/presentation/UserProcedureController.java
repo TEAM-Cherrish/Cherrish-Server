@@ -11,7 +11,7 @@ import com.sopt.cherrish.domain.user.exception.UserErrorCode;
 import com.sopt.cherrish.domain.userprocedure.application.service.UserProcedureService;
 import com.sopt.cherrish.domain.userprocedure.exception.UserProcedureErrorCode;
 import com.sopt.cherrish.domain.userprocedure.presentation.dto.request.UserProcedureCreateRequestDto;
-import com.sopt.cherrish.domain.userprocedure.presentation.dto.response.UserProcedureListResponseDto;
+import com.sopt.cherrish.domain.userprocedure.presentation.dto.response.UserProcedureCreateResponseDto;
 import com.sopt.cherrish.global.annotation.ApiExceptions;
 import com.sopt.cherrish.global.response.CommonApiResponse;
 import com.sopt.cherrish.global.response.error.ErrorCode;
@@ -37,12 +37,12 @@ public class UserProcedureController {
 	)
 	@ApiExceptions({UserProcedureErrorCode.class, ProcedureErrorCode.class, UserErrorCode.class, ErrorCode.class})
 	@PostMapping
-	public CommonApiResponse<UserProcedureListResponseDto> createUserProcedures(
+	public CommonApiResponse<UserProcedureCreateResponseDto> createUserProcedures(
 		@Parameter(description = "사용자 ID", required = true, example = "1")
 		@PathVariable Long userId,
 		@Valid @RequestBody UserProcedureCreateRequestDto request
 	) {
-		UserProcedureListResponseDto response = userProcedureService.createUserProcedures(userId, request);
+		UserProcedureCreateResponseDto response = userProcedureService.createUserProcedures(userId, request);
 		return CommonApiResponse.success(SuccessCode.SUCCESS, response);
 	}
 
