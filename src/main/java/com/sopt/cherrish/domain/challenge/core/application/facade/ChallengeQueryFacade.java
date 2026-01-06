@@ -7,6 +7,7 @@ import java.util.List;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.sopt.cherrish.domain.challenge.core.application.service.CheeringMessageGenerator;
 import com.sopt.cherrish.domain.challenge.core.application.service.ChallengeRoutineService;
 import com.sopt.cherrish.domain.challenge.core.application.service.ChallengeService;
 import com.sopt.cherrish.domain.challenge.core.application.service.ChallengeStatisticsService;
