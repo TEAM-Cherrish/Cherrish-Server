@@ -1,5 +1,6 @@
 package com.sopt.cherrish.domain.challenge.core.application.service;
 
+import java.time.Clock;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -18,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 public class ChallengeRoutineService {
 
 	private final ChallengeRoutineRepository routineRepository;
+	private final Clock clock;
 
 	/**
 	 * 챌린지 루틴 생성 및 Batch Insert
@@ -25,6 +27,7 @@ public class ChallengeRoutineService {
 	 * @param routineNames 루틴명 리스트
 	 * @return 생성된 루틴 리스트
 	 */
+	@Transactional
 	public List<ChallengeRoutine> createAndSaveRoutines(
 		Challenge challenge, List<String> routineNames) {
 
@@ -41,7 +44,7 @@ public class ChallengeRoutineService {
 	 * @return 오늘의 루틴 리스트
 	 */
 	public List<ChallengeRoutine> getTodayRoutines(Long challengeId) {
-		LocalDate today = LocalDate.now();
+		LocalDate today = LocalDate.now(clock);
 		return routineRepository.findByChallengeIdAndScheduledDate(challengeId, today);
 	}
 

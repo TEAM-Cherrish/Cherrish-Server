@@ -39,6 +39,7 @@ public class ChallengeService {
 	 * @param startDate 시작일
 	 * @return 생성된 챌린지
 	 */
+	@Transactional
 	public Challenge createChallenge(Long userId, HomecareRoutine routine,
 		String title, LocalDate startDate) {
 		Challenge challenge = Challenge.builder()
