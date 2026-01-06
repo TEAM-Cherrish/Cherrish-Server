@@ -5,6 +5,8 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.sopt.cherrish.domain.challenge.core.exception.ChallengeErrorCode;
+import com.sopt.cherrish.domain.challenge.core.exception.ChallengeException;
 import com.sopt.cherrish.domain.challenge.homecare.domain.model.HomecareRoutine;
 import com.sopt.cherrish.global.entity.BaseTimeEntity;
 
@@ -88,6 +90,19 @@ public class Challenge extends BaseTimeEntity {
 
 	public void complete() {
 		this.isActive = false;
+	}
+
+	/**
+	 * 소유자 검증
+	 * @param userId 검증할 사용자 ID
+	 * @throws ChallengeException 소유자가 아닌 경우
+	 */
+	public void validateOwner(Long userId) {
+		if (!this.userId.equals(userId)) {
+			throw new ChallengeException(
+				ChallengeErrorCode.UNAUTHORIZED_ACCESS
+			);
+		}
 	}
 
 	/**

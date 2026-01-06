@@ -24,6 +24,7 @@ public class ChallengeQueryFacade {
 	private final ChallengeService challengeService;
 	private final ChallengeRoutineService routineService;
 	private final ChallengeStatisticsService statisticsService;
+	private final CheeringMessageGenerator cheeringMessageGenerator;
 	private final Clock clock;
 
 	/**
@@ -47,7 +48,7 @@ public class ChallengeQueryFacade {
 		int currentDay = challenge.getCurrentDay(today);
 
 		// 5. 응원 메시지 생성
-		String cheeringMessage = currentDay + "일차 루틴입니다. 오늘도 피부를 위해 힘내봐요!";
+		String cheeringMessage = cheeringMessageGenerator.generate(currentDay, challenge.getTotalDays());
 
 		// 6. 응답 DTO 생성
 		return ChallengeDetailResponseDto.from(
