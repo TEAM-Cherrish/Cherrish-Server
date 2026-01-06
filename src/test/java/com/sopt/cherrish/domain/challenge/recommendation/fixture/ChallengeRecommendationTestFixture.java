@@ -1,0 +1,37 @@
+package com.sopt.cherrish.domain.challenge.recommendation.fixture;
+
+import java.util.List;
+
+import com.sopt.cherrish.domain.challenge.recommendation.presentation.dto.request.AiRecommendationRequestDto;
+import com.sopt.cherrish.domain.challenge.recommendation.presentation.dto.response.AiRecommendationResponseDto;
+
+public class ChallengeRecommendationTestFixture {
+
+	private ChallengeRecommendationTestFixture() {
+		// Utility class
+	}
+
+	// AiRecommendationRequestDto Fixtures
+	public static AiRecommendationRequestDto recommendationRequest(Integer homecareRoutineId) {
+		return new AiRecommendationRequestDto(homecareRoutineId);
+	}
+
+	// AiRecommendationResponseDto Fixtures
+	public static AiRecommendationResponseDto skinMoisturizingRecommendation() {
+		return AiRecommendationResponseDto.of(
+			"피부 보습 7일 챌린지",
+			List.of("아침 세안 후 토너 바르기", "저녁 보습 크림 바르기", "하루 8잔 물 마시기")
+		);
+	}
+
+	public static AiRecommendationResponseDto wrinkleCareRecommendation() {
+		return AiRecommendationResponseDto.of(
+			"주름 개선 7일 챌린지",
+			List.of("레티놀 세럼 바르기", "충분한 수면")
+		);
+	}
+
+	public static AiRecommendationResponseDto emptyRoutinesRecommendation() {
+		return AiRecommendationResponseDto.of("테스트 챌린지", List.of());
+	}
+}
