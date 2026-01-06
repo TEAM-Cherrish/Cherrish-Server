@@ -61,7 +61,8 @@ public class ChallengeStatistics extends BaseTimeEntity {
 		if (totalRoutineCount == 0) {
 			return 0.0;
 		}
-		return (double) completedCount / totalRoutineCount * 100;
+		double percentage = (double) completedCount / totalRoutineCount * 100;
+		return Math.round(percentage * 10.0) / 10.0;  // 소수점 1자리까지 반올림
 	}
 
 	/**
@@ -125,6 +126,7 @@ public class ChallengeStatistics extends BaseTimeEntity {
 			return 0.0;
 		}
 
-		return ((double)progressInLevel / levelSize) * 100.0;
+		double percentage = ((double)progressInLevel / levelSize) * 100.0;
+		return Math.round(percentage * 10.0) / 10.0;  // 소수점 1자리까지 반올림
 	}
 }
