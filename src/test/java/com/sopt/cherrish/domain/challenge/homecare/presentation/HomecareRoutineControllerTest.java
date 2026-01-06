@@ -17,6 +17,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.sopt.cherrish.domain.challenge.homecare.application.service.HomecareRoutineService;
+import com.sopt.cherrish.domain.challenge.homecare.presentation.dto.response.HomecareRoutineResponseDto;
 
 @WebMvcTest(HomecareRoutineController.class)
 @DisplayName("HomecareRoutineController 통합 테스트")
@@ -36,19 +37,22 @@ class HomecareRoutineControllerTest {
 		@DisplayName("성공 - 루틴 목록 반환")
 		void success() throws Exception {
 			// given
-			given(homecareRoutineService.getAllHomecareRoutines()).willReturn(homecareRoutineList());
+			List<HomecareRoutineResponseDto> expectedRoutines = homecareRoutineList();
+			given(homecareRoutineService.getAllHomecareRoutines()).willReturn(expectedRoutines);
 
 			// when & then
 			mockMvc.perform(get("/api/challenges/homecare-routines"))
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$.data").isArray())
-				.andExpect(jsonPath("$.data.length()").value(6))
-				.andExpect(jsonPath("$.data[0].id").value(1))
-				.andExpect(jsonPath("$.data[0].name").value("SKIN_MOISTURIZING"))
-				.andExpect(jsonPath("$.data[0].description").value("피부 보습 관리"))
-				.andExpect(jsonPath("$.data[1].id").value(2))
-				.andExpect(jsonPath("$.data[2].id").value(3))
-				.andExpect(jsonPath("$.data[5].id").value(6));
+				.andExpect(jsonPath("$.data.length()").value(expectedRoutines.size()))
+				// 대표 요소 하나는 fixture와 비교하며 완전히 검증
+				.andExpect(jsonPath("$.data[0].id").value(expectedRoutines.get(0).id()))
+				.andExpect(jsonPath("$.data[0].name").value(expectedRoutines.get(0).name()))
+				.andExpect(jsonPath("$.data[0].description").value(expectedRoutines.get(0).description()))
+				// 모든 요소가 필수 필드를 가지는지 검증
+				.andExpect(jsonPath("$.data[*].id").exists())
+				.andExpect(jsonPath("$.data[*].name").exists())
+				.andExpect(jsonPath("$.data[*].description").exists());
 		}
 
 		@Test
