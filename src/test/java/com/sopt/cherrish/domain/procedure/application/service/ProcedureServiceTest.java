@@ -30,13 +30,13 @@ class ProcedureServiceTest {
 	private ProcedureRepository procedureRepository;
 
 	@Test
-	@DisplayName("시술 검색 성공 - 전체 조회 (keyword, worryId 둘 다 null)")
+	@DisplayName("시술 검색 성공 - keyword, worryId 둘 다 null")
 	void searchProceduresWithNoFilters() {
 		// given
-		Procedure procedure1 = ProcedureFixture.createProcedure("레이저 토닝", "레이저", 0, 1);
-		Procedure procedure2 = ProcedureFixture.createProcedure("필러", "주사", 1, 3);
+        Procedure procedure1 = ProcedureFixture.createProcedure("필러", "주사", 1, 3);
+        Procedure procedure2 = ProcedureFixture.createProcedure("레이저 토닝", "레이저", 0, 1);
 
-		List<Procedure> procedures = Arrays.asList(procedure1, procedure2);
+        List<Procedure> procedures = Arrays.asList(procedure1, procedure2);
 		given(procedureRepository.searchProcedures(null, null)).willReturn(procedures);
 
 		// when
@@ -44,6 +44,7 @@ class ProcedureServiceTest {
 
 		// then
 		assertThat(result.getProcedures()).hasSize(2);
+        // 이름순 정렬 확인
 		assertThat(result.getProcedures().get(0).getName()).isEqualTo("레이저 토닝");
 		assertThat(result.getProcedures().get(1).getName()).isEqualTo("필러");
 	}
@@ -82,6 +83,41 @@ class ProcedureServiceTest {
 		assertThat(result.getProcedures()).hasSize(1);
 		assertThat(result.getProcedures().get(0).getName()).isEqualTo("레이저 토닝");
 	}
+
+    @Test
+    @DisplayName("시술 검색 성공 - 키워드와 피부 고민 ID 동시 검색")
+    void searchProceduresWithBothFilters() {
+        // given
+        String keyword = "레이저";
+        Long worryId = 1L;
+        Procedure procedure = ProcedureFixture.createProcedure("레이저 토닝", "레이저", 0, 1);
+
+        given(procedureRepository.searchProcedures(keyword, worryId))
+                .willReturn(Collections.singletonList(procedure));
+
+        // when
+        ProcedureListResponseDto result = procedureService.searchProcedures(keyword, worryId);
+
+        // then
+        assertThat(result.getProcedures()).hasSize(1);
+        assertThat(result.getProcedures().get(0).getName()).isEqualTo("레이저 토닝");
+        assertThat(result.getProcedures().get(0).getCategory()).isEqualTo("레이저");
+    }
+
+    @Test
+    @DisplayName("시술 검색 성공 - 빈 문자열 키워드 처리")
+    void searchProceduresWithEmptyKeyword() {
+        // given
+        String emptyKeyword = "";
+        given(procedureRepository.searchProcedures(emptyKeyword, null))
+                .willReturn(Collections.emptyList());
+
+        // when
+        ProcedureListResponseDto result = procedureService.searchProcedures(emptyKeyword, null);
+
+        // then
+        assertThat(result.getProcedures()).isEmpty();
+    }
 
 	@Test
 	@DisplayName("시술 검색 성공 - 결과가 없는 경우")
