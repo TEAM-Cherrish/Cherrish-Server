@@ -11,16 +11,16 @@ import lombok.Getter;
 @Getter
 @Builder
 @Schema(description = "사용자 시술 일정 등록 응답")
-public class UserProcedureListResponseDto {
+public class UserProcedureCreateResponseDto {
 
 	@Schema(description = "등록된 시술 일정 목록")
 	private List<UserProcedureResponseDto> procedures;
 
-	public static UserProcedureListResponseDto from(List<UserProcedure> userProcedures) {
+	public static UserProcedureCreateResponseDto from(List<UserProcedure> userProcedures) {
 		List<UserProcedureResponseDto> responses = userProcedures.stream()
 			.map(UserProcedureResponseDto::from)
 			.toList();
-		return UserProcedureListResponseDto.builder()
+		return UserProcedureCreateResponseDto.builder()
 			.procedures(responses)
 			.build();
 	}
