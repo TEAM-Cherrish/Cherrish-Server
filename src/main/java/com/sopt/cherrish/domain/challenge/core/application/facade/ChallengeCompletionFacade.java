@@ -27,14 +27,16 @@ public class ChallengeCompletionFacade {
 	 */
 	@Transactional
 	public RoutineCompletionResponseDto toggleRoutineCompletion(Long userId, Long routineId) {
-		// 1. 루틴 조회 및 소유자 검증
+		// 1. 루틴 조회
 		ChallengeRoutine routine = routineService.getRoutineById(routineId);
-		validateOwnership(userId, routine);
 
-		// 2. 완료 상태 토글
+		// 2. 소유자 검증 (도메인 로직)
+		routine.getChallenge().validateOwner(userId);
+
+		// 3. 완료 상태 토글
 		routine.toggleCompletion();
 
-		// 3. 통계 업데이트 (체리 레벨 자동 업데이트)
+		// 4. 통계 업데이트 (체리 레벨 자동 업데이트)
 		Long challengeId = routine.getChallenge().getId();
 		if (routine.getIsComplete()) {
 			statisticsService.incrementCompletedCount(challengeId);
@@ -42,16 +44,7 @@ public class ChallengeCompletionFacade {
 			statisticsService.decrementCompletedCount(challengeId);
 		}
 
-		// 4. 응답 생성
+		// 5. 응답 생성
 		return RoutineCompletionResponseDto.from(routine);
-	}
-
-	/**
-	 * 소유자 검증
-	 */
-	private void validateOwnership(Long userId, ChallengeRoutine routine) {
-		if (!routine.getChallenge().getUserId().equals(userId)) {
-			throw new ChallengeException(ChallengeErrorCode.UNAUTHORIZED_ACCESS);
-		}
 	}
 }
