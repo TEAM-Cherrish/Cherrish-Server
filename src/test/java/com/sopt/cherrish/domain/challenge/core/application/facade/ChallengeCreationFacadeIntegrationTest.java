@@ -29,11 +29,13 @@ import com.sopt.cherrish.domain.user.domain.model.User;
 import com.sopt.cherrish.domain.user.domain.repository.UserRepository;
 import com.sopt.cherrish.domain.user.exception.UserErrorCode;
 import com.sopt.cherrish.domain.user.exception.UserException;
+import com.sopt.cherrish.global.config.TestClockConfig;
 import com.sopt.cherrish.global.config.TestJpaAuditConfig;
 
 @DataJpaTest
 @Import({
 	TestJpaAuditConfig.class,
+	TestClockConfig.class,
 	ChallengeCreationFacade.class,
 	ChallengeService.class,
 	ChallengeRoutineService.class,

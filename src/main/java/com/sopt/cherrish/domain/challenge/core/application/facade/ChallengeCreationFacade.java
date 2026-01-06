@@ -1,5 +1,6 @@
 package com.sopt.cherrish.domain.challenge.core.application.facade;
 
+import java.time.Clock;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -28,6 +29,7 @@ public class ChallengeCreationFacade {
 	private final ChallengeRoutineService routineService;
 	private final ChallengeStatisticsService statisticsService;
 	private final UserRepository userRepository;
+	private final Clock clock;
 
 	/**
 	 * 챌린지 생성 플로우 오케스트레이션
@@ -54,7 +56,7 @@ public class ChallengeCreationFacade {
 		HomecareRoutine routine = HomecareRoutine.fromId(request.homecareRoutineId());
 
 		// 4. 챌린지 생성
-		LocalDate startDate = LocalDate.now();
+		LocalDate startDate = LocalDate.now(clock);
 
 		Challenge challenge = challengeService.createChallenge(
 			userId, routine, request.title(), startDate);

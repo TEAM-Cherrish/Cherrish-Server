@@ -16,7 +16,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sopt.cherrish.domain.challenge.homecare.application.service.HomecareRoutineService;
 
 @WebMvcTest(HomecareRoutineController.class)
@@ -25,9 +24,6 @@ class HomecareRoutineControllerTest {
 
 	@Autowired
 	private MockMvc mockMvc;
-
-	@Autowired
-	private ObjectMapper objectMapper;
 
 	@MockitoBean
 	private HomecareRoutineService homecareRoutineService;

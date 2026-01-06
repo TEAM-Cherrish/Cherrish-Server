@@ -24,11 +24,12 @@ public enum HomecareRoutine {
 	PORE_CARE(5, "모공 관리"),
 	ELASTICITY_CARE(6, "탄력 관리");
 
+	private final int id;
+	private final String description;
+
 	private static final Map<Integer, HomecareRoutine> ID_MAP =
 		Arrays.stream(values())
 			.collect(Collectors.toMap(HomecareRoutine::getId, routine -> routine));
-	private final int id;
-	private final String description;
 
 	/**
 	 * ID로 HomecareRoutine 찾기

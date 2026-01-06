@@ -59,7 +59,7 @@ public class Challenge extends BaseTimeEntity {
 		this.homecareRoutine = homecareRoutine;
 		this.title = title;
 		this.startDate = startDate;
-		this.endDate = startDate.plusDays(6); // 7일 챌린지
+		this.endDate = startDate.plusDays(this.totalDays - 1); // 7일 챌린지
 	}
 
 	/**

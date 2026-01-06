@@ -50,7 +50,6 @@ public class ChallengeRoutine extends BaseTimeEntity {
 		this.challenge = challenge;
 		this.name = name;
 		this.scheduledDate = scheduledDate;
-		this.isComplete = false;
 	}
 
 	public void complete() {
