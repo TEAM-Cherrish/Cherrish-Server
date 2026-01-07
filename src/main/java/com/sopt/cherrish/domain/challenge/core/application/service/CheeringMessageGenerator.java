@@ -13,8 +13,14 @@ public class CheeringMessageGenerator {
 	 * @param currentDay 현재 일차
 	 * @param totalDays 전체 일차
 	 * @return 응원 메시지
+	 * @throws IllegalArgumentException totalDays가 0 이하인 경우
 	 */
 	public String generate(int currentDay, int totalDays) {
+		// 입력 유효성 검증
+		if (totalDays <= 0) {
+			throw new IllegalArgumentException("totalDays는 0보다 커야 합니다: " + totalDays);
+		}
+
 		// 챌린지 시작 전
 		if (currentDay <= 0) {
 			return "챌린지가 곧 시작됩니다. 준비하세요!";
@@ -25,8 +31,8 @@ public class CheeringMessageGenerator {
 			return "챌린지 시작! 오늘부터 피부를 위한 첫 걸음입니다.";
 		}
 
-		// 중간 지점
-		if (currentDay == totalDays / 2) {
+		// 중간 지점 (totalDays가 2 이상일 때만 체크)
+		if (totalDays > 1 && currentDay == totalDays / 2) {
 			return "절반을 달성했어요! 끝까지 함께 해봐요!";
 		}
 
