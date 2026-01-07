@@ -8,6 +8,12 @@ import org.springframework.stereotype.Service;
 @Service
 public class CheeringMessageGenerator {
 
+	// 메시지 상수
+	public static final String PREPARATION_MESSAGE = "챌린지가 곧 시작됩니다. 준비하세요!";
+	public static final String FIRST_DAY_MESSAGE = "챌린지 시작! 오늘부터 피부를 위한 첫 걸음입니다.";
+	public static final String HALFWAY_MESSAGE = "절반을 달성했어요! 끝까지 함께 해봐요!";
+	public static final String LAST_DAY_MESSAGE = "마지막 날입니다! 완주까지 조금만 더 힘내세요!";
+
 	/**
 	 * 현재 일차에 따른 응원 메시지 생성
 	 * @param currentDay 현재 일차
@@ -23,22 +29,22 @@ public class CheeringMessageGenerator {
 
 		// 챌린지 시작 전
 		if (currentDay <= 0) {
-			return "챌린지가 곧 시작됩니다. 준비하세요!";
+			return PREPARATION_MESSAGE;
 		}
 
 		// 첫째 날
 		if (currentDay == 1) {
-			return "챌린지 시작! 오늘부터 피부를 위한 첫 걸음입니다.";
+			return FIRST_DAY_MESSAGE;
 		}
 
 		// 중간 지점 (totalDays가 2 이상일 때만 체크)
 		if (totalDays > 1 && currentDay == totalDays / 2) {
-			return "절반을 달성했어요! 끝까지 함께 해봐요!";
+			return HALFWAY_MESSAGE;
 		}
 
 		// 마지막 날
 		if (currentDay >= totalDays) {
-			return "마지막 날입니다! 완주까지 조금만 더 힘내세요!";
+			return LAST_DAY_MESSAGE;
 		}
 
 		// 일반적인 경우
