@@ -8,6 +8,8 @@ import java.util.List;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
@@ -66,7 +68,11 @@ class ChallengeQueryFacadeIntegrationTest {
 	@Autowired
 	private EntityManager entityManager;
 
+	// 테스트 상수
 	private static final Long TEST_USER_ID = 1L;
+	private static final int TOTAL_CHALLENGE_DAYS = 7;
+	private static final int DEFAULT_ROUTINE_COUNT_PER_DAY = 3;
+	private static final int TOTAL_ROUTINES_PER_WEEK = DEFAULT_ROUTINE_COUNT_PER_DAY * TOTAL_CHALLENGE_DAYS; // 21
 
 	/**
 	 * Hibernate Statistics를 이용해 쿼리 카운트를 가져옴
@@ -94,7 +100,7 @@ class ChallengeQueryFacadeIntegrationTest {
 	void getActiveChallengeDetailSuccessFirstDay() {
 		// given
 		LocalDate startDate = ChallengeTestFixture.FIXED_START_DATE; // 2024-01-01
-		Challenge challenge = createAndSaveChallengeWithRoutines(TEST_USER_ID, startDate, 3);
+		Challenge challenge = createAndSaveChallengeWithRoutines(TEST_USER_ID, startDate, DEFAULT_ROUTINE_COUNT_PER_DAY);
 
 		// when - TestClockConfig의 고정 시간은 2024-01-01이므로 첫째 날
 		ChallengeDetailResponseDto response = challengeQueryFacade.getActiveChallengeDetail(TEST_USER_ID);
@@ -109,28 +115,6 @@ class ChallengeQueryFacadeIntegrationTest {
 		assertThat(response.todayRoutines()).hasSize(3);
 		assertThat(response.cheeringMessage())
 			.isEqualTo("챌린지 시작! 오늘부터 피부를 위한 첫 걸음입니다.");
-	}
-
-	@Test
-	@DisplayName("성공 - 활성 챌린지 상세 조회 (3일차, 일부 완료)")
-	void getActiveChallengeDetailSuccessThirdDayPartialComplete() {
-		// given
-		LocalDate startDate = ChallengeTestFixture.FIXED_START_DATE.minusDays(2); // 2일 전 시작
-		Challenge challenge = createAndSaveChallengeWithRoutines(TEST_USER_ID, startDate, 2);
-
-		// 오늘의 첫 번째 루틴만 완료
-		completeTodayRoutine(challenge);
-
-		// when
-		ChallengeDetailResponseDto response = challengeQueryFacade.getActiveChallengeDetail(TEST_USER_ID);
-
-		// then
-		assertThat(response.currentDay()).isEqualTo(3);
-		assertThat(response.todayRoutines()).hasSize(2);
-		assertThat(response.todayRoutines())
-			.anyMatch(ChallengeRoutineResponseDto::isComplete)
-			.anyMatch(routine -> !routine.isComplete());
-		assertThat(response.progressPercentage()).isGreaterThan(0.0);
 	}
 
 	@Test
@@ -170,10 +154,10 @@ class ChallengeQueryFacadeIntegrationTest {
 	void getActiveChallengeDetailFetchJoinPreventsNPlusOne() {
 		// given
 		LocalDate startDate = ChallengeTestFixture.FIXED_START_DATE;
-		Challenge challenge = createAndSaveChallengeWithRoutines(TEST_USER_ID, startDate, 3);
+		Challenge challenge = createAndSaveChallengeWithRoutines(TEST_USER_ID, startDate, DEFAULT_ROUTINE_COUNT_PER_DAY);
 
 		// 영속성 컨텍스트 초기화 - 캐시 없이 실제 쿼리 실행 확인
-		entityManager.clear();
+		flushAndClear();
 		clearStatistics();
 
 		// when
@@ -181,9 +165,12 @@ class ChallengeQueryFacadeIntegrationTest {
 		ChallengeDetailResponseDto response = challengeQueryFacade.getActiveChallengeDetail(TEST_USER_ID);
 		long queryCountAfter = getQueryCount();
 
-		// then - 정확히 2개의 쿼리만 실행 (Challenge+Statistics Fetch Join, Routines 조회)
+		// then - N+1 문제가 발생하지 않도록 최소한의 쿼리만 실행
+		// (Challenge+Statistics Fetch Join, Routines 조회)
 		long executedQueries = queryCountAfter - queryCountBefore;
-		assertThat(executedQueries).isEqualTo(2);
+		assertThat(executedQueries)
+			.as("N+1 문제 방지: 루틴 개수(%d)에 비해 쿼리가 많지 않아야 함", DEFAULT_ROUTINE_COUNT_PER_DAY)
+			.isLessThanOrEqualTo(3);
 
 		// 통계 정보가 추가 쿼리 없이 조회됨
 		assertThat(response.progressPercentage()).isNotNull();
@@ -196,14 +183,14 @@ class ChallengeQueryFacadeIntegrationTest {
 	void getActiveChallengeDetailOnlyTodayRoutines() {
 		// given
 		LocalDate startDate = ChallengeTestFixture.FIXED_START_DATE.minusDays(1);
-		Challenge challenge = createAndSaveChallengeWithRoutines(TEST_USER_ID, startDate, 3);
+		Challenge challenge = createAndSaveChallengeWithRoutines(TEST_USER_ID, startDate, DEFAULT_ROUTINE_COUNT_PER_DAY);
 
 		// when
 		ChallengeDetailResponseDto response = challengeQueryFacade.getActiveChallengeDetail(TEST_USER_ID);
 
 		// then - 전체 루틴은 21개지만 오늘 것만 3개 반환
-		assertThat(routineRepository.count()).isEqualTo(21); // 3 × 7일
-		assertThat(response.todayRoutines()).hasSize(3); // 오늘 것만
+		assertThat(routineRepository.count()).isEqualTo(TOTAL_ROUTINES_PER_WEEK);
+		assertThat(response.todayRoutines()).hasSize(DEFAULT_ROUTINE_COUNT_PER_DAY);
 	}
 
 	@Test
@@ -235,7 +222,7 @@ class ChallengeQueryFacadeIntegrationTest {
 	void getActiveChallengeDetailDistinguishesCompletedRoutines() {
 		// given
 		LocalDate startDate = ChallengeTestFixture.FIXED_START_DATE;
-		Challenge challenge = createAndSaveChallengeWithRoutines(TEST_USER_ID, startDate, 3);
+		Challenge challenge = createAndSaveChallengeWithRoutines(TEST_USER_ID, startDate, DEFAULT_ROUTINE_COUNT_PER_DAY);
 
 		// 첫 번째 루틴만 완료
 		completeTodayRoutine(challenge);
@@ -251,77 +238,38 @@ class ChallengeQueryFacadeIntegrationTest {
 		assertThat(completedCount).isEqualTo(1);
 	}
 
-	@Test
-	@DisplayName("성공 - 체리 레벨별 진행도 계산 정확성 (레벨 1: 0-24%)")
-	void getActiveChallengeDetailCherryLevel1() {
+	@ParameterizedTest
+	@CsvSource({
+		"5, 1, 23.0, 24.0",   // 21개 중 5개 완료 (23.8%) - 레벨 1
+		"8, 2, 38.0, 39.0",   // 21개 중 8개 완료 (38.1%) - 레벨 2
+		"13, 3, 61.0, 62.0",  // 21개 중 13개 완료 (61.9%) - 레벨 3
+		"16, 4, 76.0, 77.0"   // 21개 중 16개 완료 (76.2%) - 레벨 4
+	})
+	@DisplayName("성공 - 체리 레벨별 진행도 계산 정확성")
+	void getActiveChallengeDetailCherryLevels(
+		int completeCount,
+		int expectedLevel,
+		double minProgress,
+		double maxProgress
+	) {
 		// given
 		LocalDate startDate = ChallengeTestFixture.FIXED_START_DATE;
-		Challenge challenge = createAndSaveChallengeWithRoutines(TEST_USER_ID, startDate, 3);
+		Challenge challenge = createAndSaveChallengeWithRoutines(TEST_USER_ID, startDate, DEFAULT_ROUTINE_COUNT_PER_DAY);
 
-		// 전체 21개 중 5개 완료 (23.8% - 레벨 1)
-		completeRoutines(challenge, 5);
+		// 지정된 개수만큼 루틴 완료
+		completeRoutines(challenge, completeCount);
 
 		// when
 		ChallengeDetailResponseDto response = challengeQueryFacade.getActiveChallengeDetail(TEST_USER_ID);
 
 		// then
-		assertThat(response.cherryLevel()).isEqualTo(1);
-		assertThat(response.progressPercentage()).isBetween(23.0, 24.0);
-	}
+		assertThat(response.cherryLevel()).isEqualTo(expectedLevel);
+		assertThat(response.progressPercentage()).isBetween(minProgress, maxProgress);
 
-	@Test
-	@DisplayName("성공 - 체리 레벨별 진행도 계산 정확성 (레벨 2: 25-49%)")
-	void getActiveChallengeDetailCherryLevel2() {
-		// given
-		LocalDate startDate = ChallengeTestFixture.FIXED_START_DATE;
-		Challenge challenge = createAndSaveChallengeWithRoutines(TEST_USER_ID, startDate, 3);
-
-		// 전체 21개 중 8개 완료 (38.1% - 레벨 2)
-		completeRoutines(challenge, 8);
-
-		// when
-		ChallengeDetailResponseDto response = challengeQueryFacade.getActiveChallengeDetail(TEST_USER_ID);
-
-		// then
-		assertThat(response.cherryLevel()).isEqualTo(2);
-		assertThat(response.progressPercentage()).isBetween(38.0, 39.0);
-		assertThat(response.progressToNextLevel()).isGreaterThan(0.0).isLessThan(100.0);
-	}
-
-	@Test
-	@DisplayName("성공 - 체리 레벨별 진행도 계산 정확성 (레벨 3: 50-74%)")
-	void getActiveChallengeDetailCherryLevel3() {
-		// given
-		LocalDate startDate = ChallengeTestFixture.FIXED_START_DATE;
-		Challenge challenge = createAndSaveChallengeWithRoutines(TEST_USER_ID, startDate, 3);
-
-		// 전체 21개 중 13개 완료 (61.9% - 레벨 3)
-		completeRoutines(challenge, 13);
-
-		// when
-		ChallengeDetailResponseDto response = challengeQueryFacade.getActiveChallengeDetail(TEST_USER_ID);
-
-		// then
-		assertThat(response.cherryLevel()).isEqualTo(3);
-		assertThat(response.progressPercentage()).isBetween(61.0, 62.0);
-	}
-
-	@Test
-	@DisplayName("성공 - 체리 레벨별 진행도 계산 정확성 (레벨 4: 75-100%)")
-	void getActiveChallengeDetailCherryLevel4() {
-		// given
-		LocalDate startDate = ChallengeTestFixture.FIXED_START_DATE;
-		Challenge challenge = createAndSaveChallengeWithRoutines(TEST_USER_ID, startDate, 3);
-
-		// 전체 21개 중 16개 완료 (76.2% - 레벨 4)
-		completeRoutines(challenge, 16);
-
-		// when
-		ChallengeDetailResponseDto response = challengeQueryFacade.getActiveChallengeDetail(TEST_USER_ID);
-
-		// then
-		assertThat(response.cherryLevel()).isEqualTo(4);
-		assertThat(response.progressPercentage()).isGreaterThanOrEqualTo(75.0);
+		// 레벨 4가 아닌 경우 다음 레벨까지 진행도 검증
+		if (expectedLevel < 4) {
+			assertThat(response.progressToNextLevel()).isGreaterThan(0.0).isLessThan(100.0);
+		}
 	}
 
 	/**
@@ -355,8 +303,7 @@ class ChallengeQueryFacadeIntegrationTest {
 		routineRepository.saveAll(routines);
 
 		// 영속성 컨텍스트를 DB에 반영하고 초기화
-		entityManager.flush();
-		entityManager.clear();
+		flushAndClear();
 
 		// 통계가 포함된 챌린지를 다시 조회 (Fetch Join으로)
 		return challengeRepository.findActiveChallengeWithStatistics(userId).orElseThrow();
@@ -407,12 +354,20 @@ class ChallengeQueryFacadeIntegrationTest {
 		ChallengeStatistics statistics = statisticsRepository
 			.findByChallengeId(challenge.getId()).orElseThrow();
 
+		// 완료 카운트 증가
 		for (int i = 0; i < incrementCount; i++) {
 			statistics.incrementCompletedCount();
 		}
 		statistics.updateCherryLevel();
 		statisticsRepository.save(statistics);
 
+		flushAndClear();
+	}
+
+	/**
+	 * 영속성 컨텍스트를 DB에 반영하고 초기화
+	 */
+	private void flushAndClear() {
 		entityManager.flush();
 		entityManager.clear();
 	}

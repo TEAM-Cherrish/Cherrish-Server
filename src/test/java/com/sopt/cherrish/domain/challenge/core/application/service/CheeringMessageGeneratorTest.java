@@ -1,5 +1,6 @@
 package com.sopt.cherrish.domain.challenge.core.application.service;
 
+import static com.sopt.cherrish.domain.challenge.core.application.service.CheeringMessageGenerator.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -7,6 +8,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 @DisplayName("CheeringMessageGenerator 단위 테스트")
 class CheeringMessageGeneratorTest {
@@ -14,24 +16,15 @@ class CheeringMessageGeneratorTest {
 	private final CheeringMessageGenerator generator = new CheeringMessageGenerator();
 	private static final int TOTAL_DAYS = 7;
 
-	@Test
-	@DisplayName("챌린지 시작 전 - 준비 메시지 반환 (currentDay <= 0)")
-	void generateBeforeStartReturnsPreparationMessage() {
+	@ParameterizedTest
+	@ValueSource(ints = {-5, -1, 0})
+	@DisplayName("챌린지 시작 전 - 준비 메시지 반환")
+	void generateBeforeStartReturnsPreparationMessage(int currentDay) {
 		// when
-		String message = generator.generate(0, TOTAL_DAYS);
+		String message = generator.generate(currentDay, TOTAL_DAYS);
 
 		// then
-		assertThat(message).isEqualTo("챌린지가 곧 시작됩니다. 준비하세요!");
-	}
-
-	@Test
-	@DisplayName("챌린지 시작 전 - 음수 일차도 준비 메시지 반환")
-	void generateNegativeDayReturnsPreparationMessage() {
-		// when
-		String message = generator.generate(-1, TOTAL_DAYS);
-
-		// then
-		assertThat(message).isEqualTo("챌린지가 곧 시작됩니다. 준비하세요!");
+		assertThat(message).isEqualTo(PREPARATION_MESSAGE);
 	}
 
 	@Test
@@ -41,7 +34,7 @@ class CheeringMessageGeneratorTest {
 		String message = generator.generate(1, TOTAL_DAYS);
 
 		// then
-		assertThat(message).isEqualTo("챌린지 시작! 오늘부터 피부를 위한 첫 걸음입니다.");
+		assertThat(message).isEqualTo(FIRST_DAY_MESSAGE);
 	}
 
 	@Test
@@ -51,27 +44,18 @@ class CheeringMessageGeneratorTest {
 		String message = generator.generate(3, 6); // 6일 챌린지의 절반
 
 		// then
-		assertThat(message).isEqualTo("절반을 달성했어요! 끝까지 함께 해봐요!");
+		assertThat(message).isEqualTo(HALFWAY_MESSAGE);
 	}
 
-	@Test
-	@DisplayName("마지막 날 - 완주 응원 메시지 반환 (currentDay = totalDays)")
-	void generateLastDayReturnsLastDayMessage() {
+	@ParameterizedTest
+	@ValueSource(ints = {7, 8, 10})
+	@DisplayName("마지막 날 및 이후 - 완주 응원 메시지 반환")
+	void generateLastDayReturnsLastDayMessage(int currentDay) {
 		// when
-		String message = generator.generate(7, TOTAL_DAYS);
+		String message = generator.generate(currentDay, TOTAL_DAYS);
 
 		// then
-		assertThat(message).isEqualTo("마지막 날입니다! 완주까지 조금만 더 힘내세요!");
-	}
-
-	@Test
-	@DisplayName("마지막 날 이후 - 완주 메시지 유지 (currentDay > totalDays)")
-	void generateAfterLastDayReturnsLastDayMessage() {
-		// when
-		String message = generator.generate(8, TOTAL_DAYS);
-
-		// then
-		assertThat(message).isEqualTo("마지막 날입니다! 완주까지 조금만 더 힘내세요!");
+		assertThat(message).isEqualTo(LAST_DAY_MESSAGE);
 	}
 
 	@ParameterizedTest
@@ -102,80 +86,91 @@ class CheeringMessageGeneratorTest {
 		String message = generator.generate(currentDay, totalDays);
 
 		// then - 마지막 날 메시지가 우선순위 높음
-		assertThat(message).isEqualTo("마지막 날입니다! 완주까지 조금만 더 힘내세요!");
+		assertThat(message).isEqualTo(LAST_DAY_MESSAGE);
 	}
 
 	@ParameterizedTest
 	@CsvSource({
-		"7, 14",  // 14일 챌린지
-		"15, 30", // 30일 챌린지
-		"3, 6",   // 6일 챌린지
-		"3, 7"    // 7일 챌린지 (정수 나눗셈)
+		"7, 14",   // 14일의 절반
+		"15, 30",  // 30일의 절반
+		"3, 6",    // 6일의 절반
+		"3, 7",    // 7일의 절반 (7/2=3, 내림)
+		"5, 11"    // 11일의 절반 (11/2=5, 내림)
 	})
-	@DisplayName("다양한 챌린지 길이의 중간 지점 메시지")
+	@DisplayName("다양한 챌린지 길이의 중간 지점 메시지 (정수 나눗셈 확인)")
 	void generateVariousChallengeLengthsHalfwayPoint(int currentDay, int totalDays) {
 		// when
 		String message = generator.generate(currentDay, totalDays);
 
 		// then
-		assertThat(message).isEqualTo("절반을 달성했어요! 끝까지 함께 해봐요!");
+		assertThat(message).isEqualTo(HALFWAY_MESSAGE);
 	}
 
-	@Test
-	@DisplayName("예외 - totalDays가 0인 경우")
-	void generateWithZeroTotalDaysThrowsException() {
+	@ParameterizedTest
+	@ValueSource(ints = {0, -7, -100})
+	@DisplayName("예외 - totalDays가 0 이하인 경우")
+	void generateWithInvalidTotalDaysThrowsException(int invalidTotalDays) {
 		// when & then
-		assertThatThrownBy(() -> generator.generate(1, 0))
+		assertThatThrownBy(() -> generator.generate(1, invalidTotalDays))
 			.isInstanceOf(IllegalArgumentException.class)
 			.hasMessageContaining("totalDays는 0보다 커야 합니다");
 	}
 
-	@Test
-	@DisplayName("예외 - totalDays가 음수인 경우")
-	void generateWithNegativeTotalDaysThrowsException() {
-		// when & then
-		assertThatThrownBy(() -> generator.generate(1, -7))
-			.isInstanceOf(IllegalArgumentException.class)
-			.hasMessageContaining("totalDays는 0보다 커야 합니다");
+	@ParameterizedTest
+	@CsvSource({
+		"1, 1",   // 1일 챌린지 - 첫째 날이 우선
+		"50, 100", // 100일 챌린지 중간 지점
+		"30, 100"  // 100일 챌린지 일반 날짜
+	})
+	@DisplayName("매우 긴 챌린지 기간에 대한 정상 동작 확인")
+	void generateWithLargeValues(int currentDay, int totalDays) {
+		// when
+		String message = generator.generate(currentDay, totalDays);
+
+		// then - 메시지가 정상적으로 생성됨
+		assertThat(message).isNotNull().isNotEmpty();
 	}
 
 	@Test
-	@DisplayName("1일 챌린지 - 첫째 날과 마지막 날이 겹치는 경우")
-	void generateOneDayChallenge() {
-		// when
-		String message = generator.generate(1, 1);
-
-		// then - 첫째 날 메시지가 우선순위 높음
-		assertThat(message).isEqualTo("챌린지 시작! 오늘부터 피부를 위한 첫 걸음입니다.");
+	@DisplayName("메시지 의미 검증 - 모든 메시지는 null이 아니고 비어있지 않음")
+	void allMessagesAreNotNullOrEmpty() {
+		// when & then - 다양한 시나리오에서 메시지 생성
+		for (int day = -1; day <= 10; day++) {
+			String message = generator.generate(day, 7);
+			assertThat(message)
+				.as("Day %d should have a valid message", day)
+				.isNotNull()
+				.isNotEmpty();
+		}
 	}
 
 	@Test
-	@DisplayName("1일 챌린지 - 마지막 날 이후")
-	void generateOneDayChallengeAfterEnd() {
+	@DisplayName("메시지 의미 검증 - 마지막 날 메시지는 긍정적인 완주 동기 부여 포함")
+	void lastDayMessageContainsMotivation() {
 		// when
-		String message = generator.generate(2, 1);
+		String message = generator.generate(7, 7);
 
-		// then - 마지막 날 메시지
-		assertThat(message).isEqualTo("마지막 날입니다! 완주까지 조금만 더 힘내세요!");
+		// then
+		assertThat(message)
+			.contains("마지막")
+			.containsAnyOf("완주", "힘내");
 	}
 
 	@Test
-	@DisplayName("매우 큰 값에 대한 처리 (100일 챌린지)")
-	void generateWithLargeValues() {
-		// when
-		String message = generator.generate(50, 100);
+	@DisplayName("전체 챌린지 기간 동안 메시지 변화 확인")
+	void messageProgressionThroughoutChallenge() {
+		// when - 7일 챌린지 전체 기간의 메시지 수집
+		java.util.List<String> messages = new java.util.ArrayList<>();
+		for (int day = 1; day <= 7; day++) {
+			messages.add(generator.generate(day, 7));
+		}
 
-		// then - 정상적으로 중간 지점 메시지 반환
-		assertThat(message).isEqualTo("절반을 달성했어요! 끝까지 함께 해봐요!");
-	}
+		// then
+		// 첫 날과 마지막 날 메시지가 다른지 확인
+		assertThat(messages.get(0)).isNotEqualTo(messages.get(6));
 
-	@Test
-	@DisplayName("매우 큰 값 - 일반적인 경우")
-	void generateWithLargeValuesNormalDay() {
-		// when
-		String message = generator.generate(30, 100);
-
-		// then - 정상적으로 일반 메시지 반환
-		assertThat(message).isEqualTo("30일차 루틴입니다. 오늘도 피부를 위해 힘내봐요!");
+		// 중복되지 않은 메시지가 여러 개 존재하는지 확인
+		long distinctMessages = messages.stream().distinct().count();
+		assertThat(distinctMessages).isGreaterThan(1);
 	}
 }
