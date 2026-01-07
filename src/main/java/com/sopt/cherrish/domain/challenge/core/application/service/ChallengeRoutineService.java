@@ -61,12 +61,13 @@ public class ChallengeRoutineService {
 	}
 
 	/**
-	 * 루틴 조회 (Challenge와 함께)
+	 * 루틴 조회 (Challenge와 Statistics를 함께 로드)
+	 * 루틴 완료 토글 시 통계 중복 조회 방지를 위해 사용
 	 * @param routineId 루틴 ID
-	 * @return 루틴
+	 * @return 루틴 (Challenge와 Statistics 포함)
 	 */
-	public ChallengeRoutine getRoutineById(Long routineId) {
-		return routineRepository.findByIdWithChallenge(routineId)
+	public ChallengeRoutine getRoutineByIdWithStatistics(Long routineId) {
+		return routineRepository.findByIdWithChallengeAndStatistics(routineId)
 			.orElseThrow(() -> new ChallengeException(ChallengeErrorCode.ROUTINE_NOT_FOUND));
 	}
 }
