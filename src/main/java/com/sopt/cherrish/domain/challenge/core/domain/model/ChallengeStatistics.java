@@ -66,25 +66,33 @@ public class ChallengeStatistics extends BaseTimeEntity {
 	}
 
 	/**
-	 * 완료한 루틴 개수 기반 체리 레벨 계산
-	 * 총 루틴을 4등분하여 각 레벨 할당
-	 * 예: 총 200개 → 레벨1(0~50), 레벨2(51~100), 레벨3(101~150), 레벨4(151~200)
+	 * 완료 진행률 기반 체리 레벨 계산
+	 *
+	 * 레벨 구간:
+	 * - 레벨 1:   0% ~ 24.99%
+	 * - 레벨 2:  25% ~ 49.99%
+	 * - 레벨 3:  50% ~ 74.99%
+	 * - 레벨 4:  75% ~ 100%
+	 *
 	 * @return 체리 레벨 (1-4)
 	 */
 	public int calculateCherryLevel() {
 		if (totalRoutineCount == 0) {
+			return 1;  // 기본값
+		}
+
+		double progressPercentage = getProgressPercentage();
+
+		if (progressPercentage < 25.0) {
 			return 1;
 		}
-
-		int levelSize = totalRoutineCount / 4;  // 각 레벨의 크기
-
-		// 레벨 크기가 0이면 모든 구간을 채운 것으로 간주
-		if (levelSize == 0) {
-			return 4;
+		if (progressPercentage < 50.0) {
+			return 2;
 		}
-
-		// 수식으로 단순화: (completedCount / levelSize) + 1, 최대 4
-		return Math.min(4, (completedCount / levelSize) + 1);
+		if (progressPercentage < 75.0) {
+			return 3;
+		}
+		return 4;
 	}
 
 	/**
@@ -96,7 +104,9 @@ public class ChallengeStatistics extends BaseTimeEntity {
 
 	/**
 	 * 현재 레벨 구간 내에서의 진척도 계산 (0-100%)
-	 * 예: 총 200개 중 75개 완료 시 레벨2(51~100)에서 50% 진척
+	 *
+	 * 예: 전체 진행률 37.5% → 레벨 2(25-50% 구간)에서 50% 진척
+	 *
 	 * @return 현재 레벨 내 진척도 (%)
 	 */
 	public double getProgressToNextLevel() {
@@ -104,26 +114,23 @@ public class ChallengeStatistics extends BaseTimeEntity {
 			return 0.0;
 		}
 
+		double progressPercentage = getProgressPercentage();
 		int currentLevel = this.cherryLevel;
-		int levelSize = totalRoutineCount / 4;  // 각 레벨의 크기
 
 		// 최대 레벨이면 100% 반환
-		if (currentLevel >= 4) {
+		if (currentLevel >= 4 || progressPercentage >= 100.0) {
 			return 100.0;
 		}
 
-		// 레벨 구간 크기가 0이면 0% 반환
-		if (levelSize == 0) {
-			return 0.0;
-		}
+		// 각 레벨의 시작 진행률
+		double levelStartPercentage = (currentLevel - 1) * 25.0;
 
-		// 현재 레벨의 시작점 (개수)
-		int levelStart = (currentLevel - 1) * levelSize;
+		// 현재 레벨 구간 내 진행률
+		double progressInLevel = progressPercentage - levelStartPercentage;
 
-		// 현재 레벨 구간 내에서 완료한 개수
-		int progressInLevel = completedCount - levelStart;
+		// 레벨 구간(25%) 대비 진척도
+		double progressToNext = (progressInLevel / 25.0) * 100.0;
 
-		double percentage = ((double)progressInLevel / levelSize) * 100.0;
-		return Math.round(percentage * 10.0) / 10.0;  // 소수점 1자리까지 반올림
+		return Math.round(progressToNext * 10.0) / 10.0;  // 소수점 1자리까지 반올림
 	}
 }

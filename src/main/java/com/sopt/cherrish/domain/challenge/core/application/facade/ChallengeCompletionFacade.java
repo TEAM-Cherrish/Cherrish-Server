@@ -6,8 +6,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.sopt.cherrish.domain.challenge.core.application.service.ChallengeRoutineService;
 import com.sopt.cherrish.domain.challenge.core.application.service.ChallengeStatisticsService;
 import com.sopt.cherrish.domain.challenge.core.domain.model.ChallengeRoutine;
-import com.sopt.cherrish.domain.challenge.core.exception.ChallengeErrorCode;
-import com.sopt.cherrish.domain.challenge.core.exception.ChallengeException;
 import com.sopt.cherrish.domain.challenge.core.presentation.dto.response.RoutineCompletionResponseDto;
 
 import lombok.RequiredArgsConstructor;
