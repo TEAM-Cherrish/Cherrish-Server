@@ -160,7 +160,7 @@ class ChallengeRoutineServiceIntegrationTest {
 			// given
 			User user = fixture.createDefaultUser();
 			Challenge challenge = fixture.createChallengeWithRoutines(user, ROUTINE_COUNT_MEDIUM); // 14개 루틴
-			List<ChallengeRoutine> allRoutines = routineRepository.findAll();
+			List<ChallengeRoutine> allRoutines = routineRepository.findByChallengeId(challenge.getId());
 
 			// when & then - 25% 도달 (14개 중 4개 완료) → 레벨 2
 			completeRoutines(user, allRoutines, 0, 4);
