@@ -25,7 +25,7 @@ import lombok.NoArgsConstructor;
 @Schema(description = "사용자 시술 일정 등록 요청")
 public class UserProcedureCreateRequestDto {
 
-	@Schema(description = "예약 날짜 및 시간", example = "2025-01-01T16:00:00", requiredMode = Schema.RequiredMode.REQUIRED)
+	@Schema(description = "예약 날짜 및 시간", example = "2026-01-01T16:00:00", requiredMode = Schema.RequiredMode.REQUIRED)
 	@NotNull(message = "예약 날짜 및 시간은 필수입니다")
 	private LocalDateTime scheduledAt;
 
