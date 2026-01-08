@@ -308,20 +308,20 @@ class ChallengeRoutineServiceIntegrationTest {
 		}
 
 		@Test
-		@DisplayName("트랜잭션 롤백 - 통계가 없을 때 예외 발생 시 루틴 상태 롤백")
-		void transactionRollbackWhenStatisticsNotFound() {
+		@DisplayName("실패 - 통계가 없는 챌린지의 루틴은 조회되지 않음")
+		void throwsExceptionWhenChallengeHasNoStatistics() {
 			// given
 			User user = fixture.createDefaultUser();
 			Challenge challenge = fixture.createChallengeWithoutStatistics(user);
 			ChallengeRoutine routine = routineRepository.findByChallengeId(challenge.getId()).getFirst();
 
-			// when & then - 통계가 없으므로 ChallengeException 발생
+			// when & then - INNER JOIN으로 인해 통계가 없으면 루틴 조회부터 실패
 			assertThatThrownBy(() ->
 				challengeRoutineService.toggleCompletion(user.getId(), routine.getId()))
 				.isInstanceOf(ChallengeException.class)
-				.hasFieldOrPropertyWithValue("errorCode", ChallengeErrorCode.STATISTICS_NOT_FOUND);
+				.hasFieldOrPropertyWithValue("errorCode", ChallengeErrorCode.ROUTINE_NOT_FOUND);
 
-			// then - 루틴 상태가 변경되지 않았음 (롤백됨)
+			// then - 루틴 상태가 변경되지 않았음 (트랜잭션 롤백)
 			ChallengeRoutine unchangedRoutine = routineRepository.findById(routine.getId()).orElseThrow();
 			assertThat(unchangedRoutine.getIsComplete()).isFalse();
 		}
