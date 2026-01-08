@@ -4,7 +4,6 @@ import java.time.LocalDate;
 import java.util.List;
 
 import com.sopt.cherrish.domain.challenge.core.domain.model.Challenge;
-import com.sopt.cherrish.domain.challenge.core.domain.model.ChallengeRoutine;
 import com.sopt.cherrish.domain.challenge.core.presentation.dto.request.ChallengeCreateRequestDto;
 import com.sopt.cherrish.domain.challenge.core.presentation.dto.response.ChallengeCreateResponseDto;
 import com.sopt.cherrish.domain.challenge.core.presentation.dto.response.ChallengeDetailResponseDto;

@@ -1,6 +1,17 @@
 package com.sopt.cherrish.domain.challenge.core.presentation;
 
-import static com.sopt.cherrish.domain.challenge.core.fixture.ChallengeTestFixture.*;
+import static com.sopt.cherrish.domain.challenge.core.fixture.ChallengeTestFixture.DEFAULT_CHALLENGE_ID;
+import static com.sopt.cherrish.domain.challenge.core.fixture.ChallengeTestFixture.DEFAULT_CHALLENGE_TITLE;
+import static com.sopt.cherrish.domain.challenge.core.fixture.ChallengeTestFixture.DEFAULT_ROUTINE_ID;
+import static com.sopt.cherrish.domain.challenge.core.fixture.ChallengeTestFixture.DEFAULT_USER_ID;
+import static com.sopt.cherrish.domain.challenge.core.fixture.ChallengeTestFixture.createMockChallengeCreateResponse;
+import static com.sopt.cherrish.domain.challenge.core.fixture.ChallengeTestFixture.createMockChallengeDetailResponse;
+import static com.sopt.cherrish.domain.challenge.core.fixture.ChallengeTestFixture.createMockRoutineCompletionResponse;
+import static com.sopt.cherrish.domain.challenge.core.fixture.ChallengeTestFixture.createRequestWithEmptyRoutines;
+import static com.sopt.cherrish.domain.challenge.core.fixture.ChallengeTestFixture.createRequestWithEmptyTitle;
+import static com.sopt.cherrish.domain.challenge.core.fixture.ChallengeTestFixture.createRequestWithNullTitle;
+import static com.sopt.cherrish.domain.challenge.core.fixture.ChallengeTestFixture.createRequestWithTooManyRoutines;
+import static com.sopt.cherrish.domain.challenge.core.fixture.ChallengeTestFixture.createValidChallengeRequest;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
