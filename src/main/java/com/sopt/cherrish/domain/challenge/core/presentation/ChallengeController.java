@@ -39,6 +39,7 @@ public class ChallengeController {
 	private final ChallengeQueryFacade challengeQueryFacade;
 	private final ChallengeRoutineService challengeRoutineService;
 
+	// TODO: Spring Security 추가 시 PathVariable userId 제거하고 @AuthenticationPrincipal 사용
 	@Operation(
 		summary = "챌린지 생성",
 		description = "홈케어 루틴 ID와 루틴명 리스트를 입력받아 7일 챌린지를 생성합니다."
@@ -54,29 +55,31 @@ public class ChallengeController {
 		return CommonApiResponse.success(SuccessCode.SUCCESS, response);
 	}
 
+	// TODO: Spring Security 추가 시 PathVariable userId 제거하고 @AuthenticationPrincipal 사용
 	@Operation(
 		summary = "활성 챌린지 조회",
 		description = "사용자의 활성 챌린지와 진행 상황, 오늘의 루틴을 조회합니다."
 	)
 	@ApiExceptions({ChallengeErrorCode.class, UserErrorCode.class, ErrorCode.class})
-	@GetMapping
+	@GetMapping("/{userId}")
 	public CommonApiResponse<ChallengeDetailResponseDto> getActiveChallenge(
 		@Parameter(description = "사용자 ID", required = true, example = "1")
-		@RequestParam Long userId
+		@PathVariable Long userId
 	) {
 		ChallengeDetailResponseDto response = challengeQueryFacade.getActiveChallengeDetail(userId);
 		return CommonApiResponse.success(SuccessCode.SUCCESS, response);
 	}
 
+	// TODO: Spring Security 추가 시 PathVariable userId 제거하고 @AuthenticationPrincipal 사용
 	@Operation(
 		summary = "루틴 완료 토글",
 		description = "루틴의 완료 상태를 토글합니다. 완료 시 통계와 체리 레벨이 자동 업데이트됩니다."
 	)
 	@ApiExceptions({ChallengeErrorCode.class, UserErrorCode.class, ErrorCode.class})
-	@PatchMapping("/routines/{routineId}")
+	@PatchMapping("/{userId}/routines/{routineId}")
 	public CommonApiResponse<RoutineCompletionResponseDto> toggleRoutineCompletion(
 		@Parameter(description = "사용자 ID", required = true, example = "1")
-		@RequestParam Long userId,
+		@PathVariable Long userId,
 		@Parameter(description = "루틴 ID", required = true, example = "1")
 		@PathVariable Long routineId
 	) {
