@@ -28,7 +28,8 @@ public class ChallengeStatistics extends BaseTimeEntity {
 	private Long id;
 
 	@Version
-	private Long version;
+	@Column(nullable = false)
+	private Long version = 0L;
 
 	@OneToOne(fetch = FetchType.LAZY, optional = false)
 	@JoinColumn(name = "challenge_id", nullable = false, unique = true)
