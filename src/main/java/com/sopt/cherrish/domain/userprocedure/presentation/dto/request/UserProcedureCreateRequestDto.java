@@ -48,12 +48,18 @@ public class UserProcedureCreateRequestDto {
 			.collect(Collectors.toMap(Procedure::getId, Function.identity()));
 
 		return this.procedures.stream()
-			.map(item -> UserProcedure.builder()
-				.user(user)
-				.procedure(procedureMap.get(item.getProcedureId()))
-				.scheduledAt(scheduledAt)
-				.downtimeDays(item.getDowntimeDays())
-				.build())
+			.map(item -> {
+				Procedure procedure = procedureMap.get(item.getProcedureId());
+				if (procedure == null) {
+					throw new IllegalArgumentException("존재하지 않는 시술 ID: " + item.getProcedureId());
+				}
+				return UserProcedure.builder()
+					.user(user)
+					.procedure(procedure)
+					.scheduledAt(scheduledAt)
+					.downtimeDays(item.getDowntimeDays())
+					.build();
+			})
 			.toList();
 	}
 }
