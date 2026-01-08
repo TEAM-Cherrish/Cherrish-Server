@@ -12,7 +12,6 @@ import com.sopt.cherrish.domain.challenge.core.domain.model.ChallengeStatistics;
 import com.sopt.cherrish.domain.challenge.core.domain.repository.ChallengeRepository;
 import com.sopt.cherrish.domain.challenge.core.domain.repository.ChallengeRoutineRepository;
 import com.sopt.cherrish.domain.challenge.core.domain.repository.ChallengeStatisticsRepository;
-import com.sopt.cherrish.domain.challenge.core.fixture.ChallengeTestFixture;
 import com.sopt.cherrish.domain.challenge.homecare.domain.model.HomecareRoutine;
 import com.sopt.cherrish.domain.user.domain.model.User;
 import com.sopt.cherrish.domain.user.domain.repository.UserRepository;
@@ -44,6 +43,7 @@ public class ChallengeIntegrationTestFixture {
 	}
 
 	// 상수 정의
+	public static final LocalDate FIXED_START_DATE = LocalDate.of(2024, 1, 1);
 	public static final String DEFAULT_USER_NAME = "테스트 유저";
 	public static final int DEFAULT_USER_AGE = 25;
 	public static final String OTHER_USER_NAME = "다른 유저";
@@ -82,7 +82,7 @@ public class ChallengeIntegrationTestFixture {
 	 * @return 생성된 챌린지
 	 */
 	public Challenge createChallengeWithRoutines(User user, int routineNameCount) {
-		return createChallengeWithRoutines(user, routineNameCount, ChallengeTestFixture.FIXED_START_DATE);
+		return createChallengeWithRoutines(user, routineNameCount, FIXED_START_DATE);
 	}
 
 	/**
