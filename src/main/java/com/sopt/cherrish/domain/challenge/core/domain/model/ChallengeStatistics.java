@@ -125,7 +125,7 @@ public class ChallengeStatistics extends BaseTimeEntity {
 		}
 
 		double progressPercentage = getProgressPercentage();
-		int currentLevel = this.cherryLevel;
+		int currentLevel = calculateCherryLevel();  // 실시간 계산된 레벨 사용
 
 		// 최대 레벨이면 100% 반환
 		if (currentLevel >= 4 || progressPercentage >= 100.0) {
