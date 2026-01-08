@@ -48,24 +48,16 @@ class ChallengeRoutineServiceIntegrationTest {
 
 	@Autowired
 	private ChallengeRoutineService challengeRoutineService;
-
-	@Autowired
-	private ChallengeRepository challengeRepository;
-
 	@Autowired
 	private ChallengeRoutineRepository routineRepository;
-
 	@Autowired
 	private ChallengeStatisticsRepository statisticsRepository;
-
 	@Autowired
 	private ChallengeIntegrationTestFixture fixture;
 
-	// 상수 정의
-	private static final int ROUTINE_COUNT_SMALL = 1;   // 7개 루틴 (1개 루틴명 × 7일)
-	private static final int ROUTINE_COUNT_MEDIUM = 2;  // 14개 루틴 (2개 루틴명 × 7일)
-	private static final int ROUTINE_COUNT_LARGE = 3;   // 21개 루틴 (3개 루틴명 × 7일)
-
+	private static final int ROUTINE_COUNT_SMALL = 1;
+	private static final int ROUTINE_COUNT_MEDIUM = 2;
+	private static final int ROUTINE_COUNT_LARGE = 3;
 	private static final String COMPLETION_MESSAGE = "루틴을 완료했습니다!";
 	private static final String CANCELLATION_MESSAGE = "루틴 완료를 취소했습니다.";
 
@@ -466,36 +458,14 @@ class ChallengeRoutineServiceIntegrationTest {
 		}
 	}
 
-	// ============ 헬퍼 메서드 ============
-
-	/**
-	 * 루틴 토글 결과를 종합적으로 검증
-	 *
-	 * @param response 응답 DTO
-	 * @param routine 원본 루틴
-	 * @param challenge 챌린지
-	 * @param expectedComplete 예상 완료 상태
-	 * @param expectedCompletedCount 예상 완료 개수
-	 * @param expectedLevel 예상 체리 레벨
-	 */
-	private void assertRoutineToggleResult(
-		RoutineCompletionResponseDto response,
-		ChallengeRoutine routine,
-		Challenge challenge,
-		boolean expectedComplete,
-		int expectedCompletedCount,
-		int expectedLevel
-	) {
+	// Helper Methods
+	private void assertRoutineToggleResult(RoutineCompletionResponseDto response, ChallengeRoutine routine,
+		Challenge challenge, boolean expectedComplete, int expectedCompletedCount, int expectedLevel) {
 		assertSoftly(softly -> {
-			// Response 검증
 			softly.assertThat(response.routineId()).isEqualTo(routine.getId());
 			softly.assertThat(response.isComplete()).isEqualTo(expectedComplete);
-
-			// DB 실제 변경 확인
 			ChallengeRoutine updatedRoutine = routineRepository.findById(routine.getId()).orElseThrow();
 			softly.assertThat(updatedRoutine.getIsComplete()).isEqualTo(expectedComplete);
-
-			// 통계 업데이트 확인
 			ChallengeStatistics statistics = statisticsRepository.findByChallengeId(challenge.getId())
 				.orElseThrow();
 			softly.assertThat(statistics.getCompletedCount()).isEqualTo(expectedCompletedCount);
@@ -503,40 +473,23 @@ class ChallengeRoutineServiceIntegrationTest {
 		});
 	}
 
-	/**
-	 * 여러 루틴을 순차적으로 완료 처리
-	 */
 	private void completeRoutines(User user, List<ChallengeRoutine> routines, int fromIndex, int toIndex) {
 		for (int i = fromIndex; i < toIndex; i++) {
 			challengeRoutineService.toggleCompletion(user.getId(), routines.get(i).getId());
 		}
 	}
 
-	/**
-	 * 체리 레벨과 완료 개수 검증
-	 */
 	private void assertCherryLevel(Challenge challenge, int expectedLevel, int expectedCount) {
-		ChallengeStatistics stats = statisticsRepository.findByChallengeId(challenge.getId())
-			.orElseThrow();
-
+		ChallengeStatistics stats = statisticsRepository.findByChallengeId(challenge.getId()).orElseThrow();
 		assertSoftly(softly -> {
 			softly.assertThat(stats.getCherryLevel()).isEqualTo(expectedLevel);
 			softly.assertThat(stats.getCompletedCount()).isEqualTo(expectedCount);
 		});
 	}
 
-	/**
-	 * 체리 레벨, 완료 개수, 진행률 검증
-	 */
-	private void assertCherryLevelWithProgress(
-		Challenge challenge,
-		int expectedLevel,
-		int expectedCount,
-		double expectedProgress
-	) {
-		ChallengeStatistics stats = statisticsRepository.findByChallengeId(challenge.getId())
-			.orElseThrow();
-
+	private void assertCherryLevelWithProgress(Challenge challenge, int expectedLevel, int expectedCount,
+		double expectedProgress) {
+		ChallengeStatistics stats = statisticsRepository.findByChallengeId(challenge.getId()).orElseThrow();
 		assertSoftly(softly -> {
 			softly.assertThat(stats.getCherryLevel()).isEqualTo(expectedLevel);
 			softly.assertThat(stats.getCompletedCount()).isEqualTo(expectedCount);
