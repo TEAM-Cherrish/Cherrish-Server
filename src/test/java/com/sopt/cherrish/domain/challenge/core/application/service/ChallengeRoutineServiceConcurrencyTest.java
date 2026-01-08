@@ -75,10 +75,10 @@ class ChallengeRoutineServiceConcurrencyTest {
 		});
 
 		List<Long> routineIds = transactionTemplate.execute(status ->
-			routineRepository.findAll().stream()
+			routineRepository.findByChallengeId(challengeId).stream()
 				.map(ChallengeRoutine::getId)
-				.toList()
-		);
+			.toList()
+			);
 
 		// when - 3개 스레드가 동시에 다른 루틴 완료 시도
 		ExecutorService executor = Executors.newFixedThreadPool(3);
@@ -110,9 +110,12 @@ class ChallengeRoutineServiceConcurrencyTest {
 			});
 		}
 
-		latch.await(10, TimeUnit.SECONDS);
-		executor.shutdown();
-		executor.awaitTermination(5, TimeUnit.SECONDS);
+		try {
+			latch.await(10, TimeUnit.SECONDS);
+		} finally {
+			executor.shutdown();
+			executor.awaitTermination(5, TimeUnit.SECONDS);
+		}
 
 		// then - 모든 스레드가 완료되었는지 확인
 		assertThat(successCount.get() + failureCount.get()).isEqualTo(3);
@@ -160,7 +163,7 @@ class ChallengeRoutineServiceConcurrencyTest {
 		});
 
 		Long routineId = transactionTemplate.execute(status ->
-			routineRepository.findAll().getFirst().getId()
+			routineRepository.findByChallengeId(challengeId).getFirst().getId()
 		);
 
 		// when - 5개 스레드가 동시에 같은 루틴 토글 시도
@@ -187,9 +190,12 @@ class ChallengeRoutineServiceConcurrencyTest {
 			});
 		}
 
-		latch.await(10, TimeUnit.SECONDS);
-		executor.shutdown();
-		executor.awaitTermination(5, TimeUnit.SECONDS);
+		try {
+			latch.await(10, TimeUnit.SECONDS);
+		} finally {
+			executor.shutdown();
+			executor.awaitTermination(5, TimeUnit.SECONDS);
+		}
 
 		// then
 		assertThat(successCount.get() + failureCount.get()).isEqualTo(5);

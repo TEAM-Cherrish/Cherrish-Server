@@ -181,7 +181,7 @@ class ChallengeRoutineServiceIntegrationTest {
 			// given
 			User user = fixture.createDefaultUser();
 			Challenge challenge = fixture.createChallengeWithRoutines(user, ROUTINE_COUNT_LARGE); // 21개 루틴
-			List<ChallengeRoutine> allRoutines = routineRepository.findAll();
+			List<ChallengeRoutine> allRoutines = routineRepository.findByChallengeId(challenge.getId());
 
 			// Level 1: 0% ~ 24.99%
 			// 5개 완료 = 23.8% → 레벨 1
