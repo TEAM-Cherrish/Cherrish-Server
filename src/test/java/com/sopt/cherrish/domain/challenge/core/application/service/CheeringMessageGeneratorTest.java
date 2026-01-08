@@ -7,6 +7,9 @@ import static com.sopt.cherrish.domain.challenge.core.application.service.Cheeri
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -163,7 +166,7 @@ class CheeringMessageGeneratorTest {
 	@DisplayName("전체 챌린지 기간 동안 메시지 변화 확인")
 	void messageProgressionThroughoutChallenge() {
 		// when - 7일 챌린지 전체 기간의 메시지 수집
-		java.util.List<String> messages = new java.util.ArrayList<>();
+		List<String> messages = new ArrayList<>();
 		for (int day = 1; day <= 7; day++) {
 			messages.add(generator.generate(day, 7));
 		}
