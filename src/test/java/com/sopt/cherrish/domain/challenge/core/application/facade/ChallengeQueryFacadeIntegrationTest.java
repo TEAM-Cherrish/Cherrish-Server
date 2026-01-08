@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.DisplayName;
@@ -336,11 +337,14 @@ class ChallengeQueryFacadeIntegrationTest {
 		List<ChallengeRoutine> allRoutines = routineRepository.findAll();
 		assertThat(allRoutines.size()).isGreaterThanOrEqualTo(count);
 
+		List<ChallengeRoutine> updatedRoutines = new ArrayList<>();
 		for (int i = 0; i < count; i++) {
 			ChallengeRoutine routine = allRoutines.get(i);
 			routine.complete();
-			routineRepository.save(routine);
+			updatedRoutines.add(routine);
 		}
+
+		routineRepository.saveAll(updatedRoutines);
 
 		updateStatistics(challenge, count);
 	}
