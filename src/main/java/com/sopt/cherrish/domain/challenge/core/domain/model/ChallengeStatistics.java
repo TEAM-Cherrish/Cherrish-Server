@@ -23,6 +23,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ChallengeStatistics extends BaseTimeEntity {
 
+	private static final double LEVEL_2_THRESHOLD = 25.0;
+	private static final double LEVEL_3_THRESHOLD = 50.0;
+	private static final double LEVEL_4_THRESHOLD = 75.0;
+	private static final double LEVEL_RANGE = 25.0;
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
@@ -88,13 +93,13 @@ public class ChallengeStatistics extends BaseTimeEntity {
 
 		double progressPercentage = getProgressPercentage();
 
-		if (progressPercentage < 25.0) {
+		if (progressPercentage < LEVEL_2_THRESHOLD) {
 			return 1;
 		}
-		if (progressPercentage < 50.0) {
+		if (progressPercentage < LEVEL_3_THRESHOLD) {
 			return 2;
 		}
-		if (progressPercentage < 75.0) {
+		if (progressPercentage < LEVEL_4_THRESHOLD) {
 			return 3;
 		}
 		return 4;
@@ -128,13 +133,13 @@ public class ChallengeStatistics extends BaseTimeEntity {
 		}
 
 		// 각 레벨의 시작 진행률
-		double levelStartPercentage = (currentLevel - 1) * 25.0;
+		double levelStartPercentage = (currentLevel - 1) * LEVEL_RANGE;
 
 		// 현재 레벨 구간 내 진행률
 		double progressInLevel = progressPercentage - levelStartPercentage;
 
-		// 레벨 구간(25%) 대비 진척도
-		double progressToNext = (progressInLevel / 25.0) * 100.0;
+		// 레벨 구간 대비 진척도
+		double progressToNext = (progressInLevel / LEVEL_RANGE) * 100.0;
 
 		return Math.round(progressToNext * 10.0) / 10.0;  // 소수점 1자리까지 반올림
 	}
