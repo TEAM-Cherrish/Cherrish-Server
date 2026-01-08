@@ -49,19 +49,10 @@ public class ChallengeRoutine extends BaseTimeEntity {
 
 	@Builder
 	private ChallengeRoutine(Challenge challenge, String name, LocalDate scheduledDate) {
-		validateScheduledDateWithinChallengePeriod(challenge, scheduledDate);
+		validateDateWithinChallengePeriod(challenge, scheduledDate);
 		this.challenge = challenge;
 		this.name = name;
 		this.scheduledDate = scheduledDate;
-	}
-
-	private void validateScheduledDateWithinChallengePeriod(Challenge challenge, LocalDate scheduledDate) {
-		if (challenge == null || scheduledDate == null) {
-			// JPA가 기존 엔티티를 로드할 때 Builder가 호출되지 않으므로 이 조건에 도달하지 않음
-			// 방어적 코드: null 입력 시 검증 스킵 (실제 생성 시에는 @Column(nullable = false)로 보장)
-			throw new IllegalArgumentException("challenge와 scheduledDate는 null일 수 없습니다");
-		}
-		validateDateWithinChallengePeriod(challenge, scheduledDate);
 	}
 
 	public void complete() {

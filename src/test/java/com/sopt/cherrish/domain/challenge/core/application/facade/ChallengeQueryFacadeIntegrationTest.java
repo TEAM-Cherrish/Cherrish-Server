@@ -321,7 +321,7 @@ class ChallengeQueryFacadeIntegrationTest {
 		List<ChallengeRoutine> todayRoutines = routineRepository
 			.findByChallengeIdAndScheduledDate(challenge.getId(), ChallengeTestFixture.FIXED_START_DATE);
 
-		assertThat(todayRoutines.size()).isGreaterThan(0);
+		assertThat(todayRoutines).isNotEmpty();
 
 		ChallengeRoutine routine = todayRoutines.getFirst();
 		routine.complete();
