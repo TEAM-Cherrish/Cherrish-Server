@@ -117,7 +117,7 @@ public class ChallengeIntegrationTestFixture {
 		entityManager.flush();
 		entityManager.clear();
 
-		return challengeRepository.findById(challenge.getId()).orElseThrow();
+		return challengeRepository.findActiveChallengeWithStatistics(challenge.getUserId()).orElseThrow();
 	}
 
 	/**
