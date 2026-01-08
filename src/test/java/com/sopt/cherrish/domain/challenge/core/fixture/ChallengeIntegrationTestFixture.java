@@ -139,7 +139,7 @@ public class ChallengeIntegrationTestFixture {
 			.userId(user.getId())
 			.homecareRoutine(HomecareRoutine.SKIN_MOISTURIZING)
 			.title(DEFAULT_CHALLENGE_TITLE)
-			.startDate(LocalDate.now())
+			.startDate(FIXED_START_DATE)
 			.build());
 
 		List<ChallengeRoutine> routines = challenge.createChallengeRoutines(List.of("루틴1"));

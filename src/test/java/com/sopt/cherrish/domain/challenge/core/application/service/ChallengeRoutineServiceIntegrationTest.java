@@ -71,7 +71,7 @@ class ChallengeRoutineServiceIntegrationTest {
 			// given
 			User user = fixture.createDefaultUser();
 			Challenge challenge = fixture.createChallengeWithRoutines(user, ROUTINE_COUNT_LARGE);
-			ChallengeRoutine routine = routineRepository.findAll().getFirst();
+			ChallengeRoutine routine = routineRepository.findByChallengeId(challenge.getId()).getFirst();
 
 			assertThat(routine.getIsComplete()).isFalse();
 
@@ -89,7 +89,7 @@ class ChallengeRoutineServiceIntegrationTest {
 			// given
 			User user = fixture.createDefaultUser();
 			Challenge challenge = fixture.createChallengeWithRoutines(user, ROUTINE_COUNT_LARGE);
-			ChallengeRoutine routine = routineRepository.findAll().getFirst();
+			ChallengeRoutine routine = routineRepository.findByChallengeId(challenge.getId()).getFirst();
 
 			// 루틴을 먼저 완료 상태로 만들기
 			challengeRoutineService.toggleCompletion(user.getId(), routine.getId());
@@ -111,7 +111,7 @@ class ChallengeRoutineServiceIntegrationTest {
 			// given
 			User user = fixture.createDefaultUser();
 			Challenge challenge = fixture.createChallengeWithRoutines(user, ROUTINE_COUNT_SMALL);
-			ChallengeRoutine routine = routineRepository.findAll().getFirst();
+			ChallengeRoutine routine = routineRepository.findByChallengeId(challenge.getId()).getFirst();
 
 			// when & then - 10번 토글 반복
 			for (int i = 0; i < 10; i++) {
@@ -136,7 +136,7 @@ class ChallengeRoutineServiceIntegrationTest {
 			// given
 			User user = fixture.createDefaultUser();
 			Challenge challenge = fixture.createChallengeWithRoutines(user, ROUTINE_COUNT_SMALL);
-			ChallengeRoutine routine = routineRepository.findAll().getFirst();
+			ChallengeRoutine routine = routineRepository.findByChallengeId(challenge.getId()).getFirst();
 
 			// 초기 상태 확인
 			ChallengeStatistics statistics = statisticsRepository.findByChallengeId(challenge.getId())
@@ -169,7 +169,7 @@ class ChallengeRoutineServiceIntegrationTest {
 			// given
 			User user = fixture.createDefaultUser();
 			Challenge challenge = fixture.createChallengeWithRoutines(user, ROUTINE_COUNT_SMALL);
-			ChallengeRoutine routine = routineRepository.findAll().getFirst();
+			ChallengeRoutine routine = routineRepository.findByChallengeId(challenge.getId()).getFirst();
 
 			// when - 완료 처리
 			RoutineCompletionResponseDto completeResponse = challengeRoutineService.toggleCompletion(
@@ -290,7 +290,7 @@ class ChallengeRoutineServiceIntegrationTest {
 			User otherUser = fixture.createOtherUser();
 
 			Challenge challenge = fixture.createChallengeWithRoutines(owner, ROUTINE_COUNT_LARGE);
-			ChallengeRoutine routine = routineRepository.findAll().getFirst();
+			ChallengeRoutine routine = routineRepository.findByChallengeId(challenge.getId()).getFirst();
 
 			// when & then - 다른 사용자가 접근 시도
 			assertThatThrownBy(() ->
@@ -313,7 +313,7 @@ class ChallengeRoutineServiceIntegrationTest {
 			// given
 			User user = fixture.createDefaultUser();
 			Challenge challenge = fixture.createChallengeWithoutStatistics(user);
-			ChallengeRoutine routine = routineRepository.findAll().getFirst();
+			ChallengeRoutine routine = routineRepository.findByChallengeId(challenge.getId()).getFirst();
 
 			// when & then - 통계가 없으므로 ChallengeException 발생
 			assertThatThrownBy(() ->
@@ -390,7 +390,7 @@ class ChallengeRoutineServiceIntegrationTest {
 			// given
 			User user = fixture.createDefaultUser();
 			Challenge challenge = fixture.createChallengeWithRoutines(user, ROUTINE_COUNT_LARGE);
-			ChallengeRoutine routine = routineRepository.findAll().getFirst();
+			ChallengeRoutine routine = routineRepository.findByChallengeId(challenge.getId()).getFirst();
 
 			// when
 			RoutineCompletionResponseDto response = challengeRoutineService.toggleCompletion(
@@ -440,22 +440,22 @@ class ChallengeRoutineServiceIntegrationTest {
 		}
 
 		@Test
-		@DisplayName("실패 - 챌린지 기간 외의 루틴 완료 시도")
-		void throwsExceptionWhenRoutineOutOfDateRange() {
+		@DisplayName("성공 - 챌린지 기간 외의 루틴 생성 확인")
+		void createsRoutineOutOfDateRange() {
 			// given
 			User user = fixture.createDefaultUser();
 			Challenge challenge = fixture.createChallengeWithRoutines(user, ROUTINE_COUNT_SMALL);
+			LocalDate fixedDate = LocalDate.of(2024, 1, 1);  // TestClockConfig의 고정 날짜
 
 			// 챌린지 기간 외의 루틴 생성 (8일차)
 			ChallengeRoutine outOfRangeRoutine = fixture.createOrphanRoutine(
 				challenge,
-				LocalDate.now().plusDays(8)
+				fixedDate.plusDays(8)
 			);
 
-			// when & then - 이 경우 실제 서비스 로직에서 어떻게 처리하는지에 따라 달라질 수 있음
-			// 현재는 예외가 발생하지 않을 수 있으므로 데이터 검증으로 대체
+			// when & then - 챌린지 기간(7일)을 벗어난 루틴이 생성되었는지 검증
 			assertThat(outOfRangeRoutine.getScheduledDate())
-				.isAfter(LocalDate.now().plusDays(7));
+				.isAfter(fixedDate.plusDays(7));
 		}
 	}
 
