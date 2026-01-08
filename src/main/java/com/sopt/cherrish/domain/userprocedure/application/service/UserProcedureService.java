@@ -5,6 +5,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.sopt.cherrish.domain.procedure.domain.model.Procedure;
+import com.sopt.cherrish.domain.user.domain.model.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,7 +22,9 @@ import com.sopt.cherrish.domain.userprocedure.presentation.dto.request.UserProce
 import com.sopt.cherrish.domain.userprocedure.presentation.dto.response.UserProcedureCreateResponseDto;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -33,18 +36,17 @@ public class UserProcedureService {
 
 	@Transactional
 	public UserProcedureCreateResponseDto createUserProcedures(Long userId, UserProcedureCreateRequestDto request) {
-		validateUserExists(userId);
+		User user = getUserOrThrow(userId);
 
 		List<Procedure> procedures = getProceduresOrThrow(request.getProcedures());
-		List<UserProcedure> userProcedures = request.toEntities(userId, procedures);
+		List<UserProcedure> userProcedures = request.toEntities(user, procedures);
 		List<UserProcedure> savedProcedures = userProcedureRepository.saveAll(userProcedures);
 		return UserProcedureCreateResponseDto.from(savedProcedures);
 	}
 
-	private void validateUserExists(Long userId) {
-		if (!userRepository.existsById(userId)) {
-			throw new UserException(UserErrorCode.USER_NOT_FOUND);
-		}
+	private User getUserOrThrow(Long userId) {
+		return userRepository.findById(userId)
+			.orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
 	}
 
 	private List<Procedure> getProceduresOrThrow(List<UserProcedureCreateRequestItemDto> items) {
@@ -54,6 +56,14 @@ public class UserProcedureService {
 
 		List<Procedure> procedures = procedureRepository.findAllById(procedureIds);
 		if (procedures.size() != procedureIds.size()) {
+			Set<Long> foundIds = procedures.stream()
+				.map(Procedure::getId)
+				.collect(Collectors.toSet());
+			Set<Long> missingIds = procedureIds.stream()
+				.filter(id -> !foundIds.contains(id))
+				.collect(Collectors.toSet());
+
+			log.warn("Procedures not found: {}", missingIds);
 			throw new ProcedureException(ProcedureErrorCode.PROCEDURE_NOT_FOUND);
 		}
 

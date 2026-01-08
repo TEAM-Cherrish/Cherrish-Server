@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.sopt.cherrish.domain.procedure.domain.model.Procedure;
+import com.sopt.cherrish.domain.user.domain.model.User;
 import com.sopt.cherrish.domain.userprocedure.domain.model.UserProcedure;
 
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -42,13 +43,13 @@ public class UserProcedureCreateRequestDto {
 		this.procedures = procedures;
 	}
 
-	public List<UserProcedure> toEntities(Long userId, List<Procedure> procedures) {
+	public List<UserProcedure> toEntities(User user, List<Procedure> procedures) {
 		Map<Long, Procedure> procedureMap = procedures.stream()
 			.collect(Collectors.toMap(Procedure::getId, Function.identity()));
 
 		return this.procedures.stream()
 			.map(item -> UserProcedure.builder()
-				.userId(userId)
+				.user(user)
 				.procedure(procedureMap.get(item.getProcedureId()))
 				.scheduledAt(scheduledAt)
 				.downtimeDays(item.getDowntimeDays())
