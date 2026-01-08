@@ -337,7 +337,7 @@ class ChallengeQueryFacadeIntegrationTest {
 	 */
 	private void completeRoutines(Challenge challenge, int count) {
 		List<ChallengeRoutine> challengeRoutines = routineRepository.findByChallengeId(challenge.getId());
-		assertThat(challengeRoutines.size()).isGreaterThanOrEqualTo(count);
+		assertThat(challengeRoutines).hasSizeGreaterThanOrEqualTo(count);
 
 		List<ChallengeRoutine> updatedRoutines = new ArrayList<>();
 		for (int i = 0; i < count; i++) {

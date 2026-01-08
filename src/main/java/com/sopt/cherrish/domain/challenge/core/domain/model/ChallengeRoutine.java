@@ -57,7 +57,9 @@ public class ChallengeRoutine extends BaseTimeEntity {
 
 	private void validateScheduledDateWithinChallengePeriod(Challenge challenge, LocalDate scheduledDate) {
 		if (challenge == null || scheduledDate == null) {
-			return; // JPA가 엔티티를 로드할 때는 검증 스킵
+			// JPA가 기존 엔티티를 로드할 때 Builder가 호출되지 않으므로 이 조건에 도달하지 않음
+			// 방어적 코드: null 입력 시 검증 스킵 (실제 생성 시에는 @Column(nullable = false)로 보장)
+			return;
 		}
 		validateDateWithinChallengePeriod(challenge, scheduledDate);
 	}
@@ -74,12 +76,12 @@ public class ChallengeRoutine extends BaseTimeEntity {
 	}
 
 	/**
-	 * 챌린지 기간 내 루틴인지 검증
-	 * @param today 현재 날짜
-	 * @throws ChallengeException 챌린지 기간 외의 루틴인 경우
+	 * 주어진 날짜가 챌린지 기간 내인지 검증 (루틴 수정 가능 여부 판단용)
+	 * @param date 검증할 날짜 (일반적으로 현재 날짜)
+	 * @throws ChallengeException 챌린지 기간 외의 날짜인 경우
 	 */
-	public void validateWithinChallengePeriod(LocalDate today) {
-		validateDateWithinChallengePeriod(this.challenge, today);
+	public void validateOperationDateWithinChallengePeriod(LocalDate date) {
+		 validateDateWithinChallengePeriod(this.challenge, date);
 	}
 
 	/**

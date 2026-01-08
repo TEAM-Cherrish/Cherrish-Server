@@ -86,7 +86,7 @@ public class ChallengeRoutineService {
 		routine.getChallenge().validateOwner(userId);
 
 		LocalDate today = LocalDate.now(clock);
-		routine.validateWithinChallengePeriod(today);
+		routine.validateOperationDateWithinChallengePeriod(today);
 
 		routine.toggleCompletion();
 

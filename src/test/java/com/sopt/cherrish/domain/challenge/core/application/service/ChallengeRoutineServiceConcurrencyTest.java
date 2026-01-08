@@ -112,6 +112,7 @@ class ChallengeRoutineServiceConcurrencyTest {
 
 		latch.await(10, TimeUnit.SECONDS);
 		executor.shutdown();
+		executor.awaitTermination(5, TimeUnit.SECONDS);
 
 		// then - 모든 스레드가 완료되었는지 확인
 		assertThat(successCount.get() + failureCount.get()).isEqualTo(3);
@@ -188,6 +189,7 @@ class ChallengeRoutineServiceConcurrencyTest {
 
 		latch.await(10, TimeUnit.SECONDS);
 		executor.shutdown();
+		executor.awaitTermination(5, TimeUnit.SECONDS);
 
 		// then
 		assertThat(successCount.get() + failureCount.get()).isEqualTo(5);
