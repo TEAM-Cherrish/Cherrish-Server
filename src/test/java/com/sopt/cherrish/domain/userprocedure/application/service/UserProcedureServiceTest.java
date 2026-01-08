@@ -21,9 +21,11 @@ import com.sopt.cherrish.domain.procedure.domain.repository.ProcedureRepository;
 import com.sopt.cherrish.domain.procedure.exception.ProcedureErrorCode;
 import com.sopt.cherrish.domain.procedure.exception.ProcedureException;
 import com.sopt.cherrish.domain.procedure.fixture.ProcedureFixture;
+import com.sopt.cherrish.domain.user.domain.model.User;
 import com.sopt.cherrish.domain.user.domain.repository.UserRepository;
 import com.sopt.cherrish.domain.user.exception.UserErrorCode;
 import com.sopt.cherrish.domain.user.exception.UserException;
+import com.sopt.cherrish.domain.user.fixture.UserFixture;
 import com.sopt.cherrish.domain.userprocedure.domain.model.UserProcedure;
 import com.sopt.cherrish.domain.userprocedure.domain.repository.UserProcedureRepository;
 import com.sopt.cherrish.domain.userprocedure.fixture.UserProcedureFixture;
@@ -52,6 +54,7 @@ class UserProcedureServiceTest {
 	void createUserProceduresSuccess() {
 		// given
 		Long userId = 1L;
+		User user = UserFixture.createUser();
 		LocalDateTime scheduledAt = LocalDateTime.of(2025, 1, 1, 16, 0);
 		Procedure procedure1 = ProcedureFixture.createProcedure("레이저 토닝", "레이저", 0, 1);
 		Procedure procedure2 = ProcedureFixture.createProcedure("필러", "주사", 1, 3);
@@ -65,10 +68,10 @@ class UserProcedureServiceTest {
 		);
 
 		List<Procedure> procedures = List.of(procedure1, procedure2);
-		UserProcedure saved1 = UserProcedureFixture.createUserProcedure(10L, userId, procedure1, scheduledAt, 6);
-		UserProcedure saved2 = UserProcedureFixture.createUserProcedure(11L, userId, procedure2, scheduledAt, 3);
+		UserProcedure saved1 = UserProcedureFixture.createUserProcedure(10L, user, procedure1, scheduledAt, 6);
+		UserProcedure saved2 = UserProcedureFixture.createUserProcedure(11L, user, procedure2, scheduledAt, 3);
 
-		given(userRepository.existsById(userId)).willReturn(true);
+		given(userRepository.findById(userId)).willReturn(java.util.Optional.of(user));
 		given(procedureRepository.findAllById(any())).willReturn(procedures);
 		given(userProcedureRepository.saveAll(any())).willReturn(List.of(saved1, saved2));
 
@@ -96,7 +99,7 @@ class UserProcedureServiceTest {
 			List.of(new UserProcedureCreateRequestItemDto(1L, 6))
 		);
 
-		given(userRepository.existsById(userId)).willReturn(false);
+		given(userRepository.findById(userId)).willReturn(java.util.Optional.empty());
 
 		// when & then
 		assertThatThrownBy(() -> userProcedureService.createUserProcedures(userId, request))
@@ -109,6 +112,7 @@ class UserProcedureServiceTest {
 	void createUserProceduresFailProcedureNotFound() {
 		// given
 		Long userId = 1L;
+		User user = UserFixture.createUser();
 		LocalDateTime scheduledAt = LocalDateTime.of(2025, 1, 1, 16, 0);
 		Procedure procedure = ProcedureFixture.createProcedure("레이저 토닝", "레이저", 0, 1);
 
@@ -120,12 +124,89 @@ class UserProcedureServiceTest {
 			)
 		);
 
-		given(userRepository.existsById(userId)).willReturn(true);
+		given(userRepository.findById(userId)).willReturn(java.util.Optional.of(user));
 		given(procedureRepository.findAllById(any())).willReturn(List.of(procedure));
 
 		// when & then
 		assertThatThrownBy(() -> userProcedureService.createUserProcedures(userId, request))
 			.isInstanceOf(ProcedureException.class)
 			.hasFieldOrPropertyWithValue("errorCode", ProcedureErrorCode.PROCEDURE_NOT_FOUND);
+	}
+
+	@Test
+	@DisplayName("경계값 테스트 - downtimeDays가 0인 경우 정상 등록")
+	void createUserProceduresWithZeroDowntimeDays() {
+		// given
+		Long userId = 1L;
+		User user = UserFixture.createUser();
+		LocalDateTime scheduledAt = LocalDateTime.of(2025, 1, 1, 16, 0);
+		Procedure procedure = ProcedureFixture.createProcedure("레이저 토닝", "레이저", 0, 1);
+
+		UserProcedureCreateRequestDto request = new UserProcedureCreateRequestDto(
+			scheduledAt,
+			List.of(new UserProcedureCreateRequestItemDto(procedure.getId(), 0))
+		);
+
+		List<Procedure> procedures = List.of(procedure);
+		UserProcedure saved = UserProcedureFixture.createUserProcedure(10L, user, procedure, scheduledAt, 0);
+
+		given(userRepository.findById(userId)).willReturn(java.util.Optional.of(user));
+		given(procedureRepository.findAllById(any())).willReturn(procedures);
+		given(userProcedureRepository.saveAll(any())).willReturn(List.of(saved));
+
+		// when
+		UserProcedureCreateResponseDto result = userProcedureService.createUserProcedures(userId, request);
+
+		// then
+		assertThat(result).isNotNull();
+		assertThat(result.getProcedures()).hasSize(1);
+		assertThat(result.getProcedures().get(0).getDowntimeDays()).isEqualTo(0);
+		verify(userProcedureRepository).saveAll(any());
+	}
+
+	@Test
+	@DisplayName("동시성 테스트 - 동일한 scheduledAt에 여러 시술 등록")
+	void createMultipleProceduresWithSameScheduledAt() {
+		// given
+		Long userId = 1L;
+		User user = UserFixture.createUser();
+		LocalDateTime scheduledAt = LocalDateTime.of(2025, 1, 1, 16, 0);
+		Procedure procedure1 = ProcedureFixture.createProcedure("레이저 토닝", "레이저", 0, 1);
+		Procedure procedure2 = ProcedureFixture.createProcedure("필러", "주사", 1, 3);
+		Procedure procedure3 = ProcedureFixture.createProcedure("보톡스", "주사", 2, 4);
+
+		UserProcedureCreateRequestDto request = new UserProcedureCreateRequestDto(
+			scheduledAt,
+			List.of(
+				new UserProcedureCreateRequestItemDto(procedure1.getId(), 5),
+				new UserProcedureCreateRequestItemDto(procedure2.getId(), 7),
+				new UserProcedureCreateRequestItemDto(procedure3.getId(), 10)
+			)
+		);
+
+		List<Procedure> procedures = List.of(procedure1, procedure2, procedure3);
+		UserProcedure saved1 = UserProcedureFixture.createUserProcedure(10L, user, procedure1, scheduledAt, 5);
+		UserProcedure saved2 = UserProcedureFixture.createUserProcedure(11L, user, procedure2, scheduledAt, 7);
+		UserProcedure saved3 = UserProcedureFixture.createUserProcedure(12L, user, procedure3, scheduledAt, 10);
+
+		given(userRepository.findById(userId)).willReturn(java.util.Optional.of(user));
+		given(procedureRepository.findAllById(any())).willReturn(procedures);
+		given(userProcedureRepository.saveAll(any())).willReturn(List.of(saved1, saved2, saved3));
+
+		// when
+		UserProcedureCreateResponseDto result = userProcedureService.createUserProcedures(userId, request);
+
+		// then
+		assertThat(result).isNotNull();
+		assertThat(result.getProcedures()).hasSize(3);
+		// 모든 시술이 동일한 scheduledAt을 가져야 함
+		assertThat(result.getProcedures())
+			.extracting("scheduledAt")
+			.containsOnly(scheduledAt);
+		// 각 시술의 다운타임은 개별적으로 설정됨
+		assertThat(result.getProcedures())
+			.extracting("downtimeDays")
+			.containsExactlyInAnyOrder(5, 7, 10);
+		verify(userProcedureRepository).saveAll(any());
 	}
 }
