@@ -3,6 +3,7 @@ package com.sopt.cherrish.domain.userprocedure.domain.model;
 import java.time.LocalDateTime;
 
 import com.sopt.cherrish.domain.procedure.domain.model.Procedure;
+import com.sopt.cherrish.domain.user.domain.model.User;
 import com.sopt.cherrish.global.entity.BaseTimeEntity;
 
 import jakarta.persistence.Column;
@@ -29,8 +30,9 @@ public class UserProcedure extends BaseTimeEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@Column(nullable = false, name = "user_id")
-	private Long userId;
+	@ManyToOne(fetch = FetchType.LAZY, optional = false)
+	@JoinColumn(name = "user_id", nullable = false)
+	private User user;
 
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
 	@JoinColumn(name = "procedure_id", nullable = false)
@@ -43,8 +45,8 @@ public class UserProcedure extends BaseTimeEntity {
 	private Integer downtimeDays;
 
 	@Builder
-	private UserProcedure(Long userId, Procedure procedure, LocalDateTime scheduledAt, Integer downtimeDays) {
-		this.userId = userId;
+	private UserProcedure(User user, Procedure procedure, LocalDateTime scheduledAt, Integer downtimeDays) {
+		this.user = user;
 		this.procedure = procedure;
 		this.scheduledAt = scheduledAt;
 		this.downtimeDays = downtimeDays;

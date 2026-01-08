@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.util.concurrent.atomic.AtomicLong;
 
 import com.sopt.cherrish.domain.procedure.domain.model.Procedure;
+import com.sopt.cherrish.domain.user.domain.model.User;
 import com.sopt.cherrish.domain.userprocedure.domain.model.UserProcedure;
 import com.sopt.cherrish.global.entity.BaseTimeEntity;
 
@@ -17,23 +18,23 @@ public class UserProcedureFixture {
 	}
 
 	public static UserProcedure createUserProcedure(
-		Long userId,
+		User user,
 		Procedure procedure,
 		LocalDateTime scheduledAt,
 		Integer downtimeDays
 	) {
-		return createUserProcedure(ID_GENERATOR.getAndIncrement(), userId, procedure, scheduledAt, downtimeDays);
+		return createUserProcedure(ID_GENERATOR.getAndIncrement(), user, procedure, scheduledAt, downtimeDays);
 	}
 
 	public static UserProcedure createUserProcedure(
 		Long id,
-		Long userId,
+		User user,
 		Procedure procedure,
 		LocalDateTime scheduledAt,
 		Integer downtimeDays
 	) {
 		UserProcedure userProcedure = UserProcedure.builder()
-			.userId(userId)
+			.user(user)
 			.procedure(procedure)
 			.scheduledAt(scheduledAt)
 			.downtimeDays(downtimeDays)
