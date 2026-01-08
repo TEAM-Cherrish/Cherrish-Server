@@ -357,7 +357,7 @@ class ChallengeRoutineServiceIntegrationTest {
 					} catch (OptimisticLockingFailureException e) {
 						failureCount.incrementAndGet();
 					} catch (Exception e) {
-						// 다른 예외는 무시 (테스트 환경 특성상 발생 가능)
+						// 테스트 환경 특성상 발생 가능한 다른 예외도 실패로 처리
 						failureCount.incrementAndGet();
 					} finally {
 						latch.countDown();
