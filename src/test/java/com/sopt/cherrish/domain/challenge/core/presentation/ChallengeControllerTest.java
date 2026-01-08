@@ -23,9 +23,9 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sopt.cherrish.domain.challenge.core.application.facade.ChallengeCompletionFacade;
 import com.sopt.cherrish.domain.challenge.core.application.facade.ChallengeCreationFacade;
 import com.sopt.cherrish.domain.challenge.core.application.facade.ChallengeQueryFacade;
+import com.sopt.cherrish.domain.challenge.core.application.service.ChallengeRoutineService;
 import com.sopt.cherrish.domain.challenge.core.domain.model.Challenge;
 import com.sopt.cherrish.domain.challenge.core.domain.model.ChallengeRoutine;
 import com.sopt.cherrish.domain.challenge.core.exception.ChallengeErrorCode;
@@ -52,7 +52,7 @@ class ChallengeControllerTest {
 	private ChallengeQueryFacade challengeQueryFacade;
 
 	@MockitoBean
-	private ChallengeCompletionFacade challengeCompletionFacade;
+	private ChallengeRoutineService challengeRoutineService;
 
 	@Nested
 	@DisplayName("POST /api/challenges/{userId} - 챌린지 생성")

@@ -9,9 +9,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.sopt.cherrish.domain.challenge.core.application.facade.ChallengeCompletionFacade;
 import com.sopt.cherrish.domain.challenge.core.application.facade.ChallengeCreationFacade;
 import com.sopt.cherrish.domain.challenge.core.application.facade.ChallengeQueryFacade;
+import com.sopt.cherrish.domain.challenge.core.application.service.ChallengeRoutineService;
 import com.sopt.cherrish.domain.challenge.core.exception.ChallengeErrorCode;
 import com.sopt.cherrish.domain.challenge.core.presentation.dto.request.ChallengeCreateRequestDto;
 import com.sopt.cherrish.domain.challenge.core.presentation.dto.response.ChallengeCreateResponseDto;
@@ -37,7 +37,7 @@ public class ChallengeController {
 
 	private final ChallengeCreationFacade challengeCreationFacade;
 	private final ChallengeQueryFacade challengeQueryFacade;
-	private final ChallengeCompletionFacade challengeCompletionFacade;
+	private final ChallengeRoutineService challengeRoutineService;
 
 	@Operation(
 		summary = "챌린지 생성",
@@ -81,7 +81,7 @@ public class ChallengeController {
 		@PathVariable Long routineId
 	) {
 		RoutineCompletionResponseDto response =
-			challengeCompletionFacade.toggleRoutineCompletion(userId, routineId);
+			challengeRoutineService.toggleCompletion(userId, routineId);
 		return CommonApiResponse.success(SuccessCode.SUCCESS, response);
 	}
 }

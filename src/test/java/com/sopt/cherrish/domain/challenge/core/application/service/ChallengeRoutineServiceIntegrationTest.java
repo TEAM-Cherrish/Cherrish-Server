@@ -1,4 +1,4 @@
-package com.sopt.cherrish.domain.challenge.core.application.facade;
+package com.sopt.cherrish.domain.challenge.core.application.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -12,11 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 
-import com.sopt.cherrish.domain.challenge.core.application.service.ChallengeRoutineService;
-
 import jakarta.persistence.EntityManager;
-import com.sopt.cherrish.domain.challenge.core.application.service.ChallengeService;
-import com.sopt.cherrish.domain.challenge.core.application.service.ChallengeStatisticsService;
 import com.sopt.cherrish.domain.challenge.core.domain.model.Challenge;
 import com.sopt.cherrish.domain.challenge.core.domain.model.ChallengeRoutine;
 import com.sopt.cherrish.domain.challenge.core.domain.model.ChallengeStatistics;
@@ -38,16 +34,13 @@ import com.sopt.cherrish.global.config.TestJpaAuditConfig;
 	TestJpaAuditConfig.class,
 	TestClockConfig.class,
 	QueryDslConfig.class,
-	ChallengeCompletionFacade.class,
-	ChallengeService.class,
-	ChallengeRoutineService.class,
-	ChallengeStatisticsService.class
+	ChallengeRoutineService.class
 })
-@DisplayName("ChallengeCompletionFacade 통합 테스트")
-class ChallengeCompletionFacadeIntegrationTest {
+@DisplayName("ChallengeRoutineService 통합 테스트 - 루틴 완료 토글")
+class ChallengeRoutineServiceIntegrationTest {
 
 	@Autowired
-	private ChallengeCompletionFacade challengeCompletionFacade;
+	private ChallengeRoutineService challengeRoutineService;
 
 	@Autowired
 	private ChallengeRepository challengeRepository;
@@ -104,12 +97,12 @@ class ChallengeCompletionFacadeIntegrationTest {
 		// given
 		User user = createTestUser();
 		Challenge challenge = createChallengeWithRoutines(user, 3);
-		ChallengeRoutine routine = routineRepository.findAll().get(0);
+		ChallengeRoutine routine = routineRepository.findAll().getFirst();
 
 		assertThat(routine.getIsComplete()).isFalse();
 
 		// when
-		RoutineCompletionResponseDto response = challengeCompletionFacade.toggleRoutineCompletion(
+		RoutineCompletionResponseDto response = challengeRoutineService.toggleCompletion(
 			user.getId(), routine.getId());
 
 		// then - Response 검증
@@ -133,7 +126,7 @@ class ChallengeCompletionFacadeIntegrationTest {
 		// given
 		User user = createTestUser();
 		Challenge challenge = createChallengeWithRoutines(user, 3);
-		ChallengeRoutine routine = routineRepository.findAll().get(0);
+		ChallengeRoutine routine = routineRepository.findAll().getFirst();
 
 		// 루틴을 먼저 완료 상태로 만들기
 		routine.complete();
@@ -150,7 +143,7 @@ class ChallengeCompletionFacadeIntegrationTest {
 		assertThat(statistics.getCompletedCount()).isEqualTo(1);
 
 		// when
-		RoutineCompletionResponseDto response = challengeCompletionFacade.toggleRoutineCompletion(
+		RoutineCompletionResponseDto response = challengeRoutineService.toggleCompletion(
 			user.getId(), routine.getId());
 
 		// then - Response 검증
@@ -178,7 +171,7 @@ class ChallengeCompletionFacadeIntegrationTest {
 
 		// when & then - 25% 도달 (14개 중 4개 완료) → 레벨 2
 		for (int i = 0; i < 4; i++) {
-			challengeCompletionFacade.toggleRoutineCompletion(user.getId(), allRoutines.get(i).getId());
+			challengeRoutineService.toggleCompletion(user.getId(), allRoutines.get(i).getId());
 		}
 		ChallengeStatistics statistics = statisticsRepository.findByChallengeId(challenge.getId())
 			.orElseThrow();
@@ -188,7 +181,7 @@ class ChallengeCompletionFacadeIntegrationTest {
 
 		// when & then - 50% 도달 (14개 중 7개 완료) → 레벨 3
 		for (int i = 4; i < 7; i++) {
-			challengeCompletionFacade.toggleRoutineCompletion(user.getId(), allRoutines.get(i).getId());
+			challengeRoutineService.toggleCompletion(user.getId(), allRoutines.get(i).getId());
 		}
 		statistics = statisticsRepository.findByChallengeId(challenge.getId()).orElseThrow();
 		assertThat(statistics.getCompletedCount()).isEqualTo(7);
@@ -197,7 +190,7 @@ class ChallengeCompletionFacadeIntegrationTest {
 
 		// when & then - 75% 도달 (14개 중 11개 완료) → 레벨 4
 		for (int i = 7; i < 11; i++) {
-			challengeCompletionFacade.toggleRoutineCompletion(user.getId(), allRoutines.get(i).getId());
+			challengeRoutineService.toggleCompletion(user.getId(), allRoutines.get(i).getId());
 		}
 		statistics = statisticsRepository.findByChallengeId(challenge.getId()).orElseThrow();
 		assertThat(statistics.getCompletedCount()).isEqualTo(11);
@@ -214,7 +207,7 @@ class ChallengeCompletionFacadeIntegrationTest {
 
 		// when & then
 		assertThatThrownBy(() ->
-			challengeCompletionFacade.toggleRoutineCompletion(user.getId(), nonExistentRoutineId))
+			challengeRoutineService.toggleCompletion(user.getId(), nonExistentRoutineId))
 			.isInstanceOf(ChallengeException.class)
 			.hasFieldOrPropertyWithValue("errorCode", ChallengeErrorCode.ROUTINE_NOT_FOUND);
 	}
@@ -230,11 +223,11 @@ class ChallengeCompletionFacadeIntegrationTest {
 			.build());
 
 		Challenge challenge = createChallengeWithRoutines(owner, 3);
-		ChallengeRoutine routine = routineRepository.findAll().get(0);
+		ChallengeRoutine routine = routineRepository.findAll().getFirst();
 
 		// when & then - 다른 사용자가 접근 시도
 		assertThatThrownBy(() ->
-			challengeCompletionFacade.toggleRoutineCompletion(otherUser.getId(), routine.getId()))
+			challengeRoutineService.toggleCompletion(otherUser.getId(), routine.getId()))
 			.isInstanceOf(ChallengeException.class)
 			.hasFieldOrPropertyWithValue("errorCode", ChallengeErrorCode.UNAUTHORIZED_ACCESS);
 
@@ -253,7 +246,7 @@ class ChallengeCompletionFacadeIntegrationTest {
 		// given
 		User user = createTestUser();
 		Challenge challenge = createChallengeWithRoutines(user, 1);
-		ChallengeRoutine routine = routineRepository.findAll().get(0);
+		ChallengeRoutine routine = routineRepository.findAll().getFirst();
 
 		// 초기 상태 확인
 		ChallengeStatistics statistics = statisticsRepository.findByChallengeId(challenge.getId())
@@ -261,14 +254,14 @@ class ChallengeCompletionFacadeIntegrationTest {
 		assertThat(statistics.getCompletedCount()).isEqualTo(0);
 
 		// when - 미완료 상태에서 토글 (완료 취소 시도, 실제로는 완료 처리)
-		challengeCompletionFacade.toggleRoutineCompletion(user.getId(), routine.getId());
+		challengeRoutineService.toggleCompletion(user.getId(), routine.getId());
 
 		// then - completedCount가 1로 증가
 		statistics = statisticsRepository.findByChallengeId(challenge.getId()).orElseThrow();
 		assertThat(statistics.getCompletedCount()).isEqualTo(1);
 
 		// when - 완료 상태에서 토글 (완료 취소)
-		challengeCompletionFacade.toggleRoutineCompletion(user.getId(), routine.getId());
+		challengeRoutineService.toggleCompletion(user.getId(), routine.getId());
 
 		// then - completedCount가 0으로 감소 (0 미만으로는 내려가지 않음)
 		statistics = statisticsRepository.findByChallengeId(challenge.getId()).orElseThrow();
@@ -286,7 +279,7 @@ class ChallengeCompletionFacadeIntegrationTest {
 			.build());
 
 		Challenge challenge = createChallengeWithRoutines(owner, 3);
-		ChallengeRoutine routine = routineRepository.findAll().get(0);
+		ChallengeRoutine routine = routineRepository.findAll().getFirst();
 
 		Integer initialCompletedCount = statisticsRepository.findByChallengeId(challenge.getId())
 			.orElseThrow()
@@ -294,7 +287,7 @@ class ChallengeCompletionFacadeIntegrationTest {
 
 		// when - 권한이 없는 사용자가 시도
 		try {
-			challengeCompletionFacade.toggleRoutineCompletion(otherUser.getId(), routine.getId());
+			challengeRoutineService.toggleCompletion(otherUser.getId(), routine.getId());
 		} catch (ChallengeException e) {
 			// expected
 		}
@@ -314,10 +307,10 @@ class ChallengeCompletionFacadeIntegrationTest {
 		// given
 		User user = createTestUser();
 		Challenge challenge = createChallengeWithRoutines(user, 3);
-		ChallengeRoutine routine = routineRepository.findAll().get(0);
+		ChallengeRoutine routine = routineRepository.findAll().getFirst();
 
 		// when
-		RoutineCompletionResponseDto response = challengeCompletionFacade.toggleRoutineCompletion(
+		RoutineCompletionResponseDto response = challengeRoutineService.toggleCompletion(
 			user.getId(), routine.getId());
 
 		// then - Response가 정상적으로 생성되고, 데이터가 올바름
