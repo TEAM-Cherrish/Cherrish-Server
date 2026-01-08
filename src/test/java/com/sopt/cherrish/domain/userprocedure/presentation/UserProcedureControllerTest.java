@@ -1,14 +1,18 @@
 package com.sopt.cherrish.domain.userprocedure.presentation;
 
+import static com.sopt.cherrish.domain.userprocedure.fixture.UserProcedureTestFixture.DEFAULT_SCHEDULED_AT_STRING;
+import static com.sopt.cherrish.domain.userprocedure.fixture.UserProcedureTestFixture.createInvalidRequestMissingScheduledAt;
+import static com.sopt.cherrish.domain.userprocedure.fixture.UserProcedureTestFixture.createInvalidRequestWithEmptyProcedures;
+import static com.sopt.cherrish.domain.userprocedure.fixture.UserProcedureTestFixture.createInvalidRequestWithNegativeDowntime;
+import static com.sopt.cherrish.domain.userprocedure.fixture.UserProcedureTestFixture.createRequestWithSingleProcedure;
+import static com.sopt.cherrish.domain.userprocedure.fixture.UserProcedureTestFixture.createValidRequest;
+import static com.sopt.cherrish.domain.userprocedure.fixture.UserProcedureTestFixture.createValidResponse;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-import java.time.LocalDateTime;
-import java.util.List;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -26,9 +30,7 @@ import com.sopt.cherrish.domain.user.exception.UserErrorCode;
 import com.sopt.cherrish.domain.user.exception.UserException;
 import com.sopt.cherrish.domain.userprocedure.application.service.UserProcedureService;
 import com.sopt.cherrish.domain.userprocedure.presentation.dto.request.UserProcedureCreateRequestDto;
-import com.sopt.cherrish.domain.userprocedure.presentation.dto.request.UserProcedureCreateRequestItemDto;
 import com.sopt.cherrish.domain.userprocedure.presentation.dto.response.UserProcedureCreateResponseDto;
-import com.sopt.cherrish.domain.userprocedure.presentation.dto.response.UserProcedureResponseDto;
 
 @WebMvcTest(UserProcedureController.class)
 @DisplayName("UserProcedureController 통합 테스트")
@@ -52,33 +54,8 @@ class UserProcedureControllerTest {
 		void success() throws Exception {
 			// given
 			Long userId = 1L;
-			LocalDateTime scheduledAt = LocalDateTime.of(2025, 1, 1, 16, 0);
-			UserProcedureCreateRequestDto request = new UserProcedureCreateRequestDto(
-				scheduledAt,
-				List.of(
-					new UserProcedureCreateRequestItemDto(1L, 6),
-					new UserProcedureCreateRequestItemDto(2L, 3)
-				)
-			);
-
-			UserProcedureCreateResponseDto response = UserProcedureCreateResponseDto.builder()
-				.procedures(List.of(
-					UserProcedureResponseDto.builder()
-						.userProcedureId(10L)
-						.procedureId(1L)
-						.procedureName("레이저 토닝")
-						.scheduledAt(scheduledAt)
-						.downtimeDays(6)
-						.build(),
-					UserProcedureResponseDto.builder()
-						.userProcedureId(11L)
-						.procedureId(2L)
-						.procedureName("필러")
-						.scheduledAt(scheduledAt)
-						.downtimeDays(3)
-						.build()
-				))
-				.build();
+			UserProcedureCreateRequestDto request = createValidRequest();
+			UserProcedureCreateResponseDto response = createValidResponse();
 
 			given(userProcedureService.createUserProcedures(eq(userId), any(UserProcedureCreateRequestDto.class)))
 				.willReturn(response);
@@ -95,7 +72,7 @@ class UserProcedureControllerTest {
 				.andExpect(jsonPath("$.data.procedures[0].userProcedureId").value(10))
 				.andExpect(jsonPath("$.data.procedures[0].procedureId").value(1))
 				.andExpect(jsonPath("$.data.procedures[0].procedureName").value("레이저 토닝"))
-				.andExpect(jsonPath("$.data.procedures[0].scheduledAt").value("2025-01-01T16:00:00"))
+				.andExpect(jsonPath("$.data.procedures[0].scheduledAt").value(DEFAULT_SCHEDULED_AT_STRING))
 				.andExpect(jsonPath("$.data.procedures[0].downtimeDays").value(6));
 		}
 
@@ -104,10 +81,7 @@ class UserProcedureControllerTest {
 		void failUserNotFound() throws Exception {
 			// given
 			Long userId = 999L;
-			UserProcedureCreateRequestDto request = new UserProcedureCreateRequestDto(
-				LocalDateTime.of(2025, 1, 1, 16, 0),
-				List.of(new UserProcedureCreateRequestItemDto(1L, 6))
-			);
+			UserProcedureCreateRequestDto request = createRequestWithSingleProcedure(1L, 6);
 
 			given(userProcedureService.createUserProcedures(eq(userId), any(UserProcedureCreateRequestDto.class)))
 				.willThrow(new UserException(UserErrorCode.USER_NOT_FOUND));
@@ -124,10 +98,7 @@ class UserProcedureControllerTest {
 		void failProcedureNotFound() throws Exception {
 			// given
 			Long userId = 1L;
-			UserProcedureCreateRequestDto request = new UserProcedureCreateRequestDto(
-				LocalDateTime.of(2025, 1, 1, 16, 0),
-				List.of(new UserProcedureCreateRequestItemDto(999L, 6))
-			);
+			UserProcedureCreateRequestDto request = createRequestWithSingleProcedure(999L, 6);
 
 			given(userProcedureService.createUserProcedures(eq(userId), any(UserProcedureCreateRequestDto.class)))
 				.willThrow(new ProcedureException(ProcedureErrorCode.PROCEDURE_NOT_FOUND));
@@ -143,63 +114,48 @@ class UserProcedureControllerTest {
 		@DisplayName("실패 - 유효성 검증 실패 (빈 시술 목록)")
 		void failValidationEmptyProcedures() throws Exception {
 			// given
-			String invalidRequest = """
-				{
-					"scheduledAt": "2025-01-01T16:00:00",
-					"procedures": []
-				}
-				""";
+			String invalidRequest = createInvalidRequestWithEmptyProcedures();
 
 			// when & then
 			mockMvc.perform(post("/api/users/{userId}/procedures", 1L)
 					.contentType(MediaType.APPLICATION_JSON)
 					.content(invalidRequest))
-				.andExpect(status().isBadRequest());
+				.andExpect(status().isBadRequest())
+				.andExpect(jsonPath("$.code").value("C001"))
+				.andExpect(jsonPath("$.message").value("입력값이 올바르지 않습니다"))
+				.andExpect(jsonPath("$.data.procedures").value("시술 목록은 비어 있을 수 없습니다"));
 		}
 
 		@Test
 		@DisplayName("실패 - 유효성 검증 실패 (다운타임 음수)")
 		void failValidationNegativeDowntime() throws Exception {
 			// given
-			String invalidRequest = """
-				{
-					"scheduledAt": "2025-01-01T16:00:00",
-					"procedures": [
-						{
-							"procedureId": 1,
-							"downtimeDays": -1
-						}
-					]
-				}
-				""";
+			String invalidRequest = createInvalidRequestWithNegativeDowntime();
 
 			// when & then
 			mockMvc.perform(post("/api/users/{userId}/procedures", 1L)
 					.contentType(MediaType.APPLICATION_JSON)
 					.content(invalidRequest))
-				.andExpect(status().isBadRequest());
+				.andExpect(status().isBadRequest())
+				.andExpect(jsonPath("$.code").value("C001"))
+				.andExpect(jsonPath("$.message").value("입력값이 올바르지 않습니다"))
+				.andExpect(jsonPath("$.data['procedures[0].downtimeDays']").value("다운타임은 0 이상이어야 합니다"));
 		}
 
 		@Test
 		@DisplayName("실패 - 유효성 검증 실패 (예약 날짜 누락)")
 		void failValidationMissingScheduledAt() throws Exception {
 			// given
-			String invalidRequest = """
-				{
-					"procedures": [
-						{
-							"procedureId": 1,
-							"downtimeDays": 3
-						}
-					]
-				}
-				""";
+			String invalidRequest = createInvalidRequestMissingScheduledAt();
 
 			// when & then
 			mockMvc.perform(post("/api/users/{userId}/procedures", 1L)
 					.contentType(MediaType.APPLICATION_JSON)
 					.content(invalidRequest))
-				.andExpect(status().isBadRequest());
+				.andExpect(status().isBadRequest())
+				.andExpect(jsonPath("$.code").value("C001"))
+				.andExpect(jsonPath("$.message").value("입력값이 올바르지 않습니다"))
+				.andExpect(jsonPath("$.data.scheduledAt").value("예약 날짜 및 시간은 필수입니다"));
 		}
 	}
 }
