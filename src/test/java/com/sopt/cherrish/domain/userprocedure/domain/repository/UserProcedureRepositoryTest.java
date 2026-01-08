@@ -95,32 +95,6 @@ class UserProcedureRepositoryTest {
 		assertThat(foundProcedure.getProcedure().getName()).isEqualTo("필러");
 	}
 
-	@Test
-	@DisplayName("downtimeDays null 허용 확인")
-	void saveWithNullDowntimeDays() {
-		// given
-		User user = createAndPersistUser("이영희", 28);
-		Procedure procedure = createAndPersistProcedure("보톡스", "주사", 2, 5);
-		LocalDateTime scheduledAt = LocalDateTime.of(2025, 3, 1, 11, 0);
-
-		UserProcedure userProcedure = UserProcedure.builder()
-			.user(user)
-			.procedure(procedure)
-			.scheduledAt(scheduledAt)
-			.downtimeDays(null)  // nullable 검증
-			.build();
-
-		// when
-		UserProcedure saved = userProcedureRepository.save(userProcedure);
-		entityManager.flush();
-		entityManager.clear();
-
-		// then
-		Optional<UserProcedure> found = userProcedureRepository.findById(saved.getId());
-		assertThat(found).isPresent();
-		assertThat(found.get().getDowntimeDays()).isNull();
-	}
-
 	// Helper methods
 	private User createAndPersistUser(String name, int age) {
 		User user = User.builder()

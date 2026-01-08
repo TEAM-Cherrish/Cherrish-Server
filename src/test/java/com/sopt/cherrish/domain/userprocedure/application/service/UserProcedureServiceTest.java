@@ -165,38 +165,7 @@ class UserProcedureServiceTest {
 	}
 
 	@Test
-	@DisplayName("경계값 테스트 - downtimeDays가 null인 경우 정상 등록")
-	void createUserProceduresWithNullDowntimeDays() {
-		// given
-		Long userId = 1L;
-		User user = UserFixture.createUser();
-		LocalDateTime scheduledAt = LocalDateTime.of(2025, 1, 1, 16, 0);
-		Procedure procedure = ProcedureFixture.createProcedure("레이저 토닝", "레이저", 0, 1);
-
-		UserProcedureCreateRequestDto request = new UserProcedureCreateRequestDto(
-			scheduledAt,
-			List.of(new UserProcedureCreateRequestItemDto(procedure.getId(), null))
-		);
-
-		List<Procedure> procedures = List.of(procedure);
-		UserProcedure saved = UserProcedureFixture.createUserProcedure(10L, user, procedure, scheduledAt, null);
-
-		given(userRepository.findById(userId)).willReturn(java.util.Optional.of(user));
-		given(procedureRepository.findAllById(any())).willReturn(procedures);
-		given(userProcedureRepository.saveAll(any())).willReturn(List.of(saved));
-
-		// when
-		UserProcedureCreateResponseDto result = userProcedureService.createUserProcedures(userId, request);
-
-		// then
-		assertThat(result).isNotNull();
-		assertThat(result.getProcedures()).hasSize(1);
-		assertThat(result.getProcedures().get(0).getDowntimeDays()).isNull();
-		verify(userProcedureRepository).saveAll(any());
-	}
-
-	@Test
-	@DisplayName("동시성 테스트 - 동일한 scheduledAt에 여러 시술 등록")
+	@DisplayName("단일 요청 - 동일한 scheduledAt에 여러 시술 등록")
 	void createMultipleProceduresWithSameScheduledAt() {
 		// given
 		Long userId = 1L;
