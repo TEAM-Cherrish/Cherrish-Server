@@ -1,5 +1,6 @@
 package com.sopt.cherrish.domain.userprocedure.application.service;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -59,11 +60,11 @@ public class UserProcedureService {
 			Set<Long> foundIds = procedures.stream()
 				.map(Procedure::getId)
 				.collect(Collectors.toSet());
-			Set<Long> missingIds = procedureIds.stream()
-				.filter(id -> !foundIds.contains(id))
-				.collect(Collectors.toSet());
 
-			log.warn("Procedures not found: {}", missingIds);
+			Set<Long> missingIds = new HashSet<>(procedureIds);
+			missingIds.removeAll(foundIds);
+
+			log.warn("존재하지 않는 시술 ID: {}", missingIds);
 			throw new ProcedureException(ProcedureErrorCode.PROCEDURE_NOT_FOUND);
 		}
 
