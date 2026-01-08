@@ -31,13 +31,14 @@ public interface ChallengeRoutineRepository extends JpaRepository<ChallengeRouti
 	/**
 	 * 루틴 조회 (Challenge와 Statistics를 함께 fetch)
 	 * N+1 쿼리 방지 및 통계 중복 조회 방지
+	 * INNER JOIN을 사용하여 Statistics가 반드시 존재함을 보장
 	 * @param id 루틴 ID
 	 * @return 루틴 (Challenge와 Statistics 포함)
 	 */
 	@Query("""
 		SELECT r FROM ChallengeRoutine r
 		JOIN FETCH r.challenge c
-		LEFT JOIN FETCH c.statistics
+		INNER JOIN FETCH c.statistics
 		WHERE r.id = :id
 	""")
 	Optional<ChallengeRoutine> findByIdWithChallengeAndStatistics(@Param("id") Long id);
