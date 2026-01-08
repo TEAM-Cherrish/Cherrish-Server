@@ -204,7 +204,8 @@ class ChallengeControllerTest {
 			mockMvc.perform(patch("/api/challenges/{userId}/routines/{routineId}", DEFAULT_USER_ID, DEFAULT_ROUTINE_ID))
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$.data.routineId").value(DEFAULT_ROUTINE_ID))
-				.andExpect(jsonPath("$.data.isComplete").value(isComplete));
+				.andExpect(jsonPath("$.data.isComplete").value(isComplete))
+				.andExpect(jsonPath("$.data.message").value(message));
 		}
 
 		@Test
