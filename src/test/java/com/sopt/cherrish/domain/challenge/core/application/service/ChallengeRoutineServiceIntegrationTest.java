@@ -315,10 +315,11 @@ class ChallengeRoutineServiceIntegrationTest {
 			Challenge challenge = fixture.createChallengeWithoutStatistics(user);
 			ChallengeRoutine routine = routineRepository.findAll().getFirst();
 
-			// when & then - 통계가 없으므로 예외 발생
+			// when & then - 통계가 없으므로 ChallengeException 발생
 			assertThatThrownBy(() ->
 				challengeRoutineService.toggleCompletion(user.getId(), routine.getId()))
-				.isInstanceOf(Exception.class);
+				.isInstanceOf(ChallengeException.class)
+				.hasFieldOrPropertyWithValue("errorCode", ChallengeErrorCode.STATISTICS_NOT_FOUND);
 
 			// then - 루틴 상태가 변경되지 않았음 (롤백됨)
 			ChallengeRoutine unchangedRoutine = routineRepository.findById(routine.getId()).orElseThrow();
