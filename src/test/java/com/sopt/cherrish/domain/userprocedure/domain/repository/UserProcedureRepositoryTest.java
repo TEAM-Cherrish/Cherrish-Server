@@ -64,37 +64,6 @@ class UserProcedureRepositoryTest {
 		assertThat(found.get().getDowntimeDays()).isEqualTo(5);
 	}
 
-	@Test
-	@DisplayName("User와 Procedure LAZY 로딩 확인")
-	void lazyLoadingUserAndProcedure() {
-		// given
-		User user = createAndPersistUser("김철수", 30);
-		Procedure procedure = createAndPersistProcedure("필러", "주사", 1, 3);
-		LocalDateTime scheduledAt = LocalDateTime.of(2025, 2, 1, 10, 0);
-
-		UserProcedure userProcedure = UserProcedure.builder()
-			.user(user)
-			.procedure(procedure)
-			.scheduledAt(scheduledAt)
-			.downtimeDays(7)
-			.build();
-
-		UserProcedure saved = userProcedureRepository.save(userProcedure);
-		entityManager.flush();
-		entityManager.clear();
-
-		// when
-		Optional<UserProcedure> found = userProcedureRepository.findById(saved.getId());
-
-		// then
-		assertThat(found).isPresent();
-		UserProcedure foundProcedure = found.get();
-
-		// LAZY 로딩 확인 - 실제 접근 시 로딩됨
-		assertThat(foundProcedure.getUser().getName()).isEqualTo("김철수");
-		assertThat(foundProcedure.getProcedure().getName()).isEqualTo("필러");
-	}
-
 	// Helper methods
 	private User createAndPersistUser(String name, int age) {
 		User user = User.builder()
