@@ -6,11 +6,6 @@ import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -18,7 +13,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.dao.OptimisticLockingFailureException;
 
 import com.sopt.cherrish.domain.challenge.core.domain.model.Challenge;
 import com.sopt.cherrish.domain.challenge.core.domain.model.ChallengeRoutine;
@@ -279,71 +273,6 @@ class ChallengeRoutineServiceIntegrationTest {
 			// then - 루틴 상태가 변경되지 않았음 (트랜잭션 롤백)
 			ChallengeRoutine unchangedRoutine = routineRepository.findById(routine.getId()).orElseThrow();
 			assertThat(unchangedRoutine.getIsComplete()).isFalse();
-		}
-	}
-
-	@Nested
-	@DisplayName("동시성 제어 - 낙관적 락")
-	class ConcurrencyTests {
-
-		/**
-		 * 낙관적 락 동작 검증 테스트
-		 *
-		 * 제한사항:
-		 * - @DataJpaTest는 단일 스레드 환경으로 실제 동시성 테스트 불가
-		 * - 트랜잭션이 순차적으로 실행되므로, 실제 낙관적 락 충돌 재현 어려움
-		 * - 이 테스트는 낙관적 락이 '설정되어 있음'을 확인하는 수준
-		 *
-		 * 실제 동시성 검증을 위해서는:
-		 * - @SpringBootTest + 실제 DB 사용
-		 * - 여러 트랜잭션이 동시에 실행되는 환경 필요
-		 */
-		@Test
-		@DisplayName("동시성 - 같은 챌린지의 여러 루틴을 동시에 완료할 때 낙관적 락 동작")
-		void concurrentRoutineCompletionWithOptimisticLock() throws Exception {
-			// given
-			User user = fixture.createDefaultUser();
-			Challenge challenge = fixture.createChallengeWithRoutines(user, ROUTINE_COUNT_LARGE);
-			List<ChallengeRoutine> routines = routineRepository.findAll();
-
-			// when - 3개 스레드가 동시에 다른 루틴 완료 시도
-			ExecutorService executor = Executors.newFixedThreadPool(3);
-			CountDownLatch latch = new CountDownLatch(3);
-
-			AtomicInteger successCount = new AtomicInteger(0);
-			AtomicInteger failureCount = new AtomicInteger(0);
-
-			for (int i = 0; i < 3; i++) {
-				int index = i;
-				executor.submit(() -> {
-					try {
-						challengeRoutineService.toggleCompletion(
-							user.getId(),
-							routines.get(index).getId()
-						);
-						successCount.incrementAndGet();
-					} catch (OptimisticLockingFailureException e) {
-						failureCount.incrementAndGet();
-					} catch (Exception e) {
-						// 테스트 환경 특성상 발생 가능한 다른 예외도 실패로 처리
-						failureCount.incrementAndGet();
-					} finally {
-						latch.countDown();
-					}
-				});
-			}
-
-			latch.await(5, TimeUnit.SECONDS);
-			executor.shutdown();
-
-			// then - 모든 스레드가 완료되었는지 확인
-			assertThat(successCount.get() + failureCount.get()).isEqualTo(3);
-
-			// 성공한 루틴만 completedCount가 증가했는지 확인
-			// @DataJpaTest 환경 제약으로 실제 동시성 검증은 제한적
-			ChallengeStatistics stats = statisticsRepository.findByChallengeId(challenge.getId())
-				.orElseThrow();
-			assertThat(stats.getCompletedCount()).isBetween(0, 3);
 		}
 	}
 
