@@ -93,7 +93,8 @@ class ChallengeRoutineServiceConcurrencyTest {
 				try {
 					// 각 스레드가 독립적인 트랜잭션에서 실행
 					transactionTemplate.execute(status -> {
-						challengeRoutineService.toggleCompletion(userId, Objects.requireNonNull(routineIds).get(index));
+						Long routineId = Objects.requireNonNull(routineIds).get(index);
+						challengeRoutineService.toggleCompletion(userId, routineId);
 						return null;
 					});
 					successCount.incrementAndGet();

@@ -1,6 +1,9 @@
 package com.sopt.cherrish.domain.challenge.core.application.service;
 
-import static com.sopt.cherrish.domain.challenge.core.application.service.CheeringMessageGenerator.*;
+import static com.sopt.cherrish.domain.challenge.core.application.service.CheeringMessageGenerator.FIRST_DAY_MESSAGE;
+import static com.sopt.cherrish.domain.challenge.core.application.service.CheeringMessageGenerator.HALFWAY_MESSAGE;
+import static com.sopt.cherrish.domain.challenge.core.application.service.CheeringMessageGenerator.LAST_DAY_MESSAGE;
+import static com.sopt.cherrish.domain.challenge.core.application.service.CheeringMessageGenerator.PREPARATION_MESSAGE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
