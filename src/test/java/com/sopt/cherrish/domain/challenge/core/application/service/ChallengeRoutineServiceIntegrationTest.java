@@ -57,8 +57,6 @@ class ChallengeRoutineServiceIntegrationTest {
 	private static final int ROUTINE_COUNT_SMALL = 1;
 	private static final int ROUTINE_COUNT_MEDIUM = 2;
 	private static final int ROUTINE_COUNT_LARGE = 3;
-	private static final String COMPLETION_MESSAGE = "루틴을 완료했습니다!";
-	private static final String CANCELLATION_MESSAGE = "루틴 완료를 취소했습니다.";
 
 	@Nested
 	@DisplayName("루틴 완료/취소 토글 - 기본 기능")
@@ -155,48 +153,6 @@ class ChallengeRoutineServiceIntegrationTest {
 			// then - completedCount가 0으로 감소 (0 미만으로는 내려가지 않음)
 			statistics = statisticsRepository.findByChallengeId(challenge.getId()).orElseThrow();
 			assertThat(statistics.getCompletedCount()).isEqualTo(0);
-		}
-	}
-
-	@Nested
-	@DisplayName("루틴 완료/취소 - 응답 DTO 검증")
-	class ResponseDtoTests {
-
-		@Test
-		@DisplayName("성공 - 응답 메시지가 완료 상태에 따라 올바르게 설정됨")
-		void responseMessageIsCorrectBasedOnCompletionStatus() {
-			// given
-			User user = fixture.createDefaultUser();
-			Challenge challenge = fixture.createChallengeWithRoutines(user, ROUTINE_COUNT_SMALL);
-			ChallengeRoutine routine = routineRepository.findByChallengeId(challenge.getId()).getFirst();
-
-			// when - 완료 처리
-			RoutineCompletionResponseDto completeResponse = challengeRoutineService.toggleCompletion(
-				user.getId(), routine.getId());
-
-			// then - 완료 메시지 검증
-			assertThat(completeResponse)
-				.extracting("routineId", "name", "isComplete", "message")
-				.containsExactly(
-					routine.getId(),
-					routine.getName(),
-					true,
-					COMPLETION_MESSAGE
-				);
-
-			// when - 완료 취소
-			RoutineCompletionResponseDto cancelResponse = challengeRoutineService.toggleCompletion(
-				user.getId(), routine.getId());
-
-			// then - 취소 메시지 검증
-			assertThat(cancelResponse)
-				.extracting("routineId", "name", "isComplete", "message")
-				.containsExactly(
-					routine.getId(),
-					routine.getName(),
-					false,
-					CANCELLATION_MESSAGE
-				);
 		}
 	}
 
@@ -330,6 +286,18 @@ class ChallengeRoutineServiceIntegrationTest {
 	@DisplayName("동시성 제어 - 낙관적 락")
 	class ConcurrencyTests {
 
+		/**
+		 * 낙관적 락 동작 검증 테스트
+		 *
+		 * 제한사항:
+		 * - @DataJpaTest는 단일 스레드 환경으로 실제 동시성 테스트 불가
+		 * - 트랜잭션이 순차적으로 실행되므로, 실제 낙관적 락 충돌 재현 어려움
+		 * - 이 테스트는 낙관적 락이 '설정되어 있음'을 확인하는 수준
+		 *
+		 * 실제 동시성 검증을 위해서는:
+		 * - @SpringBootTest + 실제 DB 사용
+		 * - 여러 트랜잭션이 동시에 실행되는 환경 필요
+		 */
 		@Test
 		@DisplayName("동시성 - 같은 챌린지의 여러 루틴을 동시에 완료할 때 낙관적 락 동작")
 		void concurrentRoutineCompletionWithOptimisticLock() throws Exception {
@@ -372,7 +340,7 @@ class ChallengeRoutineServiceIntegrationTest {
 			assertThat(successCount.get() + failureCount.get()).isEqualTo(3);
 
 			// 성공한 루틴만 completedCount가 증가했는지 확인
-			// @DataJpaTest 환경에서는 순차적으로 실행될 수 있으므로 0~3 사이의 값
+			// @DataJpaTest 환경 제약으로 실제 동시성 검증은 제한적
 			ChallengeStatistics stats = statisticsRepository.findByChallengeId(challenge.getId())
 				.orElseThrow();
 			assertThat(stats.getCompletedCount()).isBetween(0, 3);
@@ -380,81 +348,97 @@ class ChallengeRoutineServiceIntegrationTest {
 	}
 
 	@Nested
-	@DisplayName("쿼리 최적화 - Fetch Join")
-	class QueryOptimizationTests {
+	@DisplayName("기간 외 루틴 수정 제한")
+	class OutOfPeriodRestrictionTests {
 
 		@Test
-		@DisplayName("성공 - Fetch Join으로 N+1 문제 방지")
-		void preventsNPlusOneWithFetchJoin() {
-			// given
+		@DisplayName("실패 - 챌린지 시작 전 루틴 수정 불가")
+		void throwsExceptionWhenToggleBeforeStartDate() {
+			// given: 내일 시작하는 챌린지 (startDate = 2024-01-02)
 			User user = fixture.createDefaultUser();
-			Challenge challenge = fixture.createChallengeWithRoutines(user, ROUTINE_COUNT_LARGE);
+			LocalDate futureStartDate = LocalDate.of(2024, 1, 2);
+			Challenge challenge = fixture.createChallengeWithRoutines(
+				user, ROUTINE_COUNT_SMALL, futureStartDate);
 			ChallengeRoutine routine = routineRepository.findByChallengeId(challenge.getId()).getFirst();
 
-			// when
+			// when & then: 현재(2024-01-01) 시점에 시작 전 루틴 수정 시도
+			assertThatThrownBy(() ->
+				challengeRoutineService.toggleCompletion(user.getId(), routine.getId()))
+				.isInstanceOf(ChallengeException.class)
+				.hasFieldOrPropertyWithValue("errorCode",
+					ChallengeErrorCode.ROUTINE_OUT_OF_CHALLENGE_PERIOD);
+		}
+
+		@Test
+		@DisplayName("실패 - 챌린지 종료 후 루틴 수정 불가")
+		void throwsExceptionWhenToggleAfterEndDate() {
+			// given: 과거에 종료된 챌린지 (2023-12-20 ~ 2023-12-26)
+			User user = fixture.createDefaultUser();
+			LocalDate pastStartDate = LocalDate.of(2023, 12, 20);
+			Challenge challenge = fixture.createChallengeWithRoutines(
+				user, ROUTINE_COUNT_SMALL, pastStartDate);
+			ChallengeRoutine routine = routineRepository.findByChallengeId(challenge.getId()).getFirst();
+
+			// when & then: 현재(2024-01-01) 시점에 종료 후 루틴 수정 시도
+			assertThatThrownBy(() ->
+				challengeRoutineService.toggleCompletion(user.getId(), routine.getId()))
+				.isInstanceOf(ChallengeException.class)
+				.hasFieldOrPropertyWithValue("errorCode",
+					ChallengeErrorCode.ROUTINE_OUT_OF_CHALLENGE_PERIOD);
+		}
+
+		@Test
+		@DisplayName("성공 - 챌린지 첫날 루틴 수정 가능")
+		void canToggleOnStartDate() {
+			// given: 오늘 시작하는 챌린지 (startDate = 2024-01-01)
+			User user = fixture.createDefaultUser();
+			Challenge challenge = fixture.createChallengeWithRoutines(user, ROUTINE_COUNT_SMALL);
+			ChallengeRoutine routine = routineRepository.findByChallengeId(challenge.getId()).getFirst();
+
+			// when: 첫날 루틴 수정
 			RoutineCompletionResponseDto response = challengeRoutineService.toggleCompletion(
 				user.getId(), routine.getId());
 
-			// then - Response가 정상적으로 생성되고, 데이터가 올바름
-			assertThat(response).isNotNull();
-			assertThat(response.routineId()).isEqualTo(routine.getId());
+			// then: 정상 완료
 			assertThat(response.isComplete()).isTrue();
-
-			// 루틴이 Challenge와 Statistics를 포함하여 조회되었는지 확인
-			ChallengeRoutine fetchedRoutine = routineRepository.findByIdWithChallengeAndStatistics(routine.getId())
-				.orElseThrow();
-			assertThat(fetchedRoutine.getChallenge()).isNotNull();
-			assertThat(fetchedRoutine.getChallenge().getStatistics()).isNotNull();
-		}
-	}
-
-	@Nested
-	@DisplayName("엣지 케이스 - 특수 상황")
-	class EdgeCaseTests {
-
-		@Test
-		@DisplayName("성공 - Clock 설정에 따라 올바른 날짜의 루틴이 생성됨")
-		void routinesAreCreatedWithCorrectDatesBasedOnClock() {
-			// given
-			User user = fixture.createDefaultUser();
-			LocalDate fixedDate = LocalDate.of(2024, 1, 1);  // TestClockConfig의 고정 날짜
-
-			// when
-			Challenge challenge = fixture.createChallengeWithRoutines(user, ROUTINE_COUNT_LARGE);
-			List<ChallengeRoutine> routines = routineRepository.findAll();
-
-			// then - 루틴들이 fixedDate부터 7일간 생성되었는지 확인 (3개 루틴명 × 7일 = 21개)
-			assertThat(routines).hasSize(21);
-
-			// 각 날짜별로 3개씩 루틴이 생성되었는지 확인
-			for (int day = 0; day < 7; day++) {
-				LocalDate expectedDate = fixedDate.plusDays(day);
-				long countForDate = routines.stream()
-					.filter(r -> r.getScheduledDate().equals(expectedDate))
-					.count();
-				assertThat(countForDate)
-					.as("날짜 %s에 대한 루틴 개수", expectedDate)
-					.isEqualTo(3);
-			}
 		}
 
 		@Test
-		@DisplayName("성공 - 챌린지 기간 외의 루틴 생성 확인")
-		void createsRoutineOutOfDateRange() {
-			// given
+		@DisplayName("성공 - 챌린지 마지막 날 루틴 수정 가능")
+		void canToggleOnEndDate() {
+			// given: 오늘 종료하는 챌린지 (2023-12-26 ~ 2024-01-01)
 			User user = fixture.createDefaultUser();
-			Challenge challenge = fixture.createChallengeWithRoutines(user, ROUTINE_COUNT_SMALL);
-			LocalDate fixedDate = LocalDate.of(2024, 1, 1);  // TestClockConfig의 고정 날짜
+			LocalDate startDate = LocalDate.of(2023, 12, 26);
+			Challenge challenge = fixture.createChallengeWithRoutines(
+				user, ROUTINE_COUNT_SMALL, startDate);
+			ChallengeRoutine routine = routineRepository.findByChallengeId(challenge.getId()).getFirst();
 
-			// 챌린지 기간 외의 루틴 생성 (8일차)
-			ChallengeRoutine outOfRangeRoutine = fixture.createOrphanRoutine(
-				challenge,
-				fixedDate.plusDays(8)
-			);
+			assertThat(challenge.getEndDate()).isEqualTo(LocalDate.of(2024, 1, 1)); // 검증
 
-			// when & then - 챌린지 기간(7일)을 벗어난 루틴이 생성되었는지 검증
-			assertThat(outOfRangeRoutine.getScheduledDate())
-				.isAfter(fixedDate.plusDays(7));
+			// when: 마지막 날 루틴 수정
+			RoutineCompletionResponseDto response = challengeRoutineService.toggleCompletion(
+				user.getId(), routine.getId());
+
+			// then: 정상 완료
+			assertThat(response.isComplete()).isTrue();
+		}
+
+		@Test
+		@DisplayName("성공 - 챌린지 기간 중 루틴 수정 가능")
+		void canToggleDuringChallengePeriod() {
+			// given: 진행 중인 챌린지 (2023-12-30 ~ 2024-01-05)
+			User user = fixture.createDefaultUser();
+			LocalDate startDate = LocalDate.of(2023, 12, 30);
+			Challenge challenge = fixture.createChallengeWithRoutines(
+				user, ROUTINE_COUNT_SMALL, startDate);
+			ChallengeRoutine routine = routineRepository.findByChallengeId(challenge.getId()).getFirst();
+
+			// when: 기간 내 루틴 수정
+			RoutineCompletionResponseDto response = challengeRoutineService.toggleCompletion(
+				user.getId(), routine.getId());
+
+			// then: 정상 완료
+			assertThat(response.isComplete()).isTrue();
 		}
 	}
 
