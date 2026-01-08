@@ -84,6 +84,10 @@ public class ChallengeRoutineService {
 		ChallengeRoutine routine = getRoutineByIdWithStatistics(routineId);
 
 		routine.getChallenge().validateOwner(userId);
+
+		LocalDate today = LocalDate.now(clock);
+		routine.validateWithinChallengePeriod(today);
+
 		routine.toggleCompletion();
 
 		updateStatistics(routine);

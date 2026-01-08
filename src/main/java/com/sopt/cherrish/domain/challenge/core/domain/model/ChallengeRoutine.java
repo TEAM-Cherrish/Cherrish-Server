@@ -2,6 +2,8 @@ package com.sopt.cherrish.domain.challenge.core.domain.model;
 
 import java.time.LocalDate;
 
+import com.sopt.cherrish.domain.challenge.core.exception.ChallengeErrorCode;
+import com.sopt.cherrish.domain.challenge.core.exception.ChallengeException;
 import com.sopt.cherrish.global.entity.BaseTimeEntity;
 
 import jakarta.persistence.Column;
@@ -47,9 +49,17 @@ public class ChallengeRoutine extends BaseTimeEntity {
 
 	@Builder
 	private ChallengeRoutine(Challenge challenge, String name, LocalDate scheduledDate) {
+		validateScheduledDateWithinChallengePeriod(challenge, scheduledDate);
 		this.challenge = challenge;
 		this.name = name;
 		this.scheduledDate = scheduledDate;
+	}
+
+	private void validateScheduledDateWithinChallengePeriod(Challenge challenge, LocalDate scheduledDate) {
+		if (challenge == null || scheduledDate == null) {
+			return; // JPA가 엔티티를 로드할 때는 검증 스킵
+		}
+		validateDateWithinChallengePeriod(challenge, scheduledDate);
 	}
 
 	public void complete() {
@@ -58,11 +68,35 @@ public class ChallengeRoutine extends BaseTimeEntity {
 
 	/**
 	 * 완료 상태 토글
-	 * @return 새로운 완료 상태 (true: 완료, false: 미완료)
 	 */
-	public boolean toggleCompletion() {
+	public void toggleCompletion() {
 		this.isComplete = !this.isComplete;
-		return this.isComplete;
+	}
+
+	/**
+	 * 챌린지 기간 내 루틴인지 검증
+	 * @param today 현재 날짜
+	 * @throws ChallengeException 챌린지 기간 외의 루틴인 경우
+	 */
+	public void validateWithinChallengePeriod(LocalDate today) {
+		validateDateWithinChallengePeriod(this.challenge, today);
+	}
+
+	/**
+	 * 주어진 날짜가 챌린지 기간 내인지 검증 (공통 로직)
+	 * @param challenge 챌린지
+	 * @param date 검증할 날짜
+	 * @throws ChallengeException 챌린지 기간 외의 날짜인 경우
+	 */
+	private void validateDateWithinChallengePeriod(Challenge challenge, LocalDate date) {
+		LocalDate startDate = challenge.getStartDate();
+		LocalDate endDate = challenge.getEndDate();
+
+		if (date.isBefore(startDate) || date.isAfter(endDate)) {
+			throw new ChallengeException(
+				ChallengeErrorCode.ROUTINE_OUT_OF_CHALLENGE_PERIOD
+			);
+		}
 	}
 
 	public boolean isScheduledFor(LocalDate date) {

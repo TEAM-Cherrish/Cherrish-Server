@@ -14,7 +14,8 @@ public enum ChallengeErrorCode implements ErrorType {
 	CHALLENGE_NOT_FOUND("CH003", "챌린지를 찾을 수 없습니다", 404),
 	ROUTINE_NOT_FOUND("CH004", "루틴을 찾을 수 없습니다", 404),
 	UNAUTHORIZED_ACCESS("CH005", "해당 루틴에 대한 권한이 없습니다", 403),
-	STATISTICS_NOT_FOUND("CH006", "챌린지 통계를 찾을 수 없습니다", 404);
+	STATISTICS_NOT_FOUND("CH006", "챌린지 통계를 찾을 수 없습니다", 404),
+	ROUTINE_OUT_OF_CHALLENGE_PERIOD("CH007", "챌린지 기간 외의 루틴은 수정할 수 없습니다", 400);
 
 	private final String code;
 	private final String message;
