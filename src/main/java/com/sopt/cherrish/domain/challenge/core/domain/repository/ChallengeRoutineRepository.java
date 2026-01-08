@@ -13,6 +13,13 @@ import com.sopt.cherrish.domain.challenge.core.domain.model.ChallengeRoutine;
 public interface ChallengeRoutineRepository extends JpaRepository<ChallengeRoutine, Long> {
 
 	/**
+	 * 챌린지의 모든 루틴 조회
+	 * @param challengeId 챌린지 ID
+	 * @return 루틴 리스트
+	 */
+	List<ChallengeRoutine> findByChallengeId(Long challengeId);
+
+	/**
 	 * 챌린지의 특정 날짜 루틴 조회
 	 * @param challengeId 챌린지 ID
 	 * @param scheduledDate 예정일

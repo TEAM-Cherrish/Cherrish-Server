@@ -334,12 +334,12 @@ class ChallengeQueryFacadeIntegrationTest {
 	 * @param count 완료할 루틴 개수
 	 */
 	private void completeRoutines(Challenge challenge, int count) {
-		List<ChallengeRoutine> allRoutines = routineRepository.findAll();
-		assertThat(allRoutines.size()).isGreaterThanOrEqualTo(count);
+		List<ChallengeRoutine> challengeRoutines = routineRepository.findByChallengeId(challenge.getId());
+		assertThat(challengeRoutines.size()).isGreaterThanOrEqualTo(count);
 
 		List<ChallengeRoutine> updatedRoutines = new ArrayList<>();
 		for (int i = 0; i < count; i++) {
-			ChallengeRoutine routine = allRoutines.get(i);
+			ChallengeRoutine routine = challengeRoutines.get(i);
 			routine.complete();
 			updatedRoutines.add(routine);
 		}
