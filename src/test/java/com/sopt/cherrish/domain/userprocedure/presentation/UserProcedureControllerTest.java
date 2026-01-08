@@ -69,11 +69,18 @@ class UserProcedureControllerTest {
 				.andExpect(jsonPath("$.message").value("성공"))
 				.andExpect(jsonPath("$.data.procedures").isArray())
 				.andExpect(jsonPath("$.data.procedures.length()").value(2))
+				// 첫 번째 시술 검증
 				.andExpect(jsonPath("$.data.procedures[0].userProcedureId").value(10))
 				.andExpect(jsonPath("$.data.procedures[0].procedureId").value(1))
 				.andExpect(jsonPath("$.data.procedures[0].procedureName").value("레이저 토닝"))
 				.andExpect(jsonPath("$.data.procedures[0].scheduledAt").value(DEFAULT_SCHEDULED_AT_STRING))
-				.andExpect(jsonPath("$.data.procedures[0].downtimeDays").value(6));
+				.andExpect(jsonPath("$.data.procedures[0].downtimeDays").value(6))
+				// 두 번째 시술 검증
+				.andExpect(jsonPath("$.data.procedures[1].userProcedureId").value(11))
+				.andExpect(jsonPath("$.data.procedures[1].procedureId").value(2))
+				.andExpect(jsonPath("$.data.procedures[1].procedureName").value("필러"))
+				.andExpect(jsonPath("$.data.procedures[1].scheduledAt").value(DEFAULT_SCHEDULED_AT_STRING))
+				.andExpect(jsonPath("$.data.procedures[1].downtimeDays").value(3));
 		}
 
 		@Test

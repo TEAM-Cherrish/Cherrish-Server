@@ -66,9 +66,19 @@ class UserProcedureResponseDtoTest {
 
 		// then
 		assertThat(result.getProcedures()).hasSize(2);
+
+		// 첫 번째 항목 검증
 		assertThat(result.getProcedures().get(0).getUserProcedureId()).isEqualTo(10L);
+		assertThat(result.getProcedures().get(0).getProcedureId()).isEqualTo(procedure1.getId());
 		assertThat(result.getProcedures().get(0).getProcedureName()).isEqualTo("레이저 토닝");
+		assertThat(result.getProcedures().get(0).getScheduledAt()).isEqualTo(scheduledAt);
+		assertThat(result.getProcedures().get(0).getDowntimeDays()).isEqualTo(5);
+
+		// 두 번째 항목 검증
 		assertThat(result.getProcedures().get(1).getUserProcedureId()).isEqualTo(11L);
+		assertThat(result.getProcedures().get(1).getProcedureId()).isEqualTo(procedure2.getId());
 		assertThat(result.getProcedures().get(1).getProcedureName()).isEqualTo("필러");
+		assertThat(result.getProcedures().get(1).getScheduledAt()).isEqualTo(scheduledAt);
+		assertThat(result.getProcedures().get(1).getDowntimeDays()).isEqualTo(7);
 	}
 }
