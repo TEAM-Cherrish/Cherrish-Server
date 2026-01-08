@@ -121,17 +121,6 @@ public class ChallengeIntegrationTestFixture {
 	}
 
 	/**
-	 * 챌린지 없이 루틴만 생성 (테스트용 특수 케이스)
-	 */
-	public ChallengeRoutine createOrphanRoutine(Challenge challenge, LocalDate scheduledDate) {
-		return routineRepository.save(ChallengeRoutine.builder()
-			.challenge(challenge)
-			.name("고아 루틴")
-			.scheduledDate(scheduledDate)
-			.build());
-	}
-
-	/**
 	 * 통계 없이 챌린지만 생성 (테스트용 특수 케이스)
 	 */
 	public Challenge createChallengeWithoutStatistics(User user) {

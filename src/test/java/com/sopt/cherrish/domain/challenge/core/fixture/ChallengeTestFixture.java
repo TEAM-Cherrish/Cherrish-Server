@@ -88,26 +88,6 @@ public class ChallengeTestFixture {
 	}
 
 	/**
-	 * Mock 테스트용 Response 생성 (ID 명시적 지정)
-	 */
-	public static ChallengeCreateResponseDto createChallengeResponse(
-		Challenge challenge, List<ChallengeRoutine> routines, Long challengeId) {
-		List<ChallengeRoutineResponseDto> routineDtos = routines.stream()
-			.map(ChallengeRoutineResponseDto::from)
-			.toList();
-
-		return new ChallengeCreateResponseDto(
-			challengeId,
-			challenge.getTitle(),
-			challenge.getTotalDays(),
-			challenge.getStartDate(),
-			challenge.getEndDate(),
-			routines.size(),
-			routineDtos
-		);
-	}
-
-	/**
 	 * 컨트롤러 테스트용: 도메인 객체 없이 Response 직접 생성
 	 */
 	public static ChallengeCreateResponseDto createMockChallengeCreateResponse() {
