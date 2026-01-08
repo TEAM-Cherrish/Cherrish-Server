@@ -123,7 +123,7 @@ class ChallengeQueryFacadeIntegrationTest {
 	void getActiveChallengeDetailSuccessHalfwayPoint() {
 		// given - 4일차 (7일 챌린지의 중간은 4일차는 아니지만 가정)
 		LocalDate startDate = ChallengeTestFixture.FIXED_START_DATE.minusDays(3);
-		Challenge challenge = createAndSaveChallengeWithRoutines(TEST_USER_ID, startDate, 1);
+		createAndSaveChallengeWithRoutines(TEST_USER_ID, startDate, 1);
 
 		// when
 		ChallengeDetailResponseDto response = challengeQueryFacade.getActiveChallengeDetail(TEST_USER_ID);
@@ -139,7 +139,7 @@ class ChallengeQueryFacadeIntegrationTest {
 	void getActiveChallengeDetailSuccessLastDay() {
 		// given - 7일차
 		LocalDate startDate = ChallengeTestFixture.FIXED_START_DATE.minusDays(6);
-		Challenge challenge = createAndSaveChallengeWithRoutines(TEST_USER_ID, startDate, 2);
+		createAndSaveChallengeWithRoutines(TEST_USER_ID, startDate, 2);
 
 		// when
 		ChallengeDetailResponseDto response = challengeQueryFacade.getActiveChallengeDetail(TEST_USER_ID);
@@ -155,7 +155,7 @@ class ChallengeQueryFacadeIntegrationTest {
 	void getActiveChallengeDetailFetchJoinPreventsNPlusOne() {
 		// given
 		LocalDate startDate = ChallengeTestFixture.FIXED_START_DATE;
-		Challenge challenge = createAndSaveChallengeWithRoutines(TEST_USER_ID, startDate, DEFAULT_ROUTINE_COUNT_PER_DAY);
+		createAndSaveChallengeWithRoutines(TEST_USER_ID, startDate, DEFAULT_ROUTINE_COUNT_PER_DAY);
 
 		// 영속성 컨텍스트 초기화 - 캐시 없이 실제 쿼리 실행 확인
 		flushAndClear();
@@ -184,7 +184,7 @@ class ChallengeQueryFacadeIntegrationTest {
 	void getActiveChallengeDetailOnlyTodayRoutines() {
 		// given
 		LocalDate startDate = ChallengeTestFixture.FIXED_START_DATE.minusDays(1);
-		Challenge challenge = createAndSaveChallengeWithRoutines(TEST_USER_ID, startDate, DEFAULT_ROUTINE_COUNT_PER_DAY);
+		createAndSaveChallengeWithRoutines(TEST_USER_ID, startDate, DEFAULT_ROUTINE_COUNT_PER_DAY);
 
 		// when
 		ChallengeDetailResponseDto response = challengeQueryFacade.getActiveChallengeDetail(TEST_USER_ID);
