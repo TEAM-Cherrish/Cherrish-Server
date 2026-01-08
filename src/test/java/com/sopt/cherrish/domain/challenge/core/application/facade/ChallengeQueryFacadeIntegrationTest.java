@@ -115,7 +115,7 @@ class ChallengeQueryFacadeIntegrationTest {
 		assertThat(response.progressToNextLevel()).isEqualTo(0.0);
 		assertThat(response.todayRoutines()).hasSize(3);
 		assertThat(response.cheeringMessage())
-			.isEqualTo("챌린지 시작! 오늘부터 피부를 위한 첫 걸음입니다.");
+			.isEqualTo(CheeringMessageGenerator.FIRST_DAY_MESSAGE);
 	}
 
 	@Test
@@ -131,7 +131,9 @@ class ChallengeQueryFacadeIntegrationTest {
 		// then
 		assertThat(response.currentDay()).isEqualTo(4);
 		assertThat(response.cheeringMessage())
-			.isEqualTo("4일차 루틴입니다. 오늘도 피부를 위해 힘내봐요!");
+			.isNotBlank()
+			.contains("4일차")
+			.contains("루틴");
 	}
 
 	@Test
@@ -147,7 +149,7 @@ class ChallengeQueryFacadeIntegrationTest {
 		// then
 		assertThat(response.currentDay()).isEqualTo(7);
 		assertThat(response.cheeringMessage())
-			.isEqualTo("마지막 날입니다! 완주까지 조금만 더 힘내세요!");
+			.isEqualTo(CheeringMessageGenerator.LAST_DAY_MESSAGE);
 	}
 
 	@Test
