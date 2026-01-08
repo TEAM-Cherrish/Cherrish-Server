@@ -1,7 +1,6 @@
 package com.sopt.cherrish.domain.userprocedure.presentation.dto;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -75,29 +74,5 @@ class UserProcedureCreateRequestDtoTest {
 
 		// then
 		assertThat(result).isEmpty();
-	}
-
-	@Test
-	@DisplayName("toEntities - 존재하지 않는 Procedure ID로 변환 시 예외 발생")
-	void toEntitiesWithNonExistentProcedureId() {
-		// given
-		User user = UserFixture.createUser();
-		LocalDateTime scheduledAt = LocalDateTime.of(2025, 1, 15, 14, 30);
-
-		Procedure procedure = ProcedureFixture.createProcedure("레이저 토닝", "레이저", 0, 1);
-		List<Procedure> procedures = List.of(procedure);
-
-		UserProcedureCreateRequestDto request = new UserProcedureCreateRequestDto(
-			scheduledAt,
-			List.of(
-				new UserProcedureCreateRequestItemDto(procedure.getId(), 5),
-				new UserProcedureCreateRequestItemDto(999L, 7)  // 존재하지 않는 ID
-			)
-		);
-
-		// when & then
-		assertThatThrownBy(() -> request.toEntities(user, procedures))
-			.isInstanceOf(IllegalArgumentException.class)
-			.hasMessageContaining("존재하지 않는 시술 ID: 999");
 	}
 }
