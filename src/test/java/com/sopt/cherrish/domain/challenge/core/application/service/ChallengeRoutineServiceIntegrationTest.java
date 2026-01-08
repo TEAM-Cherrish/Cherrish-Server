@@ -23,7 +23,6 @@ import org.springframework.dao.OptimisticLockingFailureException;
 import com.sopt.cherrish.domain.challenge.core.domain.model.Challenge;
 import com.sopt.cherrish.domain.challenge.core.domain.model.ChallengeRoutine;
 import com.sopt.cherrish.domain.challenge.core.domain.model.ChallengeStatistics;
-import com.sopt.cherrish.domain.challenge.core.domain.repository.ChallengeRepository;
 import com.sopt.cherrish.domain.challenge.core.domain.repository.ChallengeRoutineRepository;
 import com.sopt.cherrish.domain.challenge.core.domain.repository.ChallengeStatisticsRepository;
 import com.sopt.cherrish.domain.challenge.core.exception.ChallengeErrorCode;
