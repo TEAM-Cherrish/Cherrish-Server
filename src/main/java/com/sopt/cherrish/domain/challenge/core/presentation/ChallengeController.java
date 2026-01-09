@@ -114,19 +114,17 @@ public class ChallengeController {
 	// TODO: Spring Security 추가 시 RequestHeader userId 제거하고 @AuthenticationPrincipal 사용
 	@Operation(
 		summary = "커스텀 루틴 추가",
-		description = "활성 챌린지에 커스텀 루틴을 추가합니다. 오늘부터 챌린지 종료일까지 매일 루틴이 추가되며, 통계가 자동 업데이트됩니다."
+		description = "현재 사용자의 활성 챌린지에 커스텀 루틴을 추가합니다. 오늘부터 챌린지 종료일까지 매일 루틴이 추가되며, 통계가 자동 업데이트됩니다."
 	)
 	@ApiExceptions({ChallengeErrorCode.class, UserErrorCode.class, ErrorCode.class})
-	@PostMapping("/{challengeId}/routines")
+	@PostMapping("/routines")
 	public CommonApiResponse<CustomRoutineAddResponseDto> addCustomRoutine(
 		@Parameter(description = "사용자 ID (X-User-Id 헤더)", required = true, example = "1")
 		@RequestHeader("X-User-Id") Long userId,
-		@Parameter(description = "챌린지 ID", required = true, example = "1")
-		@PathVariable Long challengeId,
 		@Valid @RequestBody CustomRoutineAddRequestDto request
 	) {
 		CustomRoutineAddResponseDto response = challengeCustomRoutineFacade.addCustomRoutine(
-			userId, challengeId, request
+			userId, request
 		);
 		return CommonApiResponse.success(SuccessCode.SUCCESS, response);
 	}

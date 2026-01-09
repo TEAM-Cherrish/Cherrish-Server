@@ -33,44 +33,37 @@ public class ChallengeCustomRoutineFacade {
 	 * 트랜잭션 경계: 이 메서드 전체
 	 *
 	 * @param userId 사용자 ID
-	 * @param challengeId 챌린지 ID
 	 * @param request 커스텀 루틴 추가 요청 DTO
 	 * @return 커스텀 루틴 추가 응답 DTO
 	 */
 	@Transactional
 	public CustomRoutineAddResponseDto addCustomRoutine(
 		Long userId,
-		Long challengeId,
 		CustomRoutineAddRequestDto request
 	) {
-		// 1. 챌린지 조회 (통계와 함께)
+		// 1. 활성 챌린지 조회 (통계와 함께)
 		Challenge challenge = challengeService.getActiveChallengeWithStatistics(userId);
 
-		// 2. 챌린지 ID 일치 검증
-		if (!challenge.getId().equals(challengeId)) {
-			throw new ChallengeException(ChallengeErrorCode.CHALLENGE_NOT_FOUND);
-		}
-
-		// 3. 소유자 검증
+		// 2. 소유자 검증
 		challenge.validateOwner(userId);
 
-		// 4. 활성 챌린지 검증
+		// 3. 활성 챌린지 검증
 		challenge.validateActive();
 
-		// 5. 오늘 날짜 계산
+		// 4. 오늘 날짜 계산
 		LocalDate today = LocalDate.now(clock);
 
-		// 6. 커스텀 루틴 Batch Insert
+		// 5. 커스텀 루틴 Batch Insert
 		List<ChallengeRoutine> routines = routineService.createAndSaveCustomRoutine(
 			challenge, request.routineName(), today
 		);
 
-		// 7. 통계 업데이트 (totalRoutineCount 증가, cherryLevel 재계산)
+		// 6. 통계 업데이트 (totalRoutineCount 증가, cherryLevel 재계산)
 		ChallengeStatistics statistics = challenge.getStatistics();
 		statistics.incrementTotalRoutineCount(routines.size());
 		statistics.updateCherryLevel();
 
-		// 8. Response DTO 변환
+		// 7. Response DTO 변환
 		return CustomRoutineAddResponseDto.from(
 			challenge,
 			request.routineName(),
