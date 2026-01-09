@@ -13,8 +13,10 @@ import com.sopt.cherrish.domain.challenge.core.application.facade.ChallengeQuery
 import com.sopt.cherrish.domain.challenge.core.application.service.ChallengeRoutineService;
 import com.sopt.cherrish.domain.challenge.core.exception.ChallengeErrorCode;
 import com.sopt.cherrish.domain.challenge.core.presentation.dto.request.ChallengeCreateRequestDto;
+import com.sopt.cherrish.domain.challenge.core.presentation.dto.request.RoutineUpdateRequestDto;
 import com.sopt.cherrish.domain.challenge.core.presentation.dto.response.ChallengeCreateResponseDto;
 import com.sopt.cherrish.domain.challenge.core.presentation.dto.response.ChallengeDetailResponseDto;
+import com.sopt.cherrish.domain.challenge.core.presentation.dto.response.RoutineBatchUpdateResponseDto;
 import com.sopt.cherrish.domain.challenge.core.presentation.dto.response.RoutineCompletionResponseDto;
 import com.sopt.cherrish.domain.user.exception.UserErrorCode;
 import com.sopt.cherrish.global.annotation.ApiExceptions;
@@ -84,6 +86,23 @@ public class ChallengeController {
 	) {
 		RoutineCompletionResponseDto response =
 			challengeRoutineService.toggleCompletion(userId, routineId);
+		return CommonApiResponse.success(SuccessCode.SUCCESS, response);
+	}
+
+	// TODO: Spring Security 추가 시 PathVariable userId 제거하고 @AuthenticationPrincipal 사용
+	@Operation(
+		summary = "루틴 일괄 업데이트",
+		description = "여러 루틴의 완료 상태를 한 번에 업데이트합니다. " +
+			"All or Nothing 방식으로 동작하여 하나라도 실패하면 전체 롤백됩니다."
+	)
+	@ApiExceptions({ChallengeErrorCode.class, UserErrorCode.class, ErrorCode.class})
+	@PatchMapping("/{userId}/routines")
+	public CommonApiResponse<RoutineBatchUpdateResponseDto> updateMultipleRoutines(
+		@Parameter(description = "사용자 ID", required = true, example = "1")
+		@PathVariable Long userId,
+		@Valid @RequestBody RoutineUpdateRequestDto request
+	) {
+		RoutineBatchUpdateResponseDto response = challengeRoutineService.updateMultipleRoutines(userId, request);
 		return CommonApiResponse.success(SuccessCode.SUCCESS, response);
 	}
 }
