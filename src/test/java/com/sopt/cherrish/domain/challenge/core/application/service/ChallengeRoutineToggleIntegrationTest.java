@@ -36,8 +36,8 @@ import com.sopt.cherrish.global.config.TestJpaAuditConfig;
 	ChallengeRoutineService.class,
 	ChallengeIntegrationTestFixture.class
 })
-@DisplayName("ChallengeRoutineService 통합 테스트")
-class ChallengeRoutineServiceIntegrationTest {
+@DisplayName("ChallengeRoutineService 통합 테스트 - 단일 루틴 토글")
+class ChallengeRoutineToggleIntegrationTest {
 
 	@Autowired
 	private ChallengeRoutineService challengeRoutineService;
