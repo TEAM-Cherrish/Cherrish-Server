@@ -92,8 +92,8 @@ public class ChallengeController {
 	// TODO: Spring Security 추가 시 PathVariable userId 제거하고 @AuthenticationPrincipal 사용
 	@Operation(
 		summary = "루틴 일괄 업데이트",
-		description = "여러 루틴의 완료 상태를 한 번에 업데이트합니다. " +
-			"All or Nothing 방식으로 동작하여 하나라도 실패하면 전체 롤백됩니다."
+		description = "여러 루틴의 완료 상태를 한 번에 업데이트합니다. "
+			+ "All or Nothing 방식으로 동작하여 하나라도 실패하면 전체 롤백됩니다."
 	)
 	@ApiExceptions({ChallengeErrorCode.class, UserErrorCode.class, ErrorCode.class})
 	@PatchMapping("/{userId}/routines")
