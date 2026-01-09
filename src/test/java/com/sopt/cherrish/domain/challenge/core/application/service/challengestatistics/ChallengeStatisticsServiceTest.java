@@ -1,4 +1,4 @@
-package com.sopt.cherrish.domain.challenge.core.application.service;
+package com.sopt.cherrish.domain.challenge.core.application.service.challengestatistics;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -16,6 +16,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.sopt.cherrish.domain.challenge.core.application.service.ChallengeStatisticsService;
 import com.sopt.cherrish.domain.challenge.core.domain.model.Challenge;
 import com.sopt.cherrish.domain.challenge.core.domain.model.ChallengeRoutine;
 import com.sopt.cherrish.domain.challenge.core.domain.model.ChallengeStatistics;
