@@ -2,9 +2,9 @@ package com.sopt.cherrish.domain.userprocedure.presentation;
 
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.PathVariable;
 
 import com.sopt.cherrish.domain.procedure.exception.ProcedureErrorCode;
 import com.sopt.cherrish.domain.user.exception.UserErrorCode;
@@ -24,7 +24,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/api/users/{userId}/procedures")
+@RequestMapping("/api/users/procedures")
 @RequiredArgsConstructor
 @Tag(name = "UserProcedure", description = "사용자 시술 일정 API")
 public class UserProcedureController {
@@ -38,8 +38,8 @@ public class UserProcedureController {
 	@ApiExceptions({UserProcedureErrorCode.class, ProcedureErrorCode.class, UserErrorCode.class, ErrorCode.class})
 	@PostMapping
 	public CommonApiResponse<UserProcedureCreateResponseDto> createUserProcedures(
-		@Parameter(description = "사용자 ID", required = true, example = "1")
-		@PathVariable Long userId,
+		@Parameter(description = "사용자 ID (X-User-Id 헤더)", required = true, example = "1")
+		@RequestHeader("X-User-Id") Long userId,
 		@Valid @RequestBody UserProcedureCreateRequestDto request
 	) {
 		UserProcedureCreateResponseDto response = userProcedureService.createUserProcedures(userId, request);
