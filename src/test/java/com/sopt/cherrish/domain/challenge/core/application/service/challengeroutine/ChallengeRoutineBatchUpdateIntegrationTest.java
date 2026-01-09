@@ -19,7 +19,7 @@ import com.sopt.cherrish.domain.challenge.core.domain.model.ChallengeStatistics;
 import com.sopt.cherrish.domain.challenge.core.domain.repository.ChallengeRoutineRepository;
 import com.sopt.cherrish.domain.challenge.core.domain.repository.ChallengeStatisticsRepository;
 import com.sopt.cherrish.domain.challenge.core.fixture.ChallengeIntegrationTestFixture;
-import com.sopt.cherrish.domain.challenge.core.presentation.dto.request.RoutineUpdateItemDto;
+import com.sopt.cherrish.domain.challenge.core.presentation.dto.request.RoutineUpdateItemRequestDto;
 import com.sopt.cherrish.domain.challenge.core.presentation.dto.request.RoutineUpdateRequestDto;
 import com.sopt.cherrish.domain.challenge.core.presentation.dto.response.ChallengeRoutineResponseDto;
 import com.sopt.cherrish.domain.challenge.core.presentation.dto.response.RoutineBatchUpdateResponseDto;
@@ -71,7 +71,7 @@ class ChallengeRoutineBatchUpdateIntegrationTest {
 			RoutineUpdateRequestDto request =
 				new RoutineUpdateRequestDto(
 					routines.stream()
-						.map(r -> new RoutineUpdateItemDto(r.getId(), true))
+						.map(r -> new RoutineUpdateItemRequestDto(r.getId(), true))
 						.toList()
 				);
 
@@ -120,7 +120,7 @@ class ChallengeRoutineBatchUpdateIntegrationTest {
 			RoutineUpdateRequestDto request =
 				new RoutineUpdateRequestDto(
 					routines.stream()
-						.map(r -> new RoutineUpdateItemDto(r.getId(), false))
+						.map(r -> new RoutineUpdateItemRequestDto(r.getId(), false))
 						.toList()
 				);
 
@@ -168,9 +168,9 @@ class ChallengeRoutineBatchUpdateIntegrationTest {
 			RoutineUpdateRequestDto request =
 				new RoutineUpdateRequestDto(
 					List.of(
-						new RoutineUpdateItemDto(allRoutines.get(0).getId(), false),  // 완료 → 미완료 (-1)
-						new RoutineUpdateItemDto(allRoutines.get(1).getId(), true),   // 완료 → 완료 (0)
-						new RoutineUpdateItemDto(allRoutines.get(2).getId(), true)    // 미완료 → 완료 (+1)
+						new RoutineUpdateItemRequestDto(allRoutines.get(0).getId(), false),  // 완료 → 미완료 (-1)
+						new RoutineUpdateItemRequestDto(allRoutines.get(1).getId(), true),   // 완료 → 완료 (0)
+						new RoutineUpdateItemRequestDto(allRoutines.get(2).getId(), true)    // 미완료 → 완료 (+1)
 					)
 				);
 
@@ -210,7 +210,7 @@ class ChallengeRoutineBatchUpdateIntegrationTest {
 			RoutineUpdateRequestDto request =
 				new RoutineUpdateRequestDto(
 					routines.stream()
-						.map(r -> new RoutineUpdateItemDto(r.getId(), false))  // false → false (변경 없음)
+						.map(r -> new RoutineUpdateItemRequestDto(r.getId(), false))  // false → false (변경 없음)
 						.toList()
 				);
 
@@ -255,11 +255,11 @@ class ChallengeRoutineBatchUpdateIntegrationTest {
 			RoutineUpdateRequestDto request =
 				new RoutineUpdateRequestDto(
 					List.of(
-						new RoutineUpdateItemDto(allRoutines.get(0).getId(), false),  // 완료 → 미완료 (-1)
-						new RoutineUpdateItemDto(allRoutines.get(1).getId(), false),  // 완료 → 미완료 (-1)
-						new RoutineUpdateItemDto(allRoutines.get(5).getId(), true),   // 미완료 → 완료 (+1)
-						new RoutineUpdateItemDto(allRoutines.get(6).getId(), true),   // 미완료 → 완료 (+1)
-						new RoutineUpdateItemDto(allRoutines.get(7).getId(), true)    // 미완료 → 완료 (+1)
+						new RoutineUpdateItemRequestDto(allRoutines.get(0).getId(), false),  // 완료 → 미완료 (-1)
+						new RoutineUpdateItemRequestDto(allRoutines.get(1).getId(), false),  // 완료 → 미완료 (-1)
+						new RoutineUpdateItemRequestDto(allRoutines.get(5).getId(), true),   // 미완료 → 완료 (+1)
+						new RoutineUpdateItemRequestDto(allRoutines.get(6).getId(), true),   // 미완료 → 완료 (+1)
+						new RoutineUpdateItemRequestDto(allRoutines.get(7).getId(), true)    // 미완료 → 완료 (+1)
 					)
 				);
 
@@ -290,7 +290,7 @@ class ChallengeRoutineBatchUpdateIntegrationTest {
 				new RoutineUpdateRequestDto(
 					allRoutines.stream()
 						.limit(6)
-						.map(r -> new RoutineUpdateItemDto(r.getId(), true))
+						.map(r -> new RoutineUpdateItemRequestDto(r.getId(), true))
 						.toList()
 				);
 
@@ -330,7 +330,7 @@ class ChallengeRoutineBatchUpdateIntegrationTest {
 				new RoutineUpdateRequestDto(
 					allRoutines.stream()
 						.limit(6)
-						.map(r -> new RoutineUpdateItemDto(r.getId(), false))
+						.map(r -> new RoutineUpdateItemRequestDto(r.getId(), false))
 						.toList()
 				);
 

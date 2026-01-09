@@ -5,7 +5,7 @@ import java.util.List;
 
 import com.sopt.cherrish.domain.challenge.core.domain.model.Challenge;
 import com.sopt.cherrish.domain.challenge.core.presentation.dto.request.ChallengeCreateRequestDto;
-import com.sopt.cherrish.domain.challenge.core.presentation.dto.request.RoutineUpdateItemDto;
+import com.sopt.cherrish.domain.challenge.core.presentation.dto.request.RoutineUpdateItemRequestDto;
 import com.sopt.cherrish.domain.challenge.core.presentation.dto.request.RoutineUpdateRequestDto;
 import com.sopt.cherrish.domain.challenge.core.presentation.dto.response.ChallengeCreateResponseDto;
 import com.sopt.cherrish.domain.challenge.core.presentation.dto.response.ChallengeDetailResponseDto;
@@ -150,9 +150,9 @@ public class ChallengeTestFixture {
 	public static RoutineUpdateRequestDto createValidRoutineUpdateRequest() {
 		return new RoutineUpdateRequestDto(
 			List.of(
-				new RoutineUpdateItemDto(1L, true),
-				new RoutineUpdateItemDto(2L, false),
-				new RoutineUpdateItemDto(3L, true)
+				new RoutineUpdateItemRequestDto(1L, true),
+				new RoutineUpdateItemRequestDto(2L, false),
+				new RoutineUpdateItemRequestDto(3L, true)
 			)
 		);
 	}
@@ -162,7 +162,7 @@ public class ChallengeTestFixture {
 	 */
 	public static RoutineUpdateRequestDto createSingleRoutineUpdateRequest() {
 		return new RoutineUpdateRequestDto(
-			List.of(new RoutineUpdateItemDto(1L, true))
+			List.of(new RoutineUpdateItemRequestDto(1L, true))
 		);
 	}
 
@@ -178,7 +178,7 @@ public class ChallengeTestFixture {
 	 */
 	public static RoutineUpdateRequestDto createRoutineUpdateRequestWithNullRoutineId() {
 		return new RoutineUpdateRequestDto(
-			List.of(new RoutineUpdateItemDto(null, true))
+			List.of(new RoutineUpdateItemRequestDto(null, true))
 		);
 	}
 
@@ -187,7 +187,7 @@ public class ChallengeTestFixture {
 	 */
 	public static RoutineUpdateRequestDto createRoutineUpdateRequestWithNullIsComplete() {
 		return new RoutineUpdateRequestDto(
-			List.of(new RoutineUpdateItemDto(1L, null))
+			List.of(new RoutineUpdateItemRequestDto(1L, null))
 		);
 	}
 

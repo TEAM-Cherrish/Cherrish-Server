@@ -23,7 +23,7 @@ import com.sopt.cherrish.domain.challenge.core.domain.repository.ChallengeStatis
 import com.sopt.cherrish.domain.challenge.core.exception.ChallengeErrorCode;
 import com.sopt.cherrish.domain.challenge.core.exception.ChallengeException;
 import com.sopt.cherrish.domain.challenge.core.fixture.ChallengeIntegrationTestFixture;
-import com.sopt.cherrish.domain.challenge.core.presentation.dto.request.RoutineUpdateItemDto;
+import com.sopt.cherrish.domain.challenge.core.presentation.dto.request.RoutineUpdateItemRequestDto;
 import com.sopt.cherrish.domain.challenge.core.presentation.dto.request.RoutineUpdateRequestDto;
 import com.sopt.cherrish.domain.user.domain.model.User;
 import com.sopt.cherrish.global.config.QueryDslConfig;
@@ -70,8 +70,8 @@ class ChallengeRoutineBatchUpdateExceptionTest {
 			RoutineUpdateRequestDto request =
 				new RoutineUpdateRequestDto(
 					List.of(
-						new RoutineUpdateItemDto(routines.getFirst().getId(), true),
-						new RoutineUpdateItemDto(999L, true)  // 존재하지 않는 ID
+						new RoutineUpdateItemRequestDto(routines.getFirst().getId(), true),
+						new RoutineUpdateItemRequestDto(999L, true)  // 존재하지 않는 ID
 					)
 				);
 
@@ -105,8 +105,8 @@ class ChallengeRoutineBatchUpdateExceptionTest {
 			RoutineUpdateRequestDto request =
 				new RoutineUpdateRequestDto(
 					List.of(
-						new RoutineUpdateItemDto(routine1.getId(), true),
-						new RoutineUpdateItemDto(routine2.getId(), true)
+						new RoutineUpdateItemRequestDto(routine1.getId(), true),
+						new RoutineUpdateItemRequestDto(routine2.getId(), true)
 					)
 				);
 
@@ -139,7 +139,7 @@ class ChallengeRoutineBatchUpdateExceptionTest {
 			RoutineUpdateRequestDto request =
 				new RoutineUpdateRequestDto(
 					routines.stream()
-						.map(r -> new RoutineUpdateItemDto(r.getId(), true))
+						.map(r -> new RoutineUpdateItemRequestDto(r.getId(), true))
 						.toList()
 				);
 
@@ -175,7 +175,7 @@ class ChallengeRoutineBatchUpdateExceptionTest {
 			RoutineUpdateRequestDto request =
 				new RoutineUpdateRequestDto(
 					routines.stream()
-						.map(r -> new RoutineUpdateItemDto(r.getId(), true))
+						.map(r -> new RoutineUpdateItemRequestDto(r.getId(), true))
 						.toList()
 				);
 
@@ -211,9 +211,9 @@ class ChallengeRoutineBatchUpdateExceptionTest {
 			RoutineUpdateRequestDto request =
 				new RoutineUpdateRequestDto(
 					List.of(
-						new RoutineUpdateItemDto(routines.get(0).getId(), true),
-						new RoutineUpdateItemDto(routines.get(1).getId(), true),
-						new RoutineUpdateItemDto(999L, true)  // 존재하지 않는 ID → 예외 발생
+						new RoutineUpdateItemRequestDto(routines.get(0).getId(), true),
+						new RoutineUpdateItemRequestDto(routines.get(1).getId(), true),
+						new RoutineUpdateItemRequestDto(999L, true)  // 존재하지 않는 ID → 예외 발생
 					)
 				);
 
@@ -267,7 +267,7 @@ class ChallengeRoutineBatchUpdateExceptionTest {
 					routines.stream()
 						.skip(2)
 						.limit(3)
-						.map(r -> new RoutineUpdateItemDto(r.getId(), true))
+						.map(r -> new RoutineUpdateItemRequestDto(r.getId(), true))
 						.toList()
 				);
 
