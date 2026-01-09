@@ -178,4 +178,218 @@ class ChallengeStatisticsTest {
 		// then
 		assertThat(percentage).isEqualTo(0.0);
 	}
+
+	@Test
+	@DisplayName("완료 개수 조정 - 양수 delta로 증가")
+	void adjustCompletedCountPositiveDeltaIncreasesCount() {
+		// given
+		Challenge challenge = createTestChallenge();
+
+		ChallengeStatistics statistics = ChallengeStatistics.builder()
+			.challenge(challenge)
+			.totalRoutineCount(21)
+			.build();
+
+		// when
+		statistics.adjustCompletedCount(5);
+
+		// then
+		assertThat(statistics.getCompletedCount()).isEqualTo(5);
+	}
+
+	@Test
+	@DisplayName("완료 개수 조정 - 음수 delta로 감소")
+	void adjustCompletedCountNegativeDeltaDecreasesCount() {
+		// given
+		Challenge challenge = createTestChallenge();
+
+		ChallengeStatistics statistics = ChallengeStatistics.builder()
+			.challenge(challenge)
+			.totalRoutineCount(21)
+			.build();
+
+		statistics.adjustCompletedCount(10);
+		assertThat(statistics.getCompletedCount()).isEqualTo(10);
+
+		// when
+		statistics.adjustCompletedCount(-3);
+
+		// then
+		assertThat(statistics.getCompletedCount()).isEqualTo(7);
+	}
+
+	@Test
+	@DisplayName("완료 개수 조정 - 음수 delta로 0 이하로 내려가지 않음")
+	void adjustCompletedCountNegativeDeltaDoesNotGoBelowZero() {
+		// given
+		Challenge challenge = createTestChallenge();
+
+		ChallengeStatistics statistics = ChallengeStatistics.builder()
+			.challenge(challenge)
+			.totalRoutineCount(21)
+			.build();
+
+		statistics.adjustCompletedCount(3);
+		assertThat(statistics.getCompletedCount()).isEqualTo(3);
+
+		// when
+		statistics.adjustCompletedCount(-5); // 3 - 5 = -2, but should be clamped to 0
+
+		// then
+		assertThat(statistics.getCompletedCount()).isEqualTo(0);
+	}
+
+	@Test
+	@DisplayName("체리 레벨 계산 - 총 루틴 개수가 0이면 레벨 1")
+	void calculateCherryLevelTotalCountZeroReturnsLevel1() {
+		// given
+		Challenge challenge = createTestChallenge();
+
+		ChallengeStatistics statistics = ChallengeStatistics.builder()
+			.challenge(challenge)
+			.totalRoutineCount(0)
+			.build();
+
+		// when
+		int level = statistics.calculateCherryLevel();
+
+		// then
+		assertThat(level).isEqualTo(1);
+	}
+
+	@Test
+	@DisplayName("체리 레벨 계산 - 진행률 0% → 레벨 1")
+	void calculateCherryLevel0PercentReturnsLevel1() {
+		// given
+		Challenge challenge = createTestChallenge();
+
+		ChallengeStatistics statistics = ChallengeStatistics.builder()
+			.challenge(challenge)
+			.totalRoutineCount(21)
+			.build();
+
+		// when
+		int level = statistics.calculateCherryLevel();
+
+		// then
+		assertThat(level).isEqualTo(1);
+	}
+
+	@Test
+	@DisplayName("체리 레벨 계산 - 진행률 30% → 레벨 2")
+	void calculateCherryLevel30PercentReturnsLevel2() {
+		// given
+		Challenge challenge = createTestChallenge();
+
+		ChallengeStatistics statistics = ChallengeStatistics.builder()
+			.challenge(challenge)
+			.totalRoutineCount(100)
+			.build();
+
+		statistics.adjustCompletedCount(30);
+
+		// when
+		int level = statistics.calculateCherryLevel();
+
+		// then
+		assertThat(level).isEqualTo(2);
+	}
+
+	@Test
+	@DisplayName("체리 레벨 계산 - 진행률 60% → 레벨 3")
+	void calculateCherryLevel60PercentReturnsLevel3() {
+		// given
+		Challenge challenge = createTestChallenge();
+
+		ChallengeStatistics statistics = ChallengeStatistics.builder()
+			.challenge(challenge)
+			.totalRoutineCount(100)
+			.build();
+
+		statistics.adjustCompletedCount(60);
+
+		// when
+		int level = statistics.calculateCherryLevel();
+
+		// then
+		assertThat(level).isEqualTo(3);
+	}
+
+	@Test
+	@DisplayName("체리 레벨 계산 - 진행률 80% → 레벨 4")
+	void calculateCherryLevel80PercentReturnsLevel4() {
+		// given
+		Challenge challenge = createTestChallenge();
+
+		ChallengeStatistics statistics = ChallengeStatistics.builder()
+			.challenge(challenge)
+			.totalRoutineCount(100)
+			.build();
+
+		statistics.adjustCompletedCount(80);
+
+		// when
+		int level = statistics.calculateCherryLevel();
+
+		// then
+		assertThat(level).isEqualTo(4);
+	}
+
+	@Test
+	@DisplayName("다음 레벨까지 진척도 - 총 루틴 개수가 0이면 0% 반환")
+	void getProgressToNextLevelTotalCountZeroReturns0() {
+		// given
+		Challenge challenge = createTestChallenge();
+
+		ChallengeStatistics statistics = ChallengeStatistics.builder()
+			.challenge(challenge)
+			.totalRoutineCount(0)
+			.build();
+
+		// when
+		double progress = statistics.getProgressToNextLevel();
+
+		// then
+		assertThat(progress).isEqualTo(0.0);
+	}
+
+	@Test
+	@DisplayName("다음 레벨까지 진척도 - 최대 레벨(4) 도달 시 100% 반환")
+	void getProgressToNextLevelMaxLevelReturns100() {
+		// given
+		Challenge challenge = createTestChallenge();
+
+		ChallengeStatistics statistics = ChallengeStatistics.builder()
+			.challenge(challenge)
+			.totalRoutineCount(100)
+			.build();
+
+		statistics.adjustCompletedCount(100); // 100%
+
+		// when
+		double progress = statistics.getProgressToNextLevel();
+
+		// then
+		assertThat(progress).isEqualTo(100.0);
+	}
+
+	@Test
+	@DisplayName("다음 레벨까지 진척도 - 레벨 4에서 100% 미만일 때도 100% 반환")
+	void getProgressToNextLevelLevel4Returns100() {
+		// given
+		Challenge challenge = createTestChallenge();
+
+		ChallengeStatistics statistics = ChallengeStatistics.builder()
+			.challenge(challenge)
+			.totalRoutineCount(100)
+			.build();
+
+		statistics.adjustCompletedCount(80); // 80% → Level 4
+
+		// when
+		double progress = statistics.getProgressToNextLevel();
+
+		// then
+		assertThat(progress).isEqualTo(100.0);
+	}
 }
