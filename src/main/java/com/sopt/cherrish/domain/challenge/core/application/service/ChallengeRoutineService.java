@@ -204,8 +204,10 @@ public class ChallengeRoutineService {
 		// 모든 루틴이 같은 챌린지에 속하는지 확인
 		validateAllSameChallenge(routines, challenge.getId());
 
-		// 소유자 및 날짜 검증
-		validateRoutineOwnerAndPeriod(routines.getFirst(), userId);
+		// 모든 루틴에 대해 소유자 및 날짜 검증
+		for (ChallengeRoutine routine : routines) {
+			validateRoutineOwnerAndPeriod(routine, userId);
+		}
 
 		return challenge;
 	}
