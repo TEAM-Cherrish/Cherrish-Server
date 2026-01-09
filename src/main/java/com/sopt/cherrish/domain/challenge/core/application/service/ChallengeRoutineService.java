@@ -172,8 +172,8 @@ public class ChallengeRoutineService {
 	 * 요청에서 루틴 ID 리스트 추출
 	 */
 	private List<Long> extractRoutineIds(RoutineUpdateRequestDto request) {
-		return request.getRoutines().stream()
-			.map(RoutineUpdateItemDto::getRoutineId)
+		return request.routines().stream()
+			.map(RoutineUpdateItemDto::routineId)
 			.toList();
 	}
 
@@ -204,13 +204,13 @@ public class ChallengeRoutineService {
 	 * - 챌린지 기간 내 날짜 검증
 	 */
 	private Challenge validateAndGetChallenge(List<ChallengeRoutine> routines, Long userId) {
-		Challenge challenge = routines.get(0).getChallenge();
+		Challenge challenge = routines.getFirst().getChallenge();
 
 		// 모든 루틴이 같은 챌린지에 속하는지 확인
 		validateAllSameChallenge(routines, challenge.getId());
 
 		// 소유자 및 날짜 검증
-		validateRoutineOwnerAndPeriod(routines.get(0), userId);
+		validateRoutineOwnerAndPeriod(routines.getFirst(), userId);
 
 		return challenge;
 	}
@@ -231,10 +231,10 @@ public class ChallengeRoutineService {
 	 * 루틴 상태 업데이트 및 delta 계산
 	 */
 	private int updateRoutineStates(List<ChallengeRoutine> routines, RoutineUpdateRequestDto request) {
-		Map<Long, Boolean> updateMap = request.getRoutines().stream()
+		Map<Long, Boolean> updateMap = request.routines().stream()
 			.collect(Collectors.toMap(
-				RoutineUpdateItemDto::getRoutineId,
-				RoutineUpdateItemDto::getIsComplete
+				RoutineUpdateItemDto::routineId,
+				RoutineUpdateItemDto::isComplete
 			));
 
 		int completedDelta = 0;
