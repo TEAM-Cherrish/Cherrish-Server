@@ -54,7 +54,8 @@ class UserControllerTest {
 		given(userService.getUser(userId)).willReturn(response);
 
 		// when & then
-		mockMvc.perform(get("/api/users/{id}", userId))
+		mockMvc.perform(get("/api/users")
+				.header("X-User-Id", userId))
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.data.name").value("홍길동"))
 			.andExpect(jsonPath("$.data.age").value(25));
@@ -79,7 +80,8 @@ class UserControllerTest {
 			.willReturn(response);
 
 		// when & then
-		mockMvc.perform(patch("/api/users/{id}", userId)
+		mockMvc.perform(patch("/api/users")
+				.header("X-User-Id", userId)
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(request)))
 			.andExpect(status().isOk())
@@ -95,7 +97,8 @@ class UserControllerTest {
 		willDoNothing().given(userService).deleteUser(userId);
 
 		// when & then
-		mockMvc.perform(delete("/api/users/{id}", userId))
+		mockMvc.perform(delete("/api/users")
+				.header("X-User-Id", userId))
 			.andExpect(status().isOk());
 	}
 }
