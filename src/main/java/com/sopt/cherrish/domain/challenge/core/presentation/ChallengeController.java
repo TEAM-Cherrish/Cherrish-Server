@@ -10,13 +10,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sopt.cherrish.domain.challenge.core.application.facade.ChallengeCreationFacade;
+import com.sopt.cherrish.domain.challenge.core.application.facade.ChallengeCustomRoutineFacade;
 import com.sopt.cherrish.domain.challenge.core.application.facade.ChallengeQueryFacade;
 import com.sopt.cherrish.domain.challenge.core.application.service.ChallengeRoutineService;
 import com.sopt.cherrish.domain.challenge.core.exception.ChallengeErrorCode;
 import com.sopt.cherrish.domain.challenge.core.presentation.dto.request.ChallengeCreateRequestDto;
+import com.sopt.cherrish.domain.challenge.core.presentation.dto.request.CustomRoutineAddRequestDto;
 import com.sopt.cherrish.domain.challenge.core.presentation.dto.request.RoutineUpdateRequestDto;
 import com.sopt.cherrish.domain.challenge.core.presentation.dto.response.ChallengeCreateResponseDto;
 import com.sopt.cherrish.domain.challenge.core.presentation.dto.response.ChallengeDetailResponseDto;
+import com.sopt.cherrish.domain.challenge.core.presentation.dto.response.CustomRoutineAddResponseDto;
 import com.sopt.cherrish.domain.challenge.core.presentation.dto.response.RoutineBatchUpdateResponseDto;
 import com.sopt.cherrish.domain.challenge.core.presentation.dto.response.RoutineCompletionResponseDto;
 import com.sopt.cherrish.domain.user.exception.UserErrorCode;
@@ -40,6 +43,7 @@ public class ChallengeController {
 	private final ChallengeCreationFacade challengeCreationFacade;
 	private final ChallengeQueryFacade challengeQueryFacade;
 	private final ChallengeRoutineService challengeRoutineService;
+	private final ChallengeCustomRoutineFacade challengeCustomRoutineFacade;
 
 	// TODO: Spring Security 추가 시 RequestHeader userId 제거하고 @AuthenticationPrincipal 사용
 	@Operation(
@@ -104,6 +108,26 @@ public class ChallengeController {
 		@Valid @RequestBody RoutineUpdateRequestDto request
 	) {
 		RoutineBatchUpdateResponseDto response = challengeRoutineService.updateMultipleRoutines(userId, request);
+		return CommonApiResponse.success(SuccessCode.SUCCESS, response);
+	}
+
+	// TODO: Spring Security 추가 시 RequestHeader userId 제거하고 @AuthenticationPrincipal 사용
+	@Operation(
+		summary = "커스텀 루틴 추가",
+		description = "활성 챌린지에 커스텀 루틴을 추가합니다. 오늘부터 챌린지 종료일까지 매일 루틴이 추가되며, 통계가 자동 업데이트됩니다."
+	)
+	@ApiExceptions({ChallengeErrorCode.class, UserErrorCode.class, ErrorCode.class})
+	@PostMapping("/{challengeId}/routines")
+	public CommonApiResponse<CustomRoutineAddResponseDto> addCustomRoutine(
+		@Parameter(description = "사용자 ID (X-User-Id 헤더)", required = true, example = "1")
+		@RequestHeader("X-User-Id") Long userId,
+		@Parameter(description = "챌린지 ID", required = true, example = "1")
+		@PathVariable Long challengeId,
+		@Valid @RequestBody CustomRoutineAddRequestDto request
+	) {
+		CustomRoutineAddResponseDto response = challengeCustomRoutineFacade.addCustomRoutine(
+			userId, challengeId, request
+		);
 		return CommonApiResponse.success(SuccessCode.SUCCESS, response);
 	}
 }
