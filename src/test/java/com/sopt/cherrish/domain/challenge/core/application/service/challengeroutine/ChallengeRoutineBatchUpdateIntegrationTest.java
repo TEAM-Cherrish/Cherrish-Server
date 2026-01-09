@@ -48,7 +48,6 @@ class ChallengeRoutineBatchUpdateIntegrationTest {
 	@Autowired
 	private ChallengeIntegrationTestFixture fixture;
 
-	private static final int ROUTINE_COUNT_SMALL = 1;
 	private static final int ROUTINE_COUNT_LARGE = 3;
 
 	@Nested
