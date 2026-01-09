@@ -210,9 +210,13 @@ public class ChallengeRoutineService {
 		// 모든 루틴이 같은 챌린지에 속하는지 확인
 		validateAllSameChallenge(routines, challenge.getId());
 
-		// 모든 루틴에 대해 소유자 및 날짜 검증
+		// 소유자 검증 (한 번만)
+		challenge.validateOwner(userId);
+
+		// 각 루틴의 날짜 검증 (각 루틴의 scheduledDate가 다를 수 있음)
+		LocalDate today = getCurrentDate();
 		for (ChallengeRoutine routine : routines) {
-			validateRoutineOwnerAndPeriod(routine, userId);
+			routine.validateOperationDateWithinChallengePeriod(today);
 		}
 
 		return challenge;
