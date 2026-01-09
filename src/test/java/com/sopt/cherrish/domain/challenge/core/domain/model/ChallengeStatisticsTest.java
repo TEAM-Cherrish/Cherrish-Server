@@ -240,6 +240,69 @@ class ChallengeStatisticsTest {
 	}
 
 	@Test
+	@DisplayName("완료 개수 조정 - totalRoutineCount를 초과하지 않음")
+	void adjustCompletedCountDoesNotExceedTotalRoutineCount() {
+		// given
+		Challenge challenge = createTestChallenge();
+
+		ChallengeStatistics statistics = ChallengeStatistics.builder()
+			.challenge(challenge)
+			.totalRoutineCount(21)
+			.build();
+
+		statistics.adjustCompletedCount(15);
+		assertThat(statistics.getCompletedCount()).isEqualTo(15);
+
+		// when
+		statistics.adjustCompletedCount(10); // 15 + 10 = 25, but should be clamped to 21
+
+		// then
+		assertThat(statistics.getCompletedCount()).isEqualTo(21);
+	}
+
+	@Test
+	@DisplayName("완료 개수 조정 - 오버플로우 방지 (큰 양수 delta)")
+	void adjustCompletedCountPreventsOverflowWithLargePositiveDelta() {
+		// given
+		Challenge challenge = createTestChallenge();
+
+		ChallengeStatistics statistics = ChallengeStatistics.builder()
+			.challenge(challenge)
+			.totalRoutineCount(100)
+			.build();
+
+		statistics.adjustCompletedCount(50);
+		assertThat(statistics.getCompletedCount()).isEqualTo(50);
+
+		// when
+		statistics.adjustCompletedCount(Integer.MAX_VALUE); // int 오버플로우 발생 가능, but should be clamped to 100
+
+		// then
+		assertThat(statistics.getCompletedCount()).isEqualTo(100);
+	}
+
+	@Test
+	@DisplayName("완료 개수 조정 - 오버플로우 방지 (큰 음수 delta)")
+	void adjustCompletedCountPreventsOverflowWithLargeNegativeDelta() {
+		// given
+		Challenge challenge = createTestChallenge();
+
+		ChallengeStatistics statistics = ChallengeStatistics.builder()
+			.challenge(challenge)
+			.totalRoutineCount(100)
+			.build();
+
+		statistics.adjustCompletedCount(50);
+		assertThat(statistics.getCompletedCount()).isEqualTo(50);
+
+		// when
+		statistics.adjustCompletedCount(Integer.MIN_VALUE); // int 오버플로우 발생 가능, but should be clamped to 0
+
+		// then
+		assertThat(statistics.getCompletedCount()).isEqualTo(0);
+	}
+
+	@Test
 	@DisplayName("체리 레벨 계산 - 총 루틴 개수가 0이면 레벨 1")
 	void calculateCherryLevelTotalCountZeroReturnsLevel1() {
 		// given
