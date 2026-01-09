@@ -1,4 +1,4 @@
-package com.sopt.cherrish.domain.challenge.core.application.service;
+package com.sopt.cherrish.domain.challenge.core.application.service.challengeroutine;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -17,6 +17,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.transaction.support.TransactionTemplate;
 
+import com.sopt.cherrish.domain.challenge.core.application.service.ChallengeRoutineService;
 import com.sopt.cherrish.domain.challenge.core.domain.model.Challenge;
 import com.sopt.cherrish.domain.challenge.core.domain.model.ChallengeRoutine;
 import com.sopt.cherrish.domain.challenge.core.domain.model.ChallengeStatistics;

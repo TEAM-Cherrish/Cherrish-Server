@@ -1,4 +1,4 @@
-package com.sopt.cherrish.domain.challenge.core.application.service;
+package com.sopt.cherrish.domain.challenge.core.application.service.challengeservice;
 
 import static com.sopt.cherrish.domain.challenge.core.application.service.CheeringMessageGenerator.FIRST_DAY_MESSAGE;
 import static com.sopt.cherrish.domain.challenge.core.application.service.CheeringMessageGenerator.HALFWAY_MESSAGE;
@@ -15,6 +15,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
+
+import com.sopt.cherrish.domain.challenge.core.application.service.CheeringMessageGenerator;
 
 @DisplayName("CheeringMessageGenerator 단위 테스트")
 class CheeringMessageGeneratorTest {
