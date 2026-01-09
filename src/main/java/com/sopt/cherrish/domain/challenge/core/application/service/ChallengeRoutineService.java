@@ -145,22 +145,59 @@ public class ChallengeRoutineService {
 		Long userId,
 		RoutineUpdateRequestDto request
 	) {
-		// 1. 요청에서 루틴 ID 추출
-		List<Long> routineIds = request.getRoutines().stream()
+		List<Long> routineIds = extractRoutineIds(request);
+		List<ChallengeRoutine> routines = fetchAndValidateRoutines(routineIds);
+
+		Challenge challenge = validateAndGetChallenge(routines, userId);
+
+		int completedDelta = updateRoutineStates(routines, request);
+		updateChallengeStatistics(challenge, completedDelta);
+
+		return RoutineBatchUpdateResponseDto.from(routines);
+	}
+
+	// ===== Private 헬퍼 메서드 (Batch Update) =====
+
+	/**
+	 * 요청에서 루틴 ID 리스트 추출
+	 */
+	private List<Long> extractRoutineIds(RoutineUpdateRequestDto request) {
+		return request.getRoutines().stream()
 			.map(RoutineUpdateItemDto::getRoutineId)
 			.toList();
+	}
 
-		// 2. 모든 루틴 조회 (Fetch Join으로 Challenge + Statistics 포함)
+	/**
+	 * 루틴 조회 및 존재 여부 검증
+	 */
+	private List<ChallengeRoutine> fetchAndValidateRoutines(List<Long> routineIds) {
 		List<ChallengeRoutine> routines = routineRepository
 			.findByIdInWithChallengeAndStatistics(routineIds);
 
-		// 3. 검증: 모든 루틴 존재 확인
+		// 빈 리스트 검증
+		if (routines.isEmpty()) {
+			throw new ChallengeException(ChallengeErrorCode.ROUTINE_NOT_FOUND);
+		}
+
+		// 모든 루틴 존재 확인
 		if (routines.size() != routineIds.size()) {
 			throw new ChallengeException(ChallengeErrorCode.ROUTINE_NOT_FOUND);
 		}
 
-		// 4. 검증: 모든 루틴이 같은 챌린지에 속하는지 확인
-		Long challengeId = routines.get(0).getChallenge().getId();
+		return routines;
+	}
+
+	/**
+	 * 챌린지 검증 및 반환
+	 * - 모든 루틴이 같은 챌린지에 속하는지 확인
+	 * - 소유자 검증
+	 * - 챌린지 기간 내 날짜 검증
+	 */
+	private Challenge validateAndGetChallenge(List<ChallengeRoutine> routines, Long userId) {
+		Challenge challenge = routines.get(0).getChallenge();
+		Long challengeId = challenge.getId();
+
+		// 모든 루틴이 같은 챌린지에 속하는지 확인
 		boolean allSameChallenge = routines.stream()
 			.allMatch(r -> r.getChallenge().getId().equals(challengeId));
 
@@ -168,25 +205,28 @@ public class ChallengeRoutineService {
 			throw new ChallengeException(ChallengeErrorCode.ROUTINES_FROM_DIFFERENT_CHALLENGES);
 		}
 
-		// 5. 검증: 소유자 확인 (한 번만)
-		Challenge challenge = routines.get(0).getChallenge();
+		// 소유자 확인
 		challenge.validateOwner(userId);
 
-		// 6. 검증: 현재 날짜가 챌린지 기간 내인지 확인
+		// 현재 날짜가 챌린지 기간 내인지 확인
 		LocalDate today = LocalDate.now(clock);
 		routines.get(0).validateOperationDateWithinChallengePeriod(today);
 
-		// 7. 요청 매핑: routineId → isComplete
+		return challenge;
+	}
+
+	/**
+	 * 루틴 상태 업데이트 및 delta 계산
+	 */
+	private int updateRoutineStates(List<ChallengeRoutine> routines, RoutineUpdateRequestDto request) {
 		Map<Long, Boolean> updateMap = request.getRoutines().stream()
 			.collect(Collectors.toMap(
 				RoutineUpdateItemDto::getRoutineId,
 				RoutineUpdateItemDto::getIsComplete
 			));
 
-		// 8. 상태 변화 추적 (통계 업데이트용)
-		int completedDelta = 0;  // 완료 개수 증감
+		int completedDelta = 0;
 
-		// 9. 각 루틴의 상태 업데이트
 		for (ChallengeRoutine routine : routines) {
 			Boolean targetComplete = updateMap.get(routine.getId());
 			Boolean currentComplete = routine.getIsComplete();
@@ -202,24 +242,17 @@ public class ChallengeRoutineService {
 			}
 		}
 
-		// 10. 통계 업데이트 (변경된 개수만큼 한 번에 반영)
+		return completedDelta;
+	}
+
+	/**
+	 * 챌린지 통계 업데이트 (delta 기반)
+	 */
+	private void updateChallengeStatistics(Challenge challenge, int completedDelta) {
 		if (completedDelta != 0) {
 			ChallengeStatistics statistics = challenge.getStatistics();
-
-			if (completedDelta > 0) {
-				for (int i = 0; i < completedDelta; i++) {
-					statistics.incrementCompletedCount();
-				}
-			} else {
-				for (int i = 0; i < -completedDelta; i++) {
-					statistics.decrementCompletedCount();
-				}
-			}
-
+			statistics.adjustCompletedCount(completedDelta);
 			statistics.updateCherryLevel();
 		}
-
-		// 11. JPA dirty checking으로 자동 업데이트
-		return RoutineBatchUpdateResponseDto.from(routines);
 	}
 }
