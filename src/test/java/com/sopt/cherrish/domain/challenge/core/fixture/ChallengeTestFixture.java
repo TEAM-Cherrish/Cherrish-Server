@@ -5,9 +5,12 @@ import java.util.List;
 
 import com.sopt.cherrish.domain.challenge.core.domain.model.Challenge;
 import com.sopt.cherrish.domain.challenge.core.presentation.dto.request.ChallengeCreateRequestDto;
+import com.sopt.cherrish.domain.challenge.core.presentation.dto.request.RoutineUpdateItemDto;
+import com.sopt.cherrish.domain.challenge.core.presentation.dto.request.RoutineUpdateRequestDto;
 import com.sopt.cherrish.domain.challenge.core.presentation.dto.response.ChallengeCreateResponseDto;
 import com.sopt.cherrish.domain.challenge.core.presentation.dto.response.ChallengeDetailResponseDto;
 import com.sopt.cherrish.domain.challenge.core.presentation.dto.response.ChallengeRoutineResponseDto;
+import com.sopt.cherrish.domain.challenge.core.presentation.dto.response.RoutineBatchUpdateResponseDto;
 import com.sopt.cherrish.domain.challenge.core.presentation.dto.response.RoutineCompletionResponseDto;
 import com.sopt.cherrish.domain.challenge.homecare.domain.model.HomecareRoutine;
 
@@ -137,5 +140,80 @@ public class ChallengeTestFixture {
 			isComplete,
 			isComplete ? "루틴을 완료했습니다!" : "루틴 완료를 취소했습니다."
 		);
+	}
+
+	// ===== Batch Update Request Fixtures =====
+
+	/**
+	 * 정상 루틴 일괄 업데이트 요청 (3개 루틴)
+	 */
+	public static RoutineUpdateRequestDto createValidRoutineUpdateRequest() {
+		return new RoutineUpdateRequestDto(
+			List.of(
+				new RoutineUpdateItemDto(1L, true),
+				new RoutineUpdateItemDto(2L, false),
+				new RoutineUpdateItemDto(3L, true)
+			)
+		);
+	}
+
+	/**
+	 * 단일 루틴 업데이트 요청
+	 */
+	public static RoutineUpdateRequestDto createSingleRoutineUpdateRequest() {
+		return new RoutineUpdateRequestDto(
+			List.of(new RoutineUpdateItemDto(1L, true))
+		);
+	}
+
+	/**
+	 * 빈 루틴 목록 요청 - @NotEmpty 검증 실패
+	 */
+	public static RoutineUpdateRequestDto createRoutineUpdateRequestWithEmptyList() {
+		return new RoutineUpdateRequestDto(List.of());
+	}
+
+	/**
+	 * null routineId 요청 - @NotNull 검증 실패
+	 */
+	public static RoutineUpdateRequestDto createRoutineUpdateRequestWithNullRoutineId() {
+		return new RoutineUpdateRequestDto(
+			List.of(new RoutineUpdateItemDto(null, true))
+		);
+	}
+
+	/**
+	 * null isComplete 요청 - @NotNull 검증 실패
+	 */
+	public static RoutineUpdateRequestDto createRoutineUpdateRequestWithNullIsComplete() {
+		return new RoutineUpdateRequestDto(
+			List.of(new RoutineUpdateItemDto(1L, null))
+		);
+	}
+
+	// ===== Batch Update Response Fixtures =====
+
+	/**
+	 * Mock 루틴 일괄 업데이트 응답 (3개 루틴)
+	 */
+	public static RoutineBatchUpdateResponseDto createMockRoutineBatchUpdateResponse() {
+		List<ChallengeRoutineResponseDto> routines = List.of(
+			new ChallengeRoutineResponseDto(1L, "아침 세안", FIXED_START_DATE, true),
+			new ChallengeRoutineResponseDto(2L, "토너 바르기", FIXED_START_DATE, false),
+			new ChallengeRoutineResponseDto(3L, "크림 바르기", FIXED_START_DATE, true)
+		);
+
+		return new RoutineBatchUpdateResponseDto(routines, 3, "3개의 루틴이 업데이트되었습니다.");
+	}
+
+	/**
+	 * Mock 단일 루틴 업데이트 응답
+	 */
+	public static RoutineBatchUpdateResponseDto createMockSingleRoutineBatchUpdateResponse() {
+		List<ChallengeRoutineResponseDto> routines = List.of(
+			new ChallengeRoutineResponseDto(1L, "아침 세안", FIXED_START_DATE, true)
+		);
+
+		return new RoutineBatchUpdateResponseDto(routines, 1, "1개의 루틴이 업데이트되었습니다.");
 	}
 }

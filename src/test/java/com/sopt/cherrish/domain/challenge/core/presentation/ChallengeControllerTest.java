@@ -6,12 +6,19 @@ import static com.sopt.cherrish.domain.challenge.core.fixture.ChallengeTestFixtu
 import static com.sopt.cherrish.domain.challenge.core.fixture.ChallengeTestFixture.DEFAULT_USER_ID;
 import static com.sopt.cherrish.domain.challenge.core.fixture.ChallengeTestFixture.createMockChallengeCreateResponse;
 import static com.sopt.cherrish.domain.challenge.core.fixture.ChallengeTestFixture.createMockChallengeDetailResponse;
+import static com.sopt.cherrish.domain.challenge.core.fixture.ChallengeTestFixture.createMockRoutineBatchUpdateResponse;
 import static com.sopt.cherrish.domain.challenge.core.fixture.ChallengeTestFixture.createMockRoutineCompletionResponse;
+import static com.sopt.cherrish.domain.challenge.core.fixture.ChallengeTestFixture.createMockSingleRoutineBatchUpdateResponse;
 import static com.sopt.cherrish.domain.challenge.core.fixture.ChallengeTestFixture.createRequestWithEmptyRoutines;
 import static com.sopt.cherrish.domain.challenge.core.fixture.ChallengeTestFixture.createRequestWithEmptyTitle;
 import static com.sopt.cherrish.domain.challenge.core.fixture.ChallengeTestFixture.createRequestWithNullTitle;
 import static com.sopt.cherrish.domain.challenge.core.fixture.ChallengeTestFixture.createRequestWithTooManyRoutines;
+import static com.sopt.cherrish.domain.challenge.core.fixture.ChallengeTestFixture.createRoutineUpdateRequestWithEmptyList;
+import static com.sopt.cherrish.domain.challenge.core.fixture.ChallengeTestFixture.createRoutineUpdateRequestWithNullIsComplete;
+import static com.sopt.cherrish.domain.challenge.core.fixture.ChallengeTestFixture.createRoutineUpdateRequestWithNullRoutineId;
+import static com.sopt.cherrish.domain.challenge.core.fixture.ChallengeTestFixture.createSingleRoutineUpdateRequest;
 import static com.sopt.cherrish.domain.challenge.core.fixture.ChallengeTestFixture.createValidChallengeRequest;
+import static com.sopt.cherrish.domain.challenge.core.fixture.ChallengeTestFixture.createValidRoutineUpdateRequest;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
@@ -39,8 +46,10 @@ import com.sopt.cherrish.domain.challenge.core.application.service.ChallengeRout
 import com.sopt.cherrish.domain.challenge.core.exception.ChallengeErrorCode;
 import com.sopt.cherrish.domain.challenge.core.exception.ChallengeException;
 import com.sopt.cherrish.domain.challenge.core.presentation.dto.request.ChallengeCreateRequestDto;
+import com.sopt.cherrish.domain.challenge.core.presentation.dto.request.RoutineUpdateRequestDto;
 import com.sopt.cherrish.domain.challenge.core.presentation.dto.response.ChallengeCreateResponseDto;
 import com.sopt.cherrish.domain.challenge.core.presentation.dto.response.ChallengeDetailResponseDto;
+import com.sopt.cherrish.domain.challenge.core.presentation.dto.response.RoutineBatchUpdateResponseDto;
 import com.sopt.cherrish.domain.challenge.core.presentation.dto.response.RoutineCompletionResponseDto;
 import com.sopt.cherrish.domain.user.exception.UserErrorCode;
 import com.sopt.cherrish.domain.user.exception.UserException;
@@ -276,6 +285,140 @@ class ChallengeControllerTest {
 					.contentType(MediaType.APPLICATION_JSON)
 					.content(objectMapper.writeValueAsString(request)))
 				.andExpect(status().isBadRequest());
+		}
+	}
+
+	@Nested
+	@DisplayName("PATCH /api/challenges/{userId}/routines - 루틴 일괄 업데이트")
+	class UpdateMultipleRoutines {
+
+		@Test
+		@DisplayName("성공 - 여러 루틴 일괄 업데이트 (3개)")
+		void successUpdateMultipleRoutines() throws Exception {
+			// given
+			RoutineUpdateRequestDto request = createValidRoutineUpdateRequest();
+			RoutineBatchUpdateResponseDto response = createMockRoutineBatchUpdateResponse();
+
+			given(challengeRoutineService.updateMultipleRoutines(eq(DEFAULT_USER_ID), any(RoutineUpdateRequestDto.class)))
+				.willReturn(response);
+
+			// when & then
+			mockMvc.perform(patch("/api/challenges/{userId}/routines", DEFAULT_USER_ID)
+					.contentType(MediaType.APPLICATION_JSON)
+					.content(objectMapper.writeValueAsString(request)))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.data.updatedCount").value(3))
+				.andExpect(jsonPath("$.data.routines").isArray())
+				.andExpect(jsonPath("$.data.routines.length()").value(3))
+				.andExpect(jsonPath("$.data.message").value("3개의 루틴이 업데이트되었습니다."));
+		}
+
+		@Test
+		@DisplayName("성공 - 단일 루틴 업데이트")
+		void successUpdateSingleRoutine() throws Exception {
+			// given
+			RoutineUpdateRequestDto request = createSingleRoutineUpdateRequest();
+			RoutineBatchUpdateResponseDto response = createMockSingleRoutineBatchUpdateResponse();
+
+			given(challengeRoutineService.updateMultipleRoutines(eq(DEFAULT_USER_ID), any(RoutineUpdateRequestDto.class)))
+				.willReturn(response);
+
+			// when & then
+			mockMvc.perform(patch("/api/challenges/{userId}/routines", DEFAULT_USER_ID)
+					.contentType(MediaType.APPLICATION_JSON)
+					.content(objectMapper.writeValueAsString(request)))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.data.updatedCount").value(1))
+				.andExpect(jsonPath("$.data.routines").isArray())
+				.andExpect(jsonPath("$.data.routines.length()").value(1))
+				.andExpect(jsonPath("$.data.message").value("1개의 루틴이 업데이트되었습니다."));
+		}
+
+		@Test
+		@DisplayName("실패 - 빈 루틴 목록 (@NotEmpty 검증)")
+		void failEmptyRoutineList() throws Exception {
+			// given
+			RoutineUpdateRequestDto request = createRoutineUpdateRequestWithEmptyList();
+
+			// when & then
+			mockMvc.perform(patch("/api/challenges/{userId}/routines", DEFAULT_USER_ID)
+					.contentType(MediaType.APPLICATION_JSON)
+					.content(objectMapper.writeValueAsString(request)))
+				.andExpect(status().isBadRequest());
+		}
+
+		@Test
+		@DisplayName("실패 - null routineId (@NotNull 검증)")
+		void failNullRoutineId() throws Exception {
+			// given
+			RoutineUpdateRequestDto request = createRoutineUpdateRequestWithNullRoutineId();
+
+			// when & then
+			mockMvc.perform(patch("/api/challenges/{userId}/routines", DEFAULT_USER_ID)
+					.contentType(MediaType.APPLICATION_JSON)
+					.content(objectMapper.writeValueAsString(request)))
+				.andExpect(status().isBadRequest());
+		}
+
+		@Test
+		@DisplayName("실패 - null isComplete (@NotNull 검증)")
+		void failNullIsComplete() throws Exception {
+			// given
+			RoutineUpdateRequestDto request = createRoutineUpdateRequestWithNullIsComplete();
+
+			// when & then
+			mockMvc.perform(patch("/api/challenges/{userId}/routines", DEFAULT_USER_ID)
+					.contentType(MediaType.APPLICATION_JSON)
+					.content(objectMapper.writeValueAsString(request)))
+				.andExpect(status().isBadRequest());
+		}
+
+		@Test
+		@DisplayName("실패 - 존재하지 않는 루틴")
+		void failRoutineNotFound() throws Exception {
+			// given
+			RoutineUpdateRequestDto request = createValidRoutineUpdateRequest();
+
+			given(challengeRoutineService.updateMultipleRoutines(eq(DEFAULT_USER_ID), any(RoutineUpdateRequestDto.class)))
+				.willThrow(new ChallengeException(ChallengeErrorCode.ROUTINE_NOT_FOUND));
+
+			// when & then
+			mockMvc.perform(patch("/api/challenges/{userId}/routines", DEFAULT_USER_ID)
+					.contentType(MediaType.APPLICATION_JSON)
+					.content(objectMapper.writeValueAsString(request)))
+				.andExpect(status().isNotFound());
+		}
+
+		@Test
+		@DisplayName("실패 - 서로 다른 챌린지의 루틴")
+		void failRoutinesFromDifferentChallenges() throws Exception {
+			// given
+			RoutineUpdateRequestDto request = createValidRoutineUpdateRequest();
+
+			given(challengeRoutineService.updateMultipleRoutines(eq(DEFAULT_USER_ID), any(RoutineUpdateRequestDto.class)))
+				.willThrow(new ChallengeException(ChallengeErrorCode.ROUTINES_FROM_DIFFERENT_CHALLENGES));
+
+			// when & then
+			mockMvc.perform(patch("/api/challenges/{userId}/routines", DEFAULT_USER_ID)
+					.contentType(MediaType.APPLICATION_JSON)
+					.content(objectMapper.writeValueAsString(request)))
+				.andExpect(status().isBadRequest());
+		}
+
+		@Test
+		@DisplayName("실패 - 소유자가 아님")
+		void failUnauthorizedAccess() throws Exception {
+			// given
+			RoutineUpdateRequestDto request = createValidRoutineUpdateRequest();
+
+			given(challengeRoutineService.updateMultipleRoutines(eq(DEFAULT_USER_ID), any(RoutineUpdateRequestDto.class)))
+				.willThrow(new ChallengeException(ChallengeErrorCode.UNAUTHORIZED_ACCESS));
+
+			// when & then
+			mockMvc.perform(patch("/api/challenges/{userId}/routines", DEFAULT_USER_ID)
+					.contentType(MediaType.APPLICATION_JSON)
+					.content(objectMapper.writeValueAsString(request)))
+				.andExpect(status().isForbidden());
 		}
 	}
 }
