@@ -59,7 +59,7 @@ class ChallengeRoutineBatchUpdateIntegrationTest {
 		void completeMultipleRoutinesSuccess() {
 			// given
 			User user = fixture.createDefaultUser();
-			Challenge challenge = fixture.createChallengeWithRoutines(user, ROUTINES_PER_DAY_MULTIPLE );
+			Challenge challenge = fixture.createChallengeWithRoutines(user, ROUTINES_PER_DAY_MULTIPLE);
 			List<ChallengeRoutine> routines = routineRepository.findByChallengeId(challenge.getId()).stream()
 				.limit(3)
 				.toList();
@@ -102,7 +102,7 @@ class ChallengeRoutineBatchUpdateIntegrationTest {
 		void cancelMultipleRoutinesSuccess() {
 			// given
 			User user = fixture.createDefaultUser();
-			Challenge challenge = fixture.createChallengeWithRoutines(user, ROUTINES_PER_DAY_MULTIPLE );
+			Challenge challenge = fixture.createChallengeWithRoutines(user, ROUTINES_PER_DAY_MULTIPLE);
 			List<ChallengeRoutine> routines = routineRepository.findByChallengeId(challenge.getId()).stream()
 				.limit(3)
 				.toList();
@@ -151,7 +151,7 @@ class ChallengeRoutineBatchUpdateIntegrationTest {
 		void mixedUpdateSuccess() {
 			// given
 			User user = fixture.createDefaultUser();
-			Challenge challenge = fixture.createChallengeWithRoutines(user, ROUTINES_PER_DAY_MULTIPLE );
+			Challenge challenge = fixture.createChallengeWithRoutines(user, ROUTINES_PER_DAY_MULTIPLE);
 			List<ChallengeRoutine> allRoutines = routineRepository.findByChallengeId(challenge.getId());
 
 			// 첫 3개 루틴 중 2개를 완료 상태로 만들기
@@ -200,7 +200,7 @@ class ChallengeRoutineBatchUpdateIntegrationTest {
 		void skipUnnecessaryToggleWhenSameState() {
 			// given
 			User user = fixture.createDefaultUser();
-			Challenge challenge = fixture.createChallengeWithRoutines(user, ROUTINES_PER_DAY_MULTIPLE );
+			Challenge challenge = fixture.createChallengeWithRoutines(user, ROUTINES_PER_DAY_MULTIPLE);
 			List<ChallengeRoutine> routines = routineRepository.findByChallengeId(challenge.getId()).stream()
 				.limit(3)
 				.toList();
@@ -238,7 +238,7 @@ class ChallengeRoutineBatchUpdateIntegrationTest {
 		void deltaBasedCompletedCountIsAccurate() {
 			// given
 			User user = fixture.createDefaultUser();
-			Challenge challenge = fixture.createChallengeWithRoutines(user, ROUTINES_PER_DAY_MULTIPLE ); // 21개 루틴
+			Challenge challenge = fixture.createChallengeWithRoutines(user, ROUTINES_PER_DAY_MULTIPLE); // 21개 루틴
 			List<ChallengeRoutine> allRoutines = routineRepository.findByChallengeId(challenge.getId());
 
 			// 초기: 5개 완료 처리
@@ -276,7 +276,7 @@ class ChallengeRoutineBatchUpdateIntegrationTest {
 		void cherryLevelIncreasesWithBatchCompletion() {
 			// given
 			User user = fixture.createDefaultUser();
-			Challenge challenge = fixture.createChallengeWithRoutines(user, ROUTINES_PER_DAY_MULTIPLE ); // 21개 루틴
+			Challenge challenge = fixture.createChallengeWithRoutines(user, ROUTINES_PER_DAY_MULTIPLE); // 21개 루틴
 			List<ChallengeRoutine> allRoutines = routineRepository.findByChallengeId(challenge.getId());
 
 			// 초기 레벨 확인
@@ -312,7 +312,7 @@ class ChallengeRoutineBatchUpdateIntegrationTest {
 		void cherryLevelDecreasesWithBatchCancellation() {
 			// given
 			User user = fixture.createDefaultUser();
-			Challenge challenge = fixture.createChallengeWithRoutines(user, ROUTINES_PER_DAY_MULTIPLE ); // 21개 루틴
+			Challenge challenge = fixture.createChallengeWithRoutines(user, ROUTINES_PER_DAY_MULTIPLE); // 21개 루틴
 			List<ChallengeRoutine> allRoutines = routineRepository.findByChallengeId(challenge.getId());
 
 			// 16개 완료 (76.1%) → 레벨 4
