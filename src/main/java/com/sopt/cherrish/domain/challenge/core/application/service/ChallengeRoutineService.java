@@ -45,6 +45,23 @@ public class ChallengeRoutineService {
 		return routineRepository.saveAll(routines);
 	}
 
+	/**
+	 * 커스텀 루틴 추가 및 Batch Insert
+	 * @param challenge 챌린지
+	 * @param routineName 루틴명
+	 * @param today 현재 날짜
+	 * @return 생성된 루틴 리스트
+	 */
+	@Transactional
+	public List<ChallengeRoutine> createAndSaveCustomRoutine(
+		Challenge challenge,
+		String routineName,
+		LocalDate today
+	) {
+		List<ChallengeRoutine> routines = challenge.createCustomRoutinesFromToday(routineName, today);
+		return routineRepository.saveAll(routines);
+	}
+
 	// ===== 조회 메서드 =====
 
 	/**
