@@ -4,6 +4,7 @@ public enum ErrorCode implements ErrorType {
 	// 공통 에러
 	INVALID_INPUT("C001", "입력값이 올바르지 않습니다", 400),
 	INVALID_FORMAT("C002", "데이터 형식이 올바르지 않습니다", 400),
+	CONCURRENT_UPDATE("C003", "다른 사용자가 동시에 수정했습니다. 다시 시도해주세요.", 409),
 
 	INTERNAL_SERVER_ERROR("C999", "서버 내부 오류가 발생했습니다", 500);
 

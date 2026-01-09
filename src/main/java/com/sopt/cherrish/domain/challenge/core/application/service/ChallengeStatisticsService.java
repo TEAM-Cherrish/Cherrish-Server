@@ -46,9 +46,10 @@ public class ChallengeStatisticsService {
 	public void incrementCompletedCount(Long challengeId) {
 		ChallengeStatistics statistics = statisticsRepository
 			.findByChallengeId(challengeId)
-			.orElseThrow(() -> new ChallengeException(ChallengeErrorCode.CHALLENGE_NOT_FOUND));
+			.orElseThrow(() -> new ChallengeException(ChallengeErrorCode.STATISTICS_NOT_FOUND));
 
 		statistics.incrementCompletedCount();
+		statistics.updateCherryLevel();
 	}
 
 	/**
@@ -59,9 +60,10 @@ public class ChallengeStatisticsService {
 	public void decrementCompletedCount(Long challengeId) {
 		ChallengeStatistics statistics = statisticsRepository
 			.findByChallengeId(challengeId)
-			.orElseThrow(() -> new ChallengeException(ChallengeErrorCode.CHALLENGE_NOT_FOUND));
+			.orElseThrow(() -> new ChallengeException(ChallengeErrorCode.STATISTICS_NOT_FOUND));
 
 		statistics.decrementCompletedCount();
+		statistics.updateCherryLevel();
 	}
 
 	/**
@@ -71,6 +73,6 @@ public class ChallengeStatisticsService {
 	 */
 	public ChallengeStatistics getStatistics(Long challengeId) {
 		return statisticsRepository.findByChallengeId(challengeId)
-			.orElseThrow(() -> new ChallengeException(ChallengeErrorCode.CHALLENGE_NOT_FOUND));
+			.orElseThrow(() -> new ChallengeException(ChallengeErrorCode.STATISTICS_NOT_FOUND));
 	}
 }

@@ -11,6 +11,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.Version;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -22,9 +23,18 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ChallengeStatistics extends BaseTimeEntity {
 
+	private static final double LEVEL_2_THRESHOLD = 25.0;
+	private static final double LEVEL_3_THRESHOLD = 50.0;
+	private static final double LEVEL_4_THRESHOLD = 75.0;
+	private static final double LEVEL_RANGE = 25.0;
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
+
+	@Version
+	@Column(nullable = false)
+	private Long version = 0L;
 
 	@OneToOne(fetch = FetchType.LAZY, optional = false)
 	@JoinColumn(name = "challenge_id", nullable = false, unique = true)
@@ -36,11 +46,15 @@ public class ChallengeStatistics extends BaseTimeEntity {
 	@Column(nullable = false, name = "total_routine_count")
 	private Integer totalRoutineCount;
 
+	@Column(nullable = false, name = "cherry_level")
+	private Integer cherryLevel = 1;
+
 	@Builder
 	private ChallengeStatistics(Challenge challenge, Integer totalRoutineCount) {
 		this.challenge = challenge;
 		this.completedCount = 0;
 		this.totalRoutineCount = totalRoutineCount;
+		this.cherryLevel = 1;
 	}
 
 	public void incrementCompletedCount() {
@@ -57,6 +71,76 @@ public class ChallengeStatistics extends BaseTimeEntity {
 		if (totalRoutineCount == 0) {
 			return 0.0;
 		}
-		return (double) completedCount / totalRoutineCount * 100;
+		double percentage = (double) completedCount / totalRoutineCount * 100;
+		return Math.round(percentage * 10.0) / 10.0;  // 소수점 1자리까지 반올림
+	}
+
+	/**
+	 * 완료 진행률 기반 체리 레벨 계산
+	 *
+	 * 레벨 구간:
+	 * - 레벨 1:   0% ~ 24.99%
+	 * - 레벨 2:  25% ~ 49.99%
+	 * - 레벨 3:  50% ~ 74.99%
+	 * - 레벨 4:  75% ~ 100%
+	 *
+	 * @return 체리 레벨 (1-4)
+	 */
+	public int calculateCherryLevel() {
+		if (totalRoutineCount == 0) {
+			return 1;  // 기본값
+		}
+
+		double progressPercentage = getProgressPercentage();
+
+		if (progressPercentage < LEVEL_2_THRESHOLD) {
+			return 1;
+		}
+		if (progressPercentage < LEVEL_3_THRESHOLD) {
+			return 2;
+		}
+		if (progressPercentage < LEVEL_4_THRESHOLD) {
+			return 3;
+		}
+		return 4;
+	}
+
+	/**
+	 * 현재 진행률에 따라 체리 레벨 업데이트
+	 */
+	public void updateCherryLevel() {
+		this.cherryLevel = calculateCherryLevel();
+	}
+
+	/**
+	 * 현재 레벨 구간 내에서의 진척도 계산 (0-100%)
+	 *
+	 * 예: 전체 진행률 37.5% → 레벨 2(25-50% 구간)에서 50% 진척
+	 *
+	 * @return 현재 레벨 내 진척도 (%)
+	 */
+	public double getProgressToNextLevel() {
+		if (totalRoutineCount == 0) {
+			return 0.0;
+		}
+
+		double progressPercentage = getProgressPercentage();
+		int currentLevel = calculateCherryLevel();  // 실시간 계산된 레벨 사용
+
+		// 최대 레벨이면 100% 반환
+		if (currentLevel >= 4 || progressPercentage >= 100.0) {
+			return 100.0;
+		}
+
+		// 각 레벨의 시작 진행률
+		double levelStartPercentage = (currentLevel - 1) * LEVEL_RANGE;
+
+		// 현재 레벨 구간 내 진행률
+		double progressInLevel = progressPercentage - levelStartPercentage;
+
+		// 레벨 구간 대비 진척도
+		double progressToNext = (progressInLevel / LEVEL_RANGE) * 100.0;
+
+		return Math.round(progressToNext * 10.0) / 10.0;  // 소수점 1자리까지 반올림
 	}
 }

@@ -4,10 +4,11 @@ import java.time.LocalDate;
 import java.util.List;
 
 import com.sopt.cherrish.domain.challenge.core.domain.model.Challenge;
-import com.sopt.cherrish.domain.challenge.core.domain.model.ChallengeRoutine;
 import com.sopt.cherrish.domain.challenge.core.presentation.dto.request.ChallengeCreateRequestDto;
 import com.sopt.cherrish.domain.challenge.core.presentation.dto.response.ChallengeCreateResponseDto;
+import com.sopt.cherrish.domain.challenge.core.presentation.dto.response.ChallengeDetailResponseDto;
 import com.sopt.cherrish.domain.challenge.core.presentation.dto.response.ChallengeRoutineResponseDto;
+import com.sopt.cherrish.domain.challenge.core.presentation.dto.response.RoutineCompletionResponseDto;
 import com.sopt.cherrish.domain.challenge.homecare.domain.model.HomecareRoutine;
 
 public class ChallengeTestFixture {
@@ -15,7 +16,11 @@ public class ChallengeTestFixture {
 	// 공통 테스트 상수
 	public static final LocalDate FIXED_START_DATE = LocalDate.of(2024, 1, 1);
 	public static final Long DEFAULT_USER_ID = 1L;
+	public static final Long DEFAULT_CHALLENGE_ID = 1L;
+	public static final Long DEFAULT_ROUTINE_ID = 1L;
 	public static final String DEFAULT_CHALLENGE_TITLE = "7일 챌린지";
+	public static final String DEFAULT_ROUTINE_NAME = "아침 세안";
+	public static final int DEFAULT_TOTAL_DAYS = 7;
 
 	private ChallengeTestFixture() {
 		// Utility class
@@ -34,6 +39,30 @@ public class ChallengeTestFixture {
 			1,
 			"",
 			List.of("아침 세안")
+		);
+	}
+
+	public static ChallengeCreateRequestDto createRequestWithNullTitle() {
+		return new ChallengeCreateRequestDto(
+			1,
+			null,
+			List.of("아침 세안")
+		);
+	}
+
+	public static ChallengeCreateRequestDto createRequestWithEmptyRoutines() {
+		return new ChallengeCreateRequestDto(
+			1,
+			"7일 챌린지",
+			List.of()
+		);
+	}
+
+	public static ChallengeCreateRequestDto createRequestWithTooManyRoutines() {
+		return new ChallengeCreateRequestDto(
+			1,
+			"7일 챌린지",
+			List.of("루틴1", "루틴2", "루틴3", "루틴4", "루틴5", "루틴6", "루틴7", "루틴8", "루틴9", "루틴10", "루틴11")
 		);
 	}
 
@@ -58,29 +87,55 @@ public class ChallengeTestFixture {
 	}
 
 	/**
-	 * Mock 테스트용 Response 생성 (ID 명시적 지정)
+	 * 컨트롤러 테스트용: 도메인 객체 없이 Response 직접 생성
 	 */
-	public static ChallengeCreateResponseDto createChallengeResponse(
-		Challenge challenge, List<ChallengeRoutine> routines, Long challengeId) {
-		List<ChallengeRoutineResponseDto> routineDtos = routines.stream()
-			.map(ChallengeRoutineResponseDto::from)
-			.toList();
+	public static ChallengeCreateResponseDto createMockChallengeCreateResponse() {
+		LocalDate startDate = FIXED_START_DATE;
+		List<ChallengeRoutineResponseDto> routines = List.of(
+			new ChallengeRoutineResponseDto(1L, "아침 세안", startDate, false),
+			new ChallengeRoutineResponseDto(2L, "토너 바르기", startDate, false),
+			new ChallengeRoutineResponseDto(3L, "크림 바르기", startDate, false),
+			new ChallengeRoutineResponseDto(4L, "아침 세안", startDate.plusDays(1), false),
+			new ChallengeRoutineResponseDto(5L, "토너 바르기", startDate.plusDays(1), false),
+			new ChallengeRoutineResponseDto(6L, "크림 바르기", startDate.plusDays(1), false)
+		);
 
 		return new ChallengeCreateResponseDto(
-			challengeId,
-			challenge.getTitle(),
-			challenge.getTotalDays(),
-			challenge.getStartDate(),
-			challenge.getEndDate(),
-			routines.size(),
-			routineDtos
+			DEFAULT_CHALLENGE_ID,
+			DEFAULT_CHALLENGE_TITLE,
+			DEFAULT_TOTAL_DAYS,
+			startDate,
+			startDate.plusDays(DEFAULT_TOTAL_DAYS - 1),
+			21,
+			routines
 		);
 	}
 
-	/**
-	 * 통합 테스트용 Response 생성 (Challenge의 ID 사용)
-	 */
-	public static ChallengeCreateResponseDto createChallengeResponse(Challenge challenge, List<ChallengeRoutine> routines) {
-		return createChallengeResponse(challenge, routines, challenge.getId());
+	public static ChallengeDetailResponseDto createMockChallengeDetailResponse() {
+		List<ChallengeRoutineResponseDto> todayRoutines = List.of(
+			new ChallengeRoutineResponseDto(1L, "아침 세안", FIXED_START_DATE, false),
+			new ChallengeRoutineResponseDto(2L, "토너 바르기", FIXED_START_DATE, true),
+			new ChallengeRoutineResponseDto(3L, "크림 바르기", FIXED_START_DATE, false)
+		);
+
+		return new ChallengeDetailResponseDto(
+			DEFAULT_CHALLENGE_ID,
+			"7일 보습 챌린지",
+			3,
+			42.5,
+			2,
+			50.0,
+			todayRoutines,
+			"3일차 루틴입니다. 오늘도 피부를 위해 힘내봐요!"
+		);
+	}
+
+	public static RoutineCompletionResponseDto createMockRoutineCompletionResponse(boolean isComplete) {
+		return new RoutineCompletionResponseDto(
+			DEFAULT_ROUTINE_ID,
+			DEFAULT_ROUTINE_NAME,
+			isComplete,
+			isComplete ? "루틴을 완료했습니다!" : "루틴 완료를 취소했습니다."
+		);
 	}
 }

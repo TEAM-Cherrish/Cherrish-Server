@@ -64,6 +64,18 @@ public class ChallengeService {
 	}
 
 	/**
+	 * 활성 챌린지 조회 (통계와 함께 Fetch Join)
+	 * N+1 쿼리 방지를 위해 ChallengeStatistics를 함께 로드
+	 * @param userId 사용자 ID
+	 * @return 활성 챌린지 (통계 포함)
+	 * @throws ChallengeException 활성 챌린지가 없는 경우
+	 */
+	public Challenge getActiveChallengeWithStatistics(Long userId) {
+		return challengeRepository.findActiveChallengeWithStatistics(userId)
+			.orElseThrow(() -> new ChallengeException(ChallengeErrorCode.CHALLENGE_NOT_FOUND));
+	}
+
+	/**
 	 * ID로 챌린지 조회
 	 * @param challengeId 챌린지 ID
 	 * @return 챌린지
