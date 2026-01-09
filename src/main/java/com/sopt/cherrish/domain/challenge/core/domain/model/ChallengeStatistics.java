@@ -73,9 +73,13 @@ public class ChallengeStatistics extends BaseTimeEntity {
 	 * @param delta 증가/감소할 값 (양수: 증가, 음수: 감소)
 	 */
 	public void adjustCompletedCount(int delta) {
-		this.completedCount += delta;
-		if (this.completedCount < 0) {
+		long newCount = (long) this.completedCount + (long) delta;
+		if (newCount < 0) {
 			this.completedCount = 0;
+		} else if (newCount > this.totalRoutineCount) {
+			this.completedCount = this.totalRoutineCount;
+		} else {
+			this.completedCount = (int) newCount;
 		}
 	}
 
