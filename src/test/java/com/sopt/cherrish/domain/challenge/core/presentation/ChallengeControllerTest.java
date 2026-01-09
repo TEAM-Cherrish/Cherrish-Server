@@ -198,11 +198,11 @@ class ChallengeControllerTest {
 
 		@ParameterizedTest
 		@CsvSource({
-			"true, 루틴을 완료했습니다!",
-			"false, 루틴 완료를 취소했습니다."
+			"true",
+			"false"
 		})
 		@DisplayName("성공 - 루틴 완료 상태 토글")
-		void successToggle(boolean isComplete, String message) throws Exception {
+		void successToggle(boolean isComplete) throws Exception {
 			// given
 			RoutineCompletionResponseDto response = createMockRoutineCompletionResponse(isComplete);
 
@@ -213,8 +213,7 @@ class ChallengeControllerTest {
 			mockMvc.perform(patch("/api/challenges/{userId}/routines/{routineId}", DEFAULT_USER_ID, DEFAULT_ROUTINE_ID))
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$.data.routineId").value(DEFAULT_ROUTINE_ID))
-				.andExpect(jsonPath("$.data.isComplete").value(isComplete))
-				.andExpect(jsonPath("$.data.message").value(message));
+				.andExpect(jsonPath("$.data.isComplete").value(isComplete));
 		}
 
 		@Test
@@ -309,8 +308,7 @@ class ChallengeControllerTest {
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$.data.updatedCount").value(3))
 				.andExpect(jsonPath("$.data.routines").isArray())
-				.andExpect(jsonPath("$.data.routines.length()").value(3))
-				.andExpect(jsonPath("$.data.message").value("3개의 루틴이 업데이트되었습니다."));
+				.andExpect(jsonPath("$.data.routines.length()").value(3));
 		}
 
 		@Test
@@ -330,8 +328,7 @@ class ChallengeControllerTest {
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$.data.updatedCount").value(1))
 				.andExpect(jsonPath("$.data.routines").isArray())
-				.andExpect(jsonPath("$.data.routines.length()").value(1))
-				.andExpect(jsonPath("$.data.message").value("1개의 루틴이 업데이트되었습니다."));
+				.andExpect(jsonPath("$.data.routines.length()").value(1));
 		}
 
 		@Test
