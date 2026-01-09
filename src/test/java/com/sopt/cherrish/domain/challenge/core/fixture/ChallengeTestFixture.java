@@ -29,6 +29,22 @@ public class ChallengeTestFixture {
 		// Utility class
 	}
 
+	// ===== Message Generation Helpers (matches production DTO logic) =====
+
+	/**
+	 * 루틴 완료 메시지 생성 (RoutineCompletionResponseDto.from() 로직과 동일)
+	 */
+	private static String createRoutineCompletionMessage(boolean isComplete) {
+		return isComplete ? "루틴을 완료했습니다!" : "루틴 완료를 취소했습니다.";
+	}
+
+	/**
+	 * 루틴 일괄 업데이트 메시지 생성 (RoutineBatchUpdateResponseDto.from() 로직과 동일)
+	 */
+	private static String createRoutineBatchUpdateMessage(int count) {
+		return count + "개의 루틴이 업데이트되었습니다.";
+	}
+
 	public static ChallengeCreateRequestDto createValidChallengeRequest() {
 		return new ChallengeCreateRequestDto(
 			1,
@@ -138,7 +154,7 @@ public class ChallengeTestFixture {
 			DEFAULT_ROUTINE_ID,
 			DEFAULT_ROUTINE_NAME,
 			isComplete,
-			isComplete ? "루틴을 완료했습니다!" : "루틴 완료를 취소했습니다."
+			createRoutineCompletionMessage(isComplete)
 		);
 	}
 
@@ -203,7 +219,7 @@ public class ChallengeTestFixture {
 			new ChallengeRoutineResponseDto(3L, "크림 바르기", FIXED_START_DATE, true)
 		);
 
-		return new RoutineBatchUpdateResponseDto(routines, 3, "3개의 루틴이 업데이트되었습니다.");
+		return new RoutineBatchUpdateResponseDto(routines, 3, createRoutineBatchUpdateMessage(3));
 	}
 
 	/**
@@ -214,6 +230,6 @@ public class ChallengeTestFixture {
 			new ChallengeRoutineResponseDto(1L, "아침 세안", FIXED_START_DATE, true)
 		);
 
-		return new RoutineBatchUpdateResponseDto(routines, 1, "1개의 루틴이 업데이트되었습니다.");
+		return new RoutineBatchUpdateResponseDto(routines, 1, createRoutineBatchUpdateMessage(1));
 	}
 }
