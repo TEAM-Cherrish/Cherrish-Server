@@ -111,4 +111,60 @@ class ChallengeTest {
 		// then
 		assertThat(challenge.getIsActive()).isFalse();
 	}
+
+	@Test
+	@DisplayName("현재 일차 조회 - 챌린지 시작 전")
+	void getCurrentDayBeforeStartReturnsZero() {
+		// given
+		Challenge challenge = createTestChallenge(); // startDate: 2024-01-01
+		LocalDate beforeStart = LocalDate.of(2023, 12, 31);
+
+		// when
+		int currentDay = challenge.getCurrentDay(beforeStart);
+
+		// then
+		assertThat(currentDay).isEqualTo(0);
+	}
+
+	@Test
+	@DisplayName("현재 일차 조회 - 챌린지 진행 중 (1일차)")
+	void getCurrentDayFirstDayReturnsOne() {
+		// given
+		Challenge challenge = createTestChallenge(); // startDate: 2024-01-01
+		LocalDate firstDay = LocalDate.of(2024, 1, 1);
+
+		// when
+		int currentDay = challenge.getCurrentDay(firstDay);
+
+		// then
+		assertThat(currentDay).isEqualTo(1);
+	}
+
+	@Test
+	@DisplayName("현재 일차 조회 - 챌린지 진행 중 (3일차)")
+	void getCurrentDayThirdDayReturnsThree() {
+		// given
+		Challenge challenge = createTestChallenge(); // startDate: 2024-01-01
+		LocalDate thirdDay = LocalDate.of(2024, 1, 3);
+
+		// when
+		int currentDay = challenge.getCurrentDay(thirdDay);
+
+		// then
+		assertThat(currentDay).isEqualTo(3);
+	}
+
+	@Test
+	@DisplayName("현재 일차 조회 - 챌린지 종료 후")
+	void getCurrentDayAfterEndReturnsMaxDays() {
+		// given
+		Challenge challenge = createTestChallenge(); // endDate: 2024-01-07
+		LocalDate afterEnd = LocalDate.of(2024, 1, 10);
+
+		// when
+		int currentDay = challenge.getCurrentDay(afterEnd);
+
+		// then
+		assertThat(currentDay).isEqualTo(7); // totalDays
+	}
 }
