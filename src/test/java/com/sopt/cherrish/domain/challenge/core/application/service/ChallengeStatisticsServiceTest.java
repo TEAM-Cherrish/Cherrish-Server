@@ -91,7 +91,7 @@ class ChallengeStatisticsServiceTest {
 		// when & then
 		assertThatThrownBy(() -> challengeStatisticsService.incrementCompletedCount(challengeId))
 			.isInstanceOf(ChallengeException.class)
-			.hasFieldOrPropertyWithValue("errorCode", ChallengeErrorCode.CHALLENGE_NOT_FOUND);
+			.hasFieldOrPropertyWithValue("errorCode", ChallengeErrorCode.STATISTICS_NOT_FOUND);
 	}
 
 	@Test
@@ -132,7 +132,7 @@ class ChallengeStatisticsServiceTest {
 		// when & then
 		assertThatThrownBy(() -> challengeStatisticsService.decrementCompletedCount(challengeId))
 			.isInstanceOf(ChallengeException.class)
-			.hasFieldOrPropertyWithValue("errorCode", ChallengeErrorCode.CHALLENGE_NOT_FOUND);
+			.hasFieldOrPropertyWithValue("errorCode", ChallengeErrorCode.STATISTICS_NOT_FOUND);
 	}
 
 	@Test
@@ -171,6 +171,6 @@ class ChallengeStatisticsServiceTest {
 		// when & then
 		assertThatThrownBy(() -> challengeStatisticsService.getStatistics(challengeId))
 			.isInstanceOf(ChallengeException.class)
-			.hasFieldOrPropertyWithValue("errorCode", ChallengeErrorCode.CHALLENGE_NOT_FOUND);
+			.hasFieldOrPropertyWithValue("errorCode", ChallengeErrorCode.STATISTICS_NOT_FOUND);
 	}
 }

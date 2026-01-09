@@ -1,9 +1,12 @@
 package com.sopt.cherrish.domain.challenge.core.domain.model;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.sopt.cherrish.domain.challenge.core.exception.ChallengeErrorCode;
+import com.sopt.cherrish.domain.challenge.core.exception.ChallengeException;
 import com.sopt.cherrish.domain.challenge.homecare.domain.model.HomecareRoutine;
 import com.sopt.cherrish.global.entity.BaseTimeEntity;
 
@@ -11,9 +14,11 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -29,6 +34,9 @@ public class Challenge extends BaseTimeEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
+
+	@OneToOne(mappedBy = "challenge", fetch = FetchType.LAZY)
+	private ChallengeStatistics statistics;
 
 	@Column(nullable = false, name = "user_id")
 	private Long userId;
@@ -87,5 +95,37 @@ public class Challenge extends BaseTimeEntity {
 
 	public void complete() {
 		this.isActive = false;
+	}
+
+	/**
+	 * 소유자 검증
+	 * @param userId 검증할 사용자 ID
+	 * @throws ChallengeException 소유자가 아닌 경우
+	 */
+	public void validateOwner(Long userId) {
+		if (!this.userId.equals(userId)) {
+			throw new ChallengeException(
+				ChallengeErrorCode.UNAUTHORIZED_ACCESS
+			);
+		}
+	}
+
+	/**
+	 * 현재 챌린지 진행 일차 계산 (1-indexed)
+	 * @param today 현재 날짜
+	 * @return 현재 일차 (1부터 시작)
+	 */
+	public int getCurrentDay(LocalDate today) {
+		// 챌린지 시작 전: 0 반환
+		if (today.isBefore(startDate)) {
+			return 0;
+		}
+
+		// 챌린지 종료 후: 최대 일차 반환
+		if (today.isAfter(endDate)) {
+			return totalDays;
+		}
+
+		return (int) ChronoUnit.DAYS.between(startDate, today) + 1;
 	}
 }

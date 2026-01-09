@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -79,6 +80,14 @@ public class GlobalExceptionHandler {
 		}
 
 		return CommonApiResponse.fail(ErrorCode.INVALID_FORMAT, errorDetails);
+	}
+
+	// 낙관적 락 충돌 처리 (동시성 제어)
+	@ExceptionHandler(ObjectOptimisticLockingFailureException.class)
+	@ResponseStatus(HttpStatus.CONFLICT)
+	public CommonApiResponse<Void> handleOptimisticLockingFailure(ObjectOptimisticLockingFailureException e) {
+		log.warn("Optimistic locking failure: {}", e.getMessage());
+		return CommonApiResponse.fail(ErrorCode.CONCURRENT_UPDATE);
 	}
 
 	// 그 외 모든 예외 처리
