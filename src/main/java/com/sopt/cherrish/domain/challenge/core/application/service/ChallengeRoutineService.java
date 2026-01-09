@@ -15,7 +15,7 @@ import com.sopt.cherrish.domain.challenge.core.domain.model.ChallengeStatistics;
 import com.sopt.cherrish.domain.challenge.core.domain.repository.ChallengeRoutineRepository;
 import com.sopt.cherrish.domain.challenge.core.exception.ChallengeErrorCode;
 import com.sopt.cherrish.domain.challenge.core.exception.ChallengeException;
-import com.sopt.cherrish.domain.challenge.core.presentation.dto.request.RoutineUpdateItemDto;
+import com.sopt.cherrish.domain.challenge.core.presentation.dto.request.RoutineUpdateItemRequestDto;
 import com.sopt.cherrish.domain.challenge.core.presentation.dto.request.RoutineUpdateRequestDto;
 import com.sopt.cherrish.domain.challenge.core.presentation.dto.response.RoutineBatchUpdateResponseDto;
 import com.sopt.cherrish.domain.challenge.core.presentation.dto.response.RoutineCompletionResponseDto;
@@ -173,7 +173,7 @@ public class ChallengeRoutineService {
 	 */
 	private List<Long> extractRoutineIds(RoutineUpdateRequestDto request) {
 		return request.routines().stream()
-			.map(RoutineUpdateItemDto::routineId)
+			.map(RoutineUpdateItemRequestDto::routineId)
 			.toList();
 	}
 
@@ -233,8 +233,8 @@ public class ChallengeRoutineService {
 	private int updateRoutineStates(List<ChallengeRoutine> routines, RoutineUpdateRequestDto request) {
 		Map<Long, Boolean> updateMap = request.routines().stream()
 			.collect(Collectors.toMap(
-				RoutineUpdateItemDto::routineId,
-				RoutineUpdateItemDto::isComplete
+				RoutineUpdateItemRequestDto::routineId,
+				RoutineUpdateItemRequestDto::isComplete
 			));
 
 		int completedDelta = 0;
