@@ -49,4 +49,25 @@ public interface ChallengeRoutineRepository extends JpaRepository<ChallengeRouti
 		WHERE r.id = :id
 	""")
 	Optional<ChallengeRoutine> findByIdWithChallengeAndStatistics(@Param("id") Long id);
+
+	/**
+	 * 여러 루틴 조회 (Challenge와 Statistics를 함께 fetch)
+	 * N+1 쿼리 방지 및 통계 중복 조회 방지
+	 * DISTINCT를 사용하여 Fetch Join의 카테시안 곱 방지
+	 * INNER JOIN을 사용하여 Statistics가 반드시 존재함을 보장
+	 *
+	 * 주의사항:
+	 * - 모든 루틴이 같은 Challenge를 공유하므로 Statistics는 한 번만 조회됨
+	 * - IN 절의 ID 개수가 많을 경우 성능 영향 고려 필요
+	 *
+	 * @param ids 루틴 ID 리스트
+	 * @return 루틴 리스트 (Challenge와 Statistics 포함)
+	 */
+	@Query("""
+		SELECT DISTINCT r FROM ChallengeRoutine r
+		JOIN FETCH r.challenge c
+		INNER JOIN FETCH c.statistics
+		WHERE r.id IN :ids
+	""")
+	List<ChallengeRoutine> findByIdInWithChallengeAndStatistics(@Param("ids") List<Long> ids);
 }
