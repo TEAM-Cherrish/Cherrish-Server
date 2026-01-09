@@ -2,6 +2,7 @@ package com.sopt.cherrish.domain.challenge.core.application.service;
 
 import java.time.Clock;
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -181,6 +182,11 @@ public class ChallengeRoutineService {
 	 * 루틴 조회 및 존재 여부 검증
 	 */
 	private List<ChallengeRoutine> fetchAndValidateRoutines(List<Long> routineIds) {
+		// 중복 ID 검증
+		if (routineIds.size() != new HashSet<>(routineIds).size()) {
+			throw new ChallengeException(ChallengeErrorCode.DUPLICATE_ROUTINE_IDS);
+		}
+
 		List<ChallengeRoutine> routines = routineRepository
 			.findByIdInWithChallengeAndStatistics(routineIds);
 
