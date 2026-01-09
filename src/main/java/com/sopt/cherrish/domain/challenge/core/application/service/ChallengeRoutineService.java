@@ -52,7 +52,7 @@ public class ChallengeRoutineService {
 	 * @return 오늘의 루틴 리스트
 	 */
 	public List<ChallengeRoutine> getTodayRoutines(Long challengeId) {
-		LocalDate today = LocalDate.now(clock);
+		LocalDate today = getCurrentDate();
 		return getRoutinesByDate(challengeId, today);
 	}
 
@@ -88,10 +88,7 @@ public class ChallengeRoutineService {
 	public RoutineCompletionResponseDto toggleCompletion(Long userId, Long routineId) {
 		ChallengeRoutine routine = getRoutineByIdWithStatistics(routineId);
 
-		routine.getChallenge().validateOwner(userId);
-
-		LocalDate today = LocalDate.now(clock);
-		routine.validateOperationDateWithinChallengePeriod(today);
+		validateRoutineOwnerAndPeriod(routine, userId);
 
 		routine.toggleCompletion();
 
@@ -119,13 +116,26 @@ public class ChallengeRoutineService {
 	private void updateStatistics(ChallengeRoutine routine) {
 		ChallengeStatistics statistics = routine.getChallenge().getStatistics();
 
-		if (routine.getIsComplete()) {
-			statistics.incrementCompletedCount();
-		} else {
-			statistics.decrementCompletedCount();
-		}
-
+		int delta = routine.getIsComplete() ? 1 : -1;
+		statistics.adjustCompletedCount(delta);
 		statistics.updateCherryLevel();
+	}
+
+	/**
+	 * 현재 날짜 조회 (시간 개념 중앙화)
+	 */
+	private LocalDate getCurrentDate() {
+		return LocalDate.now(clock);
+	}
+
+	/**
+	 * 루틴 소유자 및 작업 가능 날짜 검증 (공통 메서드)
+	 */
+	private void validateRoutineOwnerAndPeriod(ChallengeRoutine routine, Long userId) {
+		routine.getChallenge().validateOwner(userId);
+
+		LocalDate today = getCurrentDate();
+		routine.validateOperationDateWithinChallengePeriod(today);
 	}
 
 	/**
@@ -195,24 +205,26 @@ public class ChallengeRoutineService {
 	 */
 	private Challenge validateAndGetChallenge(List<ChallengeRoutine> routines, Long userId) {
 		Challenge challenge = routines.get(0).getChallenge();
-		Long challengeId = challenge.getId();
 
 		// 모든 루틴이 같은 챌린지에 속하는지 확인
+		validateAllSameChallenge(routines, challenge.getId());
+
+		// 소유자 및 날짜 검증
+		validateRoutineOwnerAndPeriod(routines.get(0), userId);
+
+		return challenge;
+	}
+
+	/**
+	 * 모든 루틴이 같은 챌린지에 속하는지 검증
+	 */
+	private void validateAllSameChallenge(List<ChallengeRoutine> routines, Long expectedChallengeId) {
 		boolean allSameChallenge = routines.stream()
-			.allMatch(r -> r.getChallenge().getId().equals(challengeId));
+			.allMatch(r -> r.getChallenge().getId().equals(expectedChallengeId));
 
 		if (!allSameChallenge) {
 			throw new ChallengeException(ChallengeErrorCode.ROUTINES_FROM_DIFFERENT_CHALLENGES);
 		}
-
-		// 소유자 확인
-		challenge.validateOwner(userId);
-
-		// 현재 날짜가 챌린지 기간 내인지 확인
-		LocalDate today = LocalDate.now(clock);
-		routines.get(0).validateOperationDateWithinChallengePeriod(today);
-
-		return challenge;
 	}
 
 	/**
