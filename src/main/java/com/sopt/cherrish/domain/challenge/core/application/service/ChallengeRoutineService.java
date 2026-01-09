@@ -184,12 +184,7 @@ public class ChallengeRoutineService {
 		List<ChallengeRoutine> routines = routineRepository
 			.findByIdInWithChallengeAndStatistics(routineIds);
 
-		// 빈 리스트 검증
-		if (routines.isEmpty()) {
-			throw new ChallengeException(ChallengeErrorCode.ROUTINE_NOT_FOUND);
-		}
-
-		// 모든 루틴 존재 확인
+		// 모든 루틴 존재 확인 (빈 리스트 케이스 포함)
 		if (routines.size() != routineIds.size()) {
 			throw new ChallengeException(ChallengeErrorCode.ROUTINE_NOT_FOUND);
 		}
