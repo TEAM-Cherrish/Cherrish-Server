@@ -60,33 +60,32 @@ class CalendarControllerTest {
 			.andExpect(jsonPath("$.data.dailyProcedureCounts['10']").value(3));
 	}
 
-	// TODO: 전역 예외 처리 개선 후 주석 해제
-	// @Test
-	// @DisplayName("월별 캘린더 조회 실패 - year 파라미터 누락")
-	// void getMonthlyCalendarMissingYear() throws Exception {
-		// 	mockMvc.perform(get("/api/calendar/monthly")
-		// 			.header("X-User-Id", 1L)
-	// 			.param("month", "1"))
-	// 		.andExpect(status().isBadRequest());
-	// }
-	//
-	// @Test
-	// @DisplayName("월별 캘린더 조회 실패 - month 파라미터 누락")
-	// void getMonthlyCalendarMissingMonth() throws Exception {
-		// 	mockMvc.perform(get("/api/calendar/monthly")
-		// 			.header("X-User-Id", 1L)
-	// 			.param("year", "2025"))
-	// 		.andExpect(status().isBadRequest());
-	// }
-	//
-	// @Test
-		// @DisplayName("월별 캘린더 조회 실패 - X-User-Id 헤더 누락")
-	// void getMonthlyCalendarMissingUserId() throws Exception {
-	// 	mockMvc.perform(get("/api/calendar/monthly")
-	// 			.param("year", "2025")
-	// 			.param("month", "1"))
-	// 		.andExpect(status().isBadRequest());
-	// }
+	@Test
+	@DisplayName("월별 캘린더 조회 실패 - year 파라미터 누락")
+	void getMonthlyCalendarMissingYear() throws Exception {
+		mockMvc.perform(get("/api/calendar/monthly")
+				.header("X-User-Id", 1L)
+				.param("month", "1"))
+			.andExpect(status().isBadRequest());
+	}
+
+	@Test
+	@DisplayName("월별 캘린더 조회 실패 - month 파라미터 누락")
+	void getMonthlyCalendarMissingMonth() throws Exception {
+		mockMvc.perform(get("/api/calendar/monthly")
+				.header("X-User-Id", 1L)
+				.param("year", "2025"))
+			.andExpect(status().isBadRequest());
+	}
+
+	@Test
+	@DisplayName("월별 캘린더 조회 실패 - X-User-Id 헤더 누락")
+	void getMonthlyCalendarMissingUserId() throws Exception {
+		mockMvc.perform(get("/api/calendar/monthly")
+				.param("year", "2025")
+				.param("month", "1"))
+			.andExpect(status().isBadRequest());
+	}
 
 	@Test
 	@DisplayName("일자별 시술 상세 조회 성공")
@@ -139,29 +138,28 @@ class CalendarControllerTest {
 			.andExpect(jsonPath("$.data.events[0].recoveryDays.length()").value(3));
 	}
 
-	// TODO: 전역 예외 처리 개선 후 주석 해제
-	// @Test
-	// @DisplayName("일자별 시술 상세 조회 실패 - date 파라미터 누락")
-	// void getDailyCalendarMissingDate() throws Exception {
-		// 	mockMvc.perform(get("/api/calendar/daily")
-		// 			.header("X-User-Id", 1L))
-	// 		.andExpect(status().isBadRequest());
-	// }
-	//
-	// @Test
-		// @DisplayName("일자별 시술 상세 조회 실패 - X-User-Id 헤더 누락")
-	// void getDailyCalendarMissingUserId() throws Exception {
-	// 	mockMvc.perform(get("/api/calendar/daily")
-	// 			.param("date", "2025-01-15"))
-	// 		.andExpect(status().isBadRequest());
-	// }
-	//
-	// @Test
-	// @DisplayName("일자별 시술 상세 조회 실패 - date 형식 오류")
-	// void getDailyCalendarInvalidDateFormat() throws Exception {
-		// 	mockMvc.perform(get("/api/calendar/daily")
-		// 			.header("X-User-Id", 1L)
-		// 			.param("date", "2025/01/15"))
-	// 		.andExpect(status().isBadRequest());
-	// }
+	@Test
+	@DisplayName("일자별 시술 상세 조회 실패 - date 파라미터 누락")
+	void getDailyCalendarMissingDate() throws Exception {
+		mockMvc.perform(get("/api/calendar/daily")
+				.header("X-User-Id", 1L))
+			.andExpect(status().isBadRequest());
+	}
+
+	@Test
+	@DisplayName("일자별 시술 상세 조회 실패 - X-User-Id 헤더 누락")
+	void getDailyCalendarMissingUserId() throws Exception {
+		mockMvc.perform(get("/api/calendar/daily")
+				.param("date", "2025-01-15"))
+			.andExpect(status().isBadRequest());
+	}
+
+	@Test
+	@DisplayName("일자별 시술 상세 조회 실패 - date 형식 오류")
+	void getDailyCalendarInvalidDateFormat() throws Exception {
+		mockMvc.perform(get("/api/calendar/daily")
+				.header("X-User-Id", 1L)
+				.param("date", "2025/01/15"))
+			.andExpect(status().isBadRequest());
+	}
 }
