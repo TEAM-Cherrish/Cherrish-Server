@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 
 import jakarta.persistence.EntityManager;
 import com.sopt.cherrish.domain.challenge.core.domain.model.Challenge;
+import com.sopt.cherrish.global.config.TestClockConfig;
 import com.sopt.cherrish.domain.challenge.core.domain.model.ChallengeRoutine;
 import com.sopt.cherrish.domain.challenge.core.domain.model.ChallengeStatistics;
 import com.sopt.cherrish.domain.challenge.core.domain.repository.ChallengeRepository;
@@ -43,7 +44,8 @@ public class ChallengeIntegrationTestFixture {
 	}
 
 	// 상수 정의
-	public static final LocalDate FIXED_START_DATE = LocalDate.of(2024, 1, 1);
+	// TestClockConfig의 고정 날짜를 참조하여 일관성 유지
+	public static final LocalDate FIXED_START_DATE = TestClockConfig.FIXED_TEST_DATE;
 	public static final String DEFAULT_USER_NAME = "테스트 유저";
 	public static final int DEFAULT_USER_AGE = 25;
 	public static final String OTHER_USER_NAME = "다른 유저";
