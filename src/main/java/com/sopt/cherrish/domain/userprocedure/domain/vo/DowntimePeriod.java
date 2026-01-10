@@ -4,6 +4,9 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.IntStream;
 
+import com.sopt.cherrish.domain.userprocedure.exception.UserProcedureErrorCode;
+import com.sopt.cherrish.domain.userprocedure.exception.UserProcedureException;
+
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -17,6 +20,8 @@ import lombok.Getter;
 public class DowntimePeriod {
 
 	private static final int PERIOD_COUNT = 3;
+	private static final int MIN_DOWNTIME_DAYS = 0;
+	private static final int MAX_DOWNTIME_DAYS = 30;
 	private static final DowntimePeriod EMPTY = new DowntimePeriod(List.of(), List.of(), List.of());
 
 	private final List<LocalDate> sensitiveDays;
@@ -33,12 +38,15 @@ public class DowntimePeriod {
 	/**
 	 * 다운타임 일수와 시작 날짜로부터 다운타임 기간 계산
 	 *
-	 * @param downtimeDays 총 다운타임 일수
+	 * @param downtimeDays 총 다운타임 일수 (0~30일)
 	 * @param startDate 시술 시작 날짜
 	 * @return 계산된 다운타임 기간
+	 * @throws UserProcedureException 다운타임 일수가 유효 범위를 벗어난 경우
 	 */
-	public static DowntimePeriod calculate(Integer downtimeDays, LocalDate startDate) {
-		if (downtimeDays == null || downtimeDays <= 0) {
+	public static DowntimePeriod calculate(int downtimeDays, LocalDate startDate) {
+		validateDowntimeDays(downtimeDays);
+
+		if (downtimeDays == 0) {
 			return empty();
 		}
 
@@ -68,6 +76,18 @@ public class DowntimePeriod {
 		return IntStream.range(0, days)
 			.mapToObj(startDate::plusDays)
 			.toList();
+	}
+
+	/**
+	 * 다운타임 일수 유효성 검증 (방어적 프로그래밍)
+	 *
+	 * @param downtimeDays 검증할 다운타임 일수
+	 * @throws UserProcedureException 다운타임 일수가 유효 범위(0~30일)를 벗어난 경우
+	 */
+	private static void validateDowntimeDays(int downtimeDays) {
+		if (downtimeDays < MIN_DOWNTIME_DAYS || downtimeDays > MAX_DOWNTIME_DAYS) {
+			throw new UserProcedureException(UserProcedureErrorCode.INVALID_DOWNTIME_DAYS);
+		}
 	}
 
 	/**

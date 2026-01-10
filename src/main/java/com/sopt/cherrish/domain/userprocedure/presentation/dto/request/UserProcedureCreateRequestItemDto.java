@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
@@ -21,7 +22,8 @@ public class UserProcedureCreateRequestItemDto {
 
 	@Schema(description = "개인 다운타임(일)", example = "6", requiredMode = Schema.RequiredMode.REQUIRED)
 	@NotNull(message = "개인 다운타임은 필수입니다")
-	@Min(value = 0, message = "다운타임은 0 이상이어야 합니다")
+	@Min(value = 0, message = "다운타임은 0일 이상이어야 합니다")
+	@Max(value = 30, message = "다운타임은 30일 이하여야 합니다")
 	private Integer downtimeDays;
 
 	@JsonCreator
