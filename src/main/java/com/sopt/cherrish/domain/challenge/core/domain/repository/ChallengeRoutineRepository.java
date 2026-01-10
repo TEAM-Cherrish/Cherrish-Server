@@ -28,6 +28,15 @@ public interface ChallengeRoutineRepository extends JpaRepository<ChallengeRouti
 	List<ChallengeRoutine> findByChallengeIdAndScheduledDate(Long challengeId, LocalDate scheduledDate);
 
 	/**
+	 * 챌린지의 특정 날짜 루틴 개수 조회
+	 * 커스텀 루틴 추가 시 하루 최대 20개 제한 검증에 사용
+	 * @param challengeId 챌린지 ID
+	 * @param scheduledDate 예정일
+	 * @return 루틴 개수
+	 */
+	long countByChallengeIdAndScheduledDate(Long challengeId, LocalDate scheduledDate);
+
+	/**
 	 * 루틴 조회 (Challenge와 함께 fetch)
 	 * @param id 루틴 ID
 	 * @return 루틴 (Challenge 포함)
