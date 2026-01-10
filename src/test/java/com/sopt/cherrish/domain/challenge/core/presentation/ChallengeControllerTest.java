@@ -28,6 +28,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.util.List;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -44,14 +46,18 @@ import com.sopt.cherrish.domain.challenge.core.application.facade.ChallengeCreat
 import com.sopt.cherrish.domain.challenge.core.application.facade.ChallengeCustomRoutineFacade;
 import com.sopt.cherrish.domain.challenge.core.application.facade.ChallengeQueryFacade;
 import com.sopt.cherrish.domain.challenge.core.application.service.ChallengeRoutineService;
+import com.sopt.cherrish.domain.challenge.core.domain.model.Challenge;
 import com.sopt.cherrish.domain.challenge.core.exception.ChallengeErrorCode;
 import com.sopt.cherrish.domain.challenge.core.exception.ChallengeException;
 import com.sopt.cherrish.domain.challenge.core.presentation.dto.request.ChallengeCreateRequestDto;
+import com.sopt.cherrish.domain.challenge.core.presentation.dto.request.CustomRoutineAddRequestDto;
 import com.sopt.cherrish.domain.challenge.core.presentation.dto.request.RoutineUpdateRequestDto;
 import com.sopt.cherrish.domain.challenge.core.presentation.dto.response.ChallengeCreateResponseDto;
 import com.sopt.cherrish.domain.challenge.core.presentation.dto.response.ChallengeDetailResponseDto;
+import com.sopt.cherrish.domain.challenge.core.presentation.dto.response.CustomRoutineAddResponseDto;
 import com.sopt.cherrish.domain.challenge.core.presentation.dto.response.RoutineBatchUpdateResponseDto;
 import com.sopt.cherrish.domain.challenge.core.presentation.dto.response.RoutineCompletionResponseDto;
+import com.sopt.cherrish.domain.challenge.homecare.domain.model.HomecareRoutine;
 import com.sopt.cherrish.domain.user.exception.UserErrorCode;
 import com.sopt.cherrish.domain.user.exception.UserException;
 
@@ -441,6 +447,137 @@ class ChallengeControllerTest {
 					.contentType(MediaType.APPLICATION_JSON)
 					.content(objectMapper.writeValueAsString(request)))
 				.andExpect(status().isForbidden());
+		}
+	}
+
+	@Nested
+	@DisplayName("POST /api/challenges/routines - 커스텀 루틴 추가")
+	class CustomRoutineAddTest {
+
+		@Test
+		@DisplayName("성공 - 커스텀 루틴 추가 (5개 생성)")
+		void successAddCustomRoutine() throws Exception {
+			// given
+			CustomRoutineAddRequestDto request = new CustomRoutineAddRequestDto("저녁 마사지");
+
+			CustomRoutineAddResponseDto response = CustomRoutineAddResponseDto.from(
+				Challenge.builder()
+					.userId(DEFAULT_USER_ID)
+					.homecareRoutine(HomecareRoutine.SKIN_MOISTURIZING)
+					.title("테스트 챌린지")
+					.startDate(java.time.LocalDate.of(2024, 1, 1))
+					.build(),
+				"저녁 마사지",
+				List.of(),
+				26
+			);
+
+			given(challengeCustomRoutineFacade.addCustomRoutine(eq(DEFAULT_USER_ID), any(CustomRoutineAddRequestDto.class)))
+				.willReturn(response);
+
+			// when & then
+			mockMvc.perform(post("/api/challenges/routines")
+					.header("X-User-Id", DEFAULT_USER_ID)
+					.contentType(MediaType.APPLICATION_JSON)
+					.content(objectMapper.writeValueAsString(request)))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.data.challengeId").value(response.challengeId()))
+				.andExpect(jsonPath("$.data.routineName").value("저녁 마사지"))
+				.andExpect(jsonPath("$.data.totalRoutineCount").value(26));
+		}
+
+		@Test
+		@DisplayName("실패 - 존재하지 않는 사용자")
+		void failUserNotFound() throws Exception {
+			// given
+			CustomRoutineAddRequestDto request = new CustomRoutineAddRequestDto("저녁 마사지");
+
+			given(challengeCustomRoutineFacade.addCustomRoutine(eq(DEFAULT_USER_ID), any(CustomRoutineAddRequestDto.class)))
+				.willThrow(new UserException(UserErrorCode.USER_NOT_FOUND));
+
+			// when & then
+			mockMvc.perform(post("/api/challenges/routines")
+					.header("X-User-Id", DEFAULT_USER_ID)
+					.contentType(MediaType.APPLICATION_JSON)
+					.content(objectMapper.writeValueAsString(request)))
+				.andExpect(status().isNotFound());
+		}
+
+		@Test
+		@DisplayName("실패 - 활성 챌린지가 없을 때")
+		void failNoChallengeFound() throws Exception {
+			// given
+			CustomRoutineAddRequestDto request = new CustomRoutineAddRequestDto("저녁 마사지");
+
+			given(challengeCustomRoutineFacade.addCustomRoutine(eq(DEFAULT_USER_ID), any(CustomRoutineAddRequestDto.class)))
+				.willThrow(new ChallengeException(ChallengeErrorCode.CHALLENGE_NOT_FOUND));
+
+			// when & then
+			mockMvc.perform(post("/api/challenges/routines")
+					.header("X-User-Id", DEFAULT_USER_ID)
+					.contentType(MediaType.APPLICATION_JSON)
+					.content(objectMapper.writeValueAsString(request)))
+				.andExpect(status().isNotFound());
+		}
+
+		@Test
+		@DisplayName("실패 - 챌린지 기간 외의 날짜")
+		void failRoutineOutOfChallengePeriod() throws Exception {
+			// given
+			CustomRoutineAddRequestDto request = new CustomRoutineAddRequestDto("저녁 마사지");
+
+			given(challengeCustomRoutineFacade.addCustomRoutine(eq(DEFAULT_USER_ID), any(CustomRoutineAddRequestDto.class)))
+				.willThrow(new ChallengeException(ChallengeErrorCode.ROUTINE_OUT_OF_CHALLENGE_PERIOD));
+
+			// when & then
+			mockMvc.perform(post("/api/challenges/routines")
+					.header("X-User-Id", DEFAULT_USER_ID)
+					.contentType(MediaType.APPLICATION_JSON)
+					.content(objectMapper.writeValueAsString(request)))
+				.andExpect(status().isBadRequest());
+		}
+
+		@Test
+		@DisplayName("실패 - 유효성 검증 실패 (빈 루틴명)")
+		void failValidationEmptyRoutineName() throws Exception {
+			// given
+			CustomRoutineAddRequestDto request = new CustomRoutineAddRequestDto("");
+
+			// when & then
+			mockMvc.perform(post("/api/challenges/routines")
+					.header("X-User-Id", DEFAULT_USER_ID)
+					.contentType(MediaType.APPLICATION_JSON)
+					.content(objectMapper.writeValueAsString(request)))
+				.andExpect(status().isBadRequest());
+		}
+
+		@Test
+		@DisplayName("실패 - 유효성 검증 실패 (null 루틴명)")
+		void failValidationNullRoutineName() throws Exception {
+			// given
+			String requestBody = "{\"routineName\": null}";
+
+			// when & then
+			mockMvc.perform(post("/api/challenges/routines")
+					.header("X-User-Id", DEFAULT_USER_ID)
+					.contentType(MediaType.APPLICATION_JSON)
+					.content(requestBody))
+				.andExpect(status().isBadRequest());
+		}
+
+		@Test
+		@DisplayName("실패 - 유효성 검증 실패 (루틴명 길이 초과)")
+		void failValidationRoutineNameTooLong() throws Exception {
+			// given - 101자 루틴명
+			String longRoutineName = "a".repeat(101);
+			CustomRoutineAddRequestDto request = new CustomRoutineAddRequestDto(longRoutineName);
+
+			// when & then
+			mockMvc.perform(post("/api/challenges/routines")
+					.header("X-User-Id", DEFAULT_USER_ID)
+					.contentType(MediaType.APPLICATION_JSON)
+					.content(objectMapper.writeValueAsString(request)))
+				.andExpect(status().isBadRequest());
 		}
 	}
 }
