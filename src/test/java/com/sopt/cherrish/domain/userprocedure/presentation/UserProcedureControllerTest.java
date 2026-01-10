@@ -151,7 +151,7 @@ class UserProcedureControllerTest {
 				.andExpect(status().isBadRequest())
 				.andExpect(jsonPath("$.code").value("C001"))
 				.andExpect(jsonPath("$.message").value("입력값이 올바르지 않습니다"))
-				.andExpect(jsonPath("$.data['procedures[0].downtimeDays']").value("다운타임은 0 이상이어야 합니다"));
+				.andExpect(jsonPath("$.data['procedures[0].downtimeDays']").value("다운타임은 0일 이상이어야 합니다"));
 		}
 
 		@Test

@@ -30,22 +30,22 @@ public class ProcedureEventResponseDto {
 	@Schema(description = "시술명", example = "레이저 토닝")
 	private String name;
 
-	@Schema(description = "예약 날짜 및 시간", example = "2025-01-15T14:00:00")
+	@Schema(description = "예약 날짜 및 시간", example = "2026-01-15T14:00:00")
 	@JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
 	private LocalDateTime scheduledAt;
 
 	@Schema(description = "다운타임(일)", example = "7")
 	private Integer downtimeDays;
 
-	@Schema(description = "민감기 날짜 목록", example = "[\"2025-01-15\", \"2025-01-16\", \"2025-01-17\"]")
+	@Schema(description = "민감기 날짜 목록", example = "[\"2026-01-15\", \"2026-01-16\", \"2026-01-17\"]")
 	@JsonFormat(pattern = "yyyy-MM-dd")
 	private List<LocalDate> sensitiveDays;
 
-	@Schema(description = "주의기 날짜 목록", example = "[\"2025-01-18\", \"2025-01-19\"]")
+	@Schema(description = "주의기 날짜 목록", example = "[\"2026-01-18\", \"2026-01-19\"]")
 	@JsonFormat(pattern = "yyyy-MM-dd")
 	private List<LocalDate> cautionDays;
 
-	@Schema(description = "회복기 날짜 목록", example = "[\"2025-01-20\", \"2025-01-21\"]")
+	@Schema(description = "회복기 날짜 목록", example = "[\"2026-01-20\", \"2026-01-21\"]")
 	@JsonFormat(pattern = "yyyy-MM-dd")
 	private List<LocalDate> recoveryDays;
 
