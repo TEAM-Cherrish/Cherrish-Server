@@ -10,6 +10,7 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingRequestHeaderException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -50,6 +51,19 @@ public class GlobalExceptionHandler {
 			));
 		log.warn("Validation failed: {}", errors);
 		return CommonApiResponse.fail(ErrorCode.INVALID_INPUT, errors);
+	}
+
+	// 필수 요청 헤더 누락 처리
+	@ExceptionHandler(MissingRequestHeaderException.class)
+	@ResponseStatus(HttpStatus.BAD_REQUEST)
+	public CommonApiResponse<Map<String, String>> handleMissingRequestHeaderException(
+		MissingRequestHeaderException e) {
+		log.warn("Required request header '{}' is missing", e.getHeaderName());
+		Map<String, String> error = Map.of(
+			"header", e.getHeaderName(),
+			"message", "필수 헤더가 누락되었습니다"
+		);
+		return CommonApiResponse.fail(ErrorCode.INVALID_INPUT, error);
 	}
 
 	// 입력 값 검증 실패 처리 (Domain validation 등)
