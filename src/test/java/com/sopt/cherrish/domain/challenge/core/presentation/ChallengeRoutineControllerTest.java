@@ -373,10 +373,10 @@ class ChallengeRoutineControllerTest {
 		}
 
 		@Test
-		@DisplayName("실패 - 하루 루틴 20개 제한 초과")
+		@DisplayName("실패 - 하루 루틴 개수 제한 초과")
 		void failCustomRoutineLimitExceeded() throws Exception {
 			// given
-			CustomRoutineAddRequestDto request = new CustomRoutineAddRequestDto("21번째 루틴");
+			CustomRoutineAddRequestDto request = new CustomRoutineAddRequestDto("초과 루틴");
 
 			given(challengeCustomRoutineFacade.addCustomRoutine(eq(DEFAULT_USER_ID), any(CustomRoutineAddRequestDto.class)))
 				.willThrow(new ChallengeException(ChallengeErrorCode.CUSTOM_ROUTINE_LIMIT_EXCEEDED));

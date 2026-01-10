@@ -282,14 +282,15 @@ class ChallengeCustomRoutineFacadeIntegrationTest {
 	}
 
 	@Test
-	@DisplayName("성공 - 오늘 날짜에 19개 루틴 → 커스텀 1개 추가 가능 (20개 제한)")
+	@DisplayName("성공 - 오늘 날짜에 19개 루틴 → 커스텀 1개 추가 가능 (제한-1)")
 	void addCustomRoutineSuccessWhen19RoutinesExist() {
 		// given
 		User user = createTestUser();
 		Challenge challenge = createActiveChallengeWithRoutines(user, 3);
 
-		// 오늘(2024-01-01)에 추가로 16개 루틴 생성 (기존 3개 + 16개 = 19개)
-		for (int i = 0; i < 16; i++) {
+		// 오늘(2024-01-01)에 추가로 루틴 생성 (기존 3개 + 추가 = MAX-1개)
+		int additionalRoutines = ChallengeCustomRoutineFacade.MAX_DAILY_ROUTINE_COUNT - 3 - 1;
+		for (int i = 0; i < additionalRoutines; i++) {
 			routineRepository.save(ChallengeRoutine.builder()
 				.challenge(challenge)
 				.name("추가 루틴 " + (i + 1))
@@ -300,22 +301,22 @@ class ChallengeCustomRoutineFacadeIntegrationTest {
 		// 통계 업데이트
 		ChallengeStatistics statistics = statisticsRepository.findByChallengeId(challenge.getId())
 			.orElseThrow();
-		statistics.incrementTotalRoutineCount(16);
+		statistics.incrementTotalRoutineCount(additionalRoutines);
 		statisticsRepository.save(statistics);
 
 		entityManager.flush();
 		entityManager.clear();
 
-		CustomRoutineAddRequestDto request = new CustomRoutineAddRequestDto("20번째 루틴");
+		CustomRoutineAddRequestDto request = new CustomRoutineAddRequestDto("마지막 루틴");
 
-		// when - 오늘 19개 → 20번째 추가 (성공)
+		// when - 오늘 MAX-1개 → MAX번째 추가 (성공)
 		CustomRoutineAddResponseDto response = challengeCustomRoutineFacade.addCustomRoutine(
 			user.getId(),
 			request
 		);
 
 		// then
-		assertThat(response.routineName()).isEqualTo("20번째 루틴");
+		assertThat(response.routineName()).isEqualTo("마지막 루틴");
 		assertThat(response.addedCount()).isEqualTo(7);
 
 		// 오늘 날짜의 루틴 개수 확인
@@ -323,18 +324,19 @@ class ChallengeCustomRoutineFacadeIntegrationTest {
 			challenge.getId(),
 			FIXED_START_DATE
 		);
-		assertThat(todayRoutineCount).isEqualTo(20); // 19 + 1 = 20
+		assertThat(todayRoutineCount).isEqualTo(ChallengeCustomRoutineFacade.MAX_DAILY_ROUTINE_COUNT);
 	}
 
 	@Test
-	@DisplayName("실패 - 오늘 날짜에 20개 루틴 → 커스텀 추가 불가 (20개 제한 초과)")
+	@DisplayName("실패 - 오늘 날짜에 MAX개 루틴 → 커스텀 추가 불가 (제한 초과)")
 	void addCustomRoutineFailsWhen20RoutinesExist() {
 		// given
 		User user = createTestUser();
 		Challenge challenge = createActiveChallengeWithRoutines(user, 3);
 
-		// 오늘(2024-01-01)에 추가로 17개 루틴 생성 (기존 3개 + 17개 = 20개)
-		for (int i = 0; i < 17; i++) {
+		// 오늘(2024-01-01)에 추가로 루틴 생성 (기존 3개 + 추가 = MAX개)
+		int additionalRoutines = ChallengeCustomRoutineFacade.MAX_DAILY_ROUTINE_COUNT - 3;
+		for (int i = 0; i < additionalRoutines; i++) {
 			routineRepository.save(ChallengeRoutine.builder()
 				.challenge(challenge)
 				.name("추가 루틴 " + (i + 1))
@@ -345,15 +347,15 @@ class ChallengeCustomRoutineFacadeIntegrationTest {
 		// 통계 업데이트
 		ChallengeStatistics statistics = statisticsRepository.findByChallengeId(challenge.getId())
 			.orElseThrow();
-		statistics.incrementTotalRoutineCount(17);
+		statistics.incrementTotalRoutineCount(additionalRoutines);
 		statisticsRepository.save(statistics);
 
 		entityManager.flush();
 		entityManager.clear();
 
-		CustomRoutineAddRequestDto request = new CustomRoutineAddRequestDto("21번째 루틴");
+		CustomRoutineAddRequestDto request = new CustomRoutineAddRequestDto("초과 루틴");
 
-		// when & then - 오늘 20개 → 21번째 추가 시도 (실패)
+		// when & then - 오늘 MAX개 → MAX+1번째 추가 시도 (실패)
 		assertThatThrownBy(() -> challengeCustomRoutineFacade.addCustomRoutine(user.getId(), request))
 			.isInstanceOf(ChallengeException.class)
 			.hasFieldOrPropertyWithValue("errorCode", ChallengeErrorCode.CUSTOM_ROUTINE_LIMIT_EXCEEDED);
@@ -363,7 +365,7 @@ class ChallengeCustomRoutineFacadeIntegrationTest {
 			challenge.getId(),
 			FIXED_START_DATE
 		);
-		assertThat(todayRoutineCount).isEqualTo(20); // 여전히 20개
+		assertThat(todayRoutineCount).isEqualTo(ChallengeCustomRoutineFacade.MAX_DAILY_ROUTINE_COUNT);
 	}
 
 	@Test
