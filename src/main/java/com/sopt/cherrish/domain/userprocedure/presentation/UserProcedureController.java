@@ -24,7 +24,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/api/users/procedures")
+@RequestMapping("/api/user-procedures")
 @RequiredArgsConstructor
 @Tag(name = "UserProcedure", description = "사용자 시술 일정 API")
 public class UserProcedureController {
