@@ -14,11 +14,13 @@ import com.sopt.cherrish.domain.challenge.core.presentation.dto.response.CustomR
 import com.sopt.cherrish.domain.challenge.core.presentation.dto.response.RoutineBatchUpdateResponseDto;
 import com.sopt.cherrish.domain.challenge.core.presentation.dto.response.RoutineCompletionResponseDto;
 import com.sopt.cherrish.domain.challenge.homecare.domain.model.HomecareRoutine;
+import com.sopt.cherrish.global.config.TestClockConfig;
 
 public class ChallengeTestFixture {
 
 	// 공통 테스트 상수
-	public static final LocalDate FIXED_START_DATE = LocalDate.of(2024, 1, 1);
+	// TestClockConfig의 고정 날짜를 참조하여 일관성 유지
+	public static final LocalDate FIXED_START_DATE = TestClockConfig.FIXED_TEST_DATE;
 	public static final Long DEFAULT_USER_ID = 1L;
 	public static final Long DEFAULT_CHALLENGE_ID = 1L;
 	public static final Long DEFAULT_ROUTINE_ID = 1L;
