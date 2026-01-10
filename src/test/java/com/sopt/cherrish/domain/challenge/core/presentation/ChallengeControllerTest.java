@@ -6,12 +6,19 @@ import static com.sopt.cherrish.domain.challenge.core.fixture.ChallengeTestFixtu
 import static com.sopt.cherrish.domain.challenge.core.fixture.ChallengeTestFixture.DEFAULT_USER_ID;
 import static com.sopt.cherrish.domain.challenge.core.fixture.ChallengeTestFixture.createMockChallengeCreateResponse;
 import static com.sopt.cherrish.domain.challenge.core.fixture.ChallengeTestFixture.createMockChallengeDetailResponse;
+import static com.sopt.cherrish.domain.challenge.core.fixture.ChallengeTestFixture.createMockRoutineBatchUpdateResponse;
 import static com.sopt.cherrish.domain.challenge.core.fixture.ChallengeTestFixture.createMockRoutineCompletionResponse;
+import static com.sopt.cherrish.domain.challenge.core.fixture.ChallengeTestFixture.createMockSingleRoutineBatchUpdateResponse;
 import static com.sopt.cherrish.domain.challenge.core.fixture.ChallengeTestFixture.createRequestWithEmptyRoutines;
 import static com.sopt.cherrish.domain.challenge.core.fixture.ChallengeTestFixture.createRequestWithEmptyTitle;
 import static com.sopt.cherrish.domain.challenge.core.fixture.ChallengeTestFixture.createRequestWithNullTitle;
 import static com.sopt.cherrish.domain.challenge.core.fixture.ChallengeTestFixture.createRequestWithTooManyRoutines;
+import static com.sopt.cherrish.domain.challenge.core.fixture.ChallengeTestFixture.createRoutineUpdateRequestWithEmptyList;
+import static com.sopt.cherrish.domain.challenge.core.fixture.ChallengeTestFixture.createRoutineUpdateRequestWithNullIsComplete;
+import static com.sopt.cherrish.domain.challenge.core.fixture.ChallengeTestFixture.createRoutineUpdateRequestWithNullRoutineId;
+import static com.sopt.cherrish.domain.challenge.core.fixture.ChallengeTestFixture.createSingleRoutineUpdateRequest;
 import static com.sopt.cherrish.domain.challenge.core.fixture.ChallengeTestFixture.createValidChallengeRequest;
+import static com.sopt.cherrish.domain.challenge.core.fixture.ChallengeTestFixture.createValidRoutineUpdateRequest;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
@@ -39,8 +46,10 @@ import com.sopt.cherrish.domain.challenge.core.application.service.ChallengeRout
 import com.sopt.cherrish.domain.challenge.core.exception.ChallengeErrorCode;
 import com.sopt.cherrish.domain.challenge.core.exception.ChallengeException;
 import com.sopt.cherrish.domain.challenge.core.presentation.dto.request.ChallengeCreateRequestDto;
+import com.sopt.cherrish.domain.challenge.core.presentation.dto.request.RoutineUpdateRequestDto;
 import com.sopt.cherrish.domain.challenge.core.presentation.dto.response.ChallengeCreateResponseDto;
 import com.sopt.cherrish.domain.challenge.core.presentation.dto.response.ChallengeDetailResponseDto;
+import com.sopt.cherrish.domain.challenge.core.presentation.dto.response.RoutineBatchUpdateResponseDto;
 import com.sopt.cherrish.domain.challenge.core.presentation.dto.response.RoutineCompletionResponseDto;
 import com.sopt.cherrish.domain.user.exception.UserErrorCode;
 import com.sopt.cherrish.domain.user.exception.UserException;
@@ -65,7 +74,7 @@ class ChallengeControllerTest {
 	private ChallengeRoutineService challengeRoutineService;
 
 	@Nested
-	@DisplayName("POST /api/challenges/{userId} - 챌린지 생성")
+	@DisplayName("POST /api/challenges - 챌린지 생성")
 	class CreateChallenge {
 
 		@Test
@@ -79,7 +88,8 @@ class ChallengeControllerTest {
 				.willReturn(response);
 
 			// when & then
-			mockMvc.perform(post("/api/challenges/{userId}", DEFAULT_USER_ID)
+			mockMvc.perform(post("/api/challenges")
+					.header("X-User-Id", DEFAULT_USER_ID)
 					.contentType(MediaType.APPLICATION_JSON)
 					.content(objectMapper.writeValueAsString(request)))
 				.andExpect(status().isOk())
@@ -99,7 +109,8 @@ class ChallengeControllerTest {
 				.willThrow(new UserException(UserErrorCode.USER_NOT_FOUND));
 
 			// when & then
-			mockMvc.perform(post("/api/challenges/{userId}", invalidUserId)
+			mockMvc.perform(post("/api/challenges")
+					.header("X-User-Id", invalidUserId)
 					.contentType(MediaType.APPLICATION_JSON)
 					.content(objectMapper.writeValueAsString(request)))
 				.andExpect(status().isNotFound());
@@ -115,7 +126,8 @@ class ChallengeControllerTest {
 				.willThrow(new ChallengeException(ChallengeErrorCode.DUPLICATE_ACTIVE_CHALLENGE));
 
 			// when & then
-			mockMvc.perform(post("/api/challenges/{userId}", DEFAULT_USER_ID)
+			mockMvc.perform(post("/api/challenges")
+					.header("X-User-Id", DEFAULT_USER_ID)
 					.contentType(MediaType.APPLICATION_JSON)
 					.content(objectMapper.writeValueAsString(request)))
 				.andExpect(status().isConflict());
@@ -128,7 +140,8 @@ class ChallengeControllerTest {
 			ChallengeCreateRequestDto request = createRequestWithEmptyTitle();
 
 			// when & then
-			mockMvc.perform(post("/api/challenges/{userId}", DEFAULT_USER_ID)
+			mockMvc.perform(post("/api/challenges")
+					.header("X-User-Id", DEFAULT_USER_ID)
 					.contentType(MediaType.APPLICATION_JSON)
 					.content(objectMapper.writeValueAsString(request)))
 				.andExpect(status().isBadRequest());
@@ -136,7 +149,7 @@ class ChallengeControllerTest {
 	}
 
 	@Nested
-	@DisplayName("GET /api/challenges/{userId} - 활성 챌린지 조회")
+	@DisplayName("GET /api/challenges - 활성 챌린지 조회")
 	class GetActiveChallenge {
 
 		@Test
@@ -149,7 +162,8 @@ class ChallengeControllerTest {
 				.willReturn(response);
 
 			// when & then
-			mockMvc.perform(get("/api/challenges/{userId}", DEFAULT_USER_ID))
+			mockMvc.perform(get("/api/challenges")
+					.header("X-User-Id", DEFAULT_USER_ID))
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$.data.challengeId").value(DEFAULT_CHALLENGE_ID))
 				.andExpect(jsonPath("$.data.currentDay").value(3))
@@ -164,7 +178,8 @@ class ChallengeControllerTest {
 				.willThrow(new ChallengeException(ChallengeErrorCode.CHALLENGE_NOT_FOUND));
 
 			// when & then
-			mockMvc.perform(get("/api/challenges/{userId}", DEFAULT_USER_ID))
+			mockMvc.perform(get("/api/challenges")
+					.header("X-User-Id", DEFAULT_USER_ID))
 				.andExpect(status().isNotFound());
 		}
 
@@ -178,22 +193,23 @@ class ChallengeControllerTest {
 				.willThrow(new UserException(UserErrorCode.USER_NOT_FOUND));
 
 			// when & then
-			mockMvc.perform(get("/api/challenges/{userId}", invalidUserId))
+			mockMvc.perform(get("/api/challenges")
+					.header("X-User-Id", invalidUserId))
 				.andExpect(status().isNotFound());
 		}
 	}
 
 	@Nested
-	@DisplayName("PATCH /api/challenges/{userId}/routines/{routineId} - 루틴 완료 토글")
+	@DisplayName("PATCH /api/challenges/routines/{routineId} - 루틴 완료 토글")
 	class ToggleRoutineCompletion {
 
 		@ParameterizedTest
 		@CsvSource({
-			"true, 루틴을 완료했습니다!",
-			"false, 루틴 완료를 취소했습니다."
+			"true",
+			"false"
 		})
 		@DisplayName("성공 - 루틴 완료 상태 토글")
-		void successToggle(boolean isComplete, String message) throws Exception {
+		void successToggle(boolean isComplete) throws Exception {
 			// given
 			RoutineCompletionResponseDto response = createMockRoutineCompletionResponse(isComplete);
 
@@ -201,11 +217,11 @@ class ChallengeControllerTest {
 				.willReturn(response);
 
 			// when & then
-			mockMvc.perform(patch("/api/challenges/{userId}/routines/{routineId}", DEFAULT_USER_ID, DEFAULT_ROUTINE_ID))
+			mockMvc.perform(patch("/api/challenges/routines/{routineId}", DEFAULT_ROUTINE_ID)
+					.header("X-User-Id", DEFAULT_USER_ID))
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$.data.routineId").value(DEFAULT_ROUTINE_ID))
-				.andExpect(jsonPath("$.data.isComplete").value(isComplete))
-				.andExpect(jsonPath("$.data.message").value(message));
+				.andExpect(jsonPath("$.data.isComplete").value(isComplete));
 		}
 
 		@Test
@@ -218,7 +234,8 @@ class ChallengeControllerTest {
 				.willThrow(new ChallengeException(ChallengeErrorCode.ROUTINE_NOT_FOUND));
 
 			// when & then
-			mockMvc.perform(patch("/api/challenges/{userId}/routines/{routineId}", DEFAULT_USER_ID, invalidRoutineId))
+			mockMvc.perform(patch("/api/challenges/routines/{routineId}", invalidRoutineId)
+					.header("X-User-Id", DEFAULT_USER_ID))
 				.andExpect(status().isNotFound());
 		}
 
@@ -230,7 +247,8 @@ class ChallengeControllerTest {
 				.willThrow(new ChallengeException(ChallengeErrorCode.UNAUTHORIZED_ACCESS));
 
 			// when & then
-			mockMvc.perform(patch("/api/challenges/{userId}/routines/{routineId}", DEFAULT_USER_ID, DEFAULT_ROUTINE_ID))
+			mockMvc.perform(patch("/api/challenges/routines/{routineId}", DEFAULT_ROUTINE_ID)
+					.header("X-User-Id", DEFAULT_USER_ID))
 				.andExpect(status().isForbidden());
 		}
 	}
@@ -246,7 +264,8 @@ class ChallengeControllerTest {
 			ChallengeCreateRequestDto request = createRequestWithNullTitle();
 
 			// when & then
-			mockMvc.perform(post("/api/challenges/{userId}", DEFAULT_USER_ID)
+			mockMvc.perform(post("/api/challenges")
+					.header("X-User-Id", DEFAULT_USER_ID)
 					.contentType(MediaType.APPLICATION_JSON)
 					.content(objectMapper.writeValueAsString(request)))
 				.andExpect(status().isBadRequest());
@@ -259,7 +278,8 @@ class ChallengeControllerTest {
 			ChallengeCreateRequestDto request = createRequestWithEmptyRoutines();
 
 			// when & then
-			mockMvc.perform(post("/api/challenges/{userId}", DEFAULT_USER_ID)
+			mockMvc.perform(post("/api/challenges")
+					.header("X-User-Id", DEFAULT_USER_ID)
 					.contentType(MediaType.APPLICATION_JSON)
 					.content(objectMapper.writeValueAsString(request)))
 				.andExpect(status().isBadRequest());
@@ -272,10 +292,151 @@ class ChallengeControllerTest {
 			ChallengeCreateRequestDto request = createRequestWithTooManyRoutines();
 
 			// when & then
-			mockMvc.perform(post("/api/challenges/{userId}", DEFAULT_USER_ID)
+			mockMvc.perform(post("/api/challenges")
+					.header("X-User-Id", DEFAULT_USER_ID)
 					.contentType(MediaType.APPLICATION_JSON)
 					.content(objectMapper.writeValueAsString(request)))
 				.andExpect(status().isBadRequest());
+		}
+	}
+
+	@Nested
+	@DisplayName("PATCH /api/challenges/routines - 루틴 일괄 업데이트")
+	class UpdateMultipleRoutines {
+
+		@Test
+		@DisplayName("성공 - 여러 루틴 일괄 업데이트 (3개)")
+		void successUpdateMultipleRoutines() throws Exception {
+			// given
+			RoutineUpdateRequestDto request = createValidRoutineUpdateRequest();
+			RoutineBatchUpdateResponseDto response = createMockRoutineBatchUpdateResponse();
+
+			given(challengeRoutineService.updateMultipleRoutines(eq(DEFAULT_USER_ID), any(RoutineUpdateRequestDto.class)))
+				.willReturn(response);
+
+			// when & then
+			mockMvc.perform(patch("/api/challenges/routines")
+					.header("X-User-Id", DEFAULT_USER_ID)
+					.contentType(MediaType.APPLICATION_JSON)
+					.content(objectMapper.writeValueAsString(request)))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.data.updatedCount").value(3))
+				.andExpect(jsonPath("$.data.routines").isArray())
+				.andExpect(jsonPath("$.data.routines.length()").value(3));
+		}
+
+		@Test
+		@DisplayName("성공 - 단일 루틴 업데이트")
+		void successUpdateSingleRoutine() throws Exception {
+			// given
+			RoutineUpdateRequestDto request = createSingleRoutineUpdateRequest();
+			RoutineBatchUpdateResponseDto response = createMockSingleRoutineBatchUpdateResponse();
+
+			given(challengeRoutineService.updateMultipleRoutines(eq(DEFAULT_USER_ID), any(RoutineUpdateRequestDto.class)))
+				.willReturn(response);
+
+			// when & then
+			mockMvc.perform(patch("/api/challenges/routines")
+					.header("X-User-Id", DEFAULT_USER_ID)
+					.contentType(MediaType.APPLICATION_JSON)
+					.content(objectMapper.writeValueAsString(request)))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.data.updatedCount").value(1))
+				.andExpect(jsonPath("$.data.routines").isArray())
+				.andExpect(jsonPath("$.data.routines.length()").value(1));
+		}
+
+		@Test
+		@DisplayName("실패 - 빈 루틴 목록 (@NotEmpty 검증)")
+		void failEmptyRoutineList() throws Exception {
+			// given
+			RoutineUpdateRequestDto request = createRoutineUpdateRequestWithEmptyList();
+
+			// when & then
+			mockMvc.perform(patch("/api/challenges/routines")
+					.header("X-User-Id", DEFAULT_USER_ID)
+					.contentType(MediaType.APPLICATION_JSON)
+					.content(objectMapper.writeValueAsString(request)))
+				.andExpect(status().isBadRequest());
+		}
+
+		@Test
+		@DisplayName("실패 - null routineId (@NotNull 검증)")
+		void failNullRoutineId() throws Exception {
+			// given
+			RoutineUpdateRequestDto request = createRoutineUpdateRequestWithNullRoutineId();
+
+			// when & then
+			mockMvc.perform(patch("/api/challenges/routines")
+					.header("X-User-Id", DEFAULT_USER_ID)
+					.contentType(MediaType.APPLICATION_JSON)
+					.content(objectMapper.writeValueAsString(request)))
+				.andExpect(status().isBadRequest());
+		}
+
+		@Test
+		@DisplayName("실패 - null isComplete (@NotNull 검증)")
+		void failNullIsComplete() throws Exception {
+			// given
+			RoutineUpdateRequestDto request = createRoutineUpdateRequestWithNullIsComplete();
+
+			// when & then
+			mockMvc.perform(patch("/api/challenges/routines")
+					.header("X-User-Id", DEFAULT_USER_ID)
+					.contentType(MediaType.APPLICATION_JSON)
+					.content(objectMapper.writeValueAsString(request)))
+				.andExpect(status().isBadRequest());
+		}
+
+		@Test
+		@DisplayName("실패 - 존재하지 않는 루틴")
+		void failRoutineNotFound() throws Exception {
+			// given
+			RoutineUpdateRequestDto request = createValidRoutineUpdateRequest();
+
+			given(challengeRoutineService.updateMultipleRoutines(eq(DEFAULT_USER_ID), any(RoutineUpdateRequestDto.class)))
+				.willThrow(new ChallengeException(ChallengeErrorCode.ROUTINE_NOT_FOUND));
+
+			// when & then
+			mockMvc.perform(patch("/api/challenges/routines")
+					.header("X-User-Id", DEFAULT_USER_ID)
+					.contentType(MediaType.APPLICATION_JSON)
+					.content(objectMapper.writeValueAsString(request)))
+				.andExpect(status().isNotFound());
+		}
+
+		@Test
+		@DisplayName("실패 - 서로 다른 챌린지의 루틴")
+		void failRoutinesFromDifferentChallenges() throws Exception {
+			// given
+			RoutineUpdateRequestDto request = createValidRoutineUpdateRequest();
+
+			given(challengeRoutineService.updateMultipleRoutines(eq(DEFAULT_USER_ID), any(RoutineUpdateRequestDto.class)))
+				.willThrow(new ChallengeException(ChallengeErrorCode.ROUTINES_FROM_DIFFERENT_CHALLENGES));
+
+			// when & then
+			mockMvc.perform(patch("/api/challenges/routines")
+					.header("X-User-Id", DEFAULT_USER_ID)
+					.contentType(MediaType.APPLICATION_JSON)
+					.content(objectMapper.writeValueAsString(request)))
+				.andExpect(status().isBadRequest());
+		}
+
+		@Test
+		@DisplayName("실패 - 소유자가 아님")
+		void failUnauthorizedAccess() throws Exception {
+			// given
+			RoutineUpdateRequestDto request = createValidRoutineUpdateRequest();
+
+			given(challengeRoutineService.updateMultipleRoutines(eq(DEFAULT_USER_ID), any(RoutineUpdateRequestDto.class)))
+				.willThrow(new ChallengeException(ChallengeErrorCode.UNAUTHORIZED_ACCESS));
+
+			// when & then
+			mockMvc.perform(patch("/api/challenges/routines")
+					.header("X-User-Id", DEFAULT_USER_ID)
+					.contentType(MediaType.APPLICATION_JSON)
+					.content(objectMapper.writeValueAsString(request)))
+				.andExpect(status().isForbidden());
 		}
 	}
 }

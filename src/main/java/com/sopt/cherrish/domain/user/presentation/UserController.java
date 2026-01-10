@@ -3,8 +3,8 @@ package com.sopt.cherrish.domain.user.presentation;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -36,12 +36,12 @@ public class UserController {
 		description = "사용자 ID로 사용자 정보를 조회합니다."
 	)
 	@ApiExceptions({UserErrorCode.class, ErrorCode.class})
-	@GetMapping("/{id}")
+	@GetMapping
 	public CommonApiResponse<UserResponseDto> getUser(
-		@Parameter(description = "사용자 ID", required = true, example = "1")
-		@PathVariable Long id
+		@Parameter(description = "사용자 ID (X-User-Id 헤더)", required = true, example = "1")
+		@RequestHeader("X-User-Id") Long userId
 	) {
-		UserResponseDto response = userService.getUser(id);
+		UserResponseDto response = userService.getUser(userId);
 		return CommonApiResponse.success(SuccessCode.SUCCESS, response);
 	}
 
@@ -50,13 +50,13 @@ public class UserController {
 		description = "사용자의 이름 또는 나이를 수정합니다. 제공된 필드만 수정됩니다."
 	)
 	@ApiExceptions({UserErrorCode.class, ErrorCode.class})
-	@PatchMapping("/{id}")
+	@PatchMapping
 	public CommonApiResponse<UserResponseDto> updateUser(
-		@Parameter(description = "사용자 ID", required = true, example = "1")
-		@PathVariable Long id,
+		@Parameter(description = "사용자 ID (X-User-Id 헤더)", required = true, example = "1")
+		@RequestHeader("X-User-Id") Long userId,
 		@Valid @RequestBody UserUpdateRequestDto request
 	) {
-		UserResponseDto response = userService.updateUser(id, request);
+		UserResponseDto response = userService.updateUser(userId, request);
 		return CommonApiResponse.success(SuccessCode.SUCCESS, response);
 	}
 
@@ -65,12 +65,12 @@ public class UserController {
 		description = "사용자를 삭제합니다."
 	)
 	@ApiExceptions({UserErrorCode.class, ErrorCode.class})
-	@DeleteMapping("/{id}")
+	@DeleteMapping
 	public CommonApiResponse<Void> deleteUser(
-		@Parameter(description = "사용자 ID", required = true, example = "1")
-		@PathVariable Long id
+		@Parameter(description = "사용자 ID (X-User-Id 헤더)", required = true, example = "1")
+		@RequestHeader("X-User-Id") Long userId
 	) {
-		userService.deleteUser(id);
+		userService.deleteUser(userId);
 		return CommonApiResponse.success(SuccessCode.SUCCESS);
 	}
 }

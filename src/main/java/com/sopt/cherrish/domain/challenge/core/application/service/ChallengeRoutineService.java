@@ -2,7 +2,10 @@ package com.sopt.cherrish.domain.challenge.core.application.service;
 
 import java.time.Clock;
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,6 +16,9 @@ import com.sopt.cherrish.domain.challenge.core.domain.model.ChallengeStatistics;
 import com.sopt.cherrish.domain.challenge.core.domain.repository.ChallengeRoutineRepository;
 import com.sopt.cherrish.domain.challenge.core.exception.ChallengeErrorCode;
 import com.sopt.cherrish.domain.challenge.core.exception.ChallengeException;
+import com.sopt.cherrish.domain.challenge.core.presentation.dto.request.RoutineUpdateItemRequestDto;
+import com.sopt.cherrish.domain.challenge.core.presentation.dto.request.RoutineUpdateRequestDto;
+import com.sopt.cherrish.domain.challenge.core.presentation.dto.response.RoutineBatchUpdateResponseDto;
 import com.sopt.cherrish.domain.challenge.core.presentation.dto.response.RoutineCompletionResponseDto;
 
 import lombok.RequiredArgsConstructor;
@@ -47,7 +53,7 @@ public class ChallengeRoutineService {
 	 * @return 오늘의 루틴 리스트
 	 */
 	public List<ChallengeRoutine> getTodayRoutines(Long challengeId) {
-		LocalDate today = LocalDate.now(clock);
+		LocalDate today = getCurrentDate();
 		return getRoutinesByDate(challengeId, today);
 	}
 
@@ -83,10 +89,7 @@ public class ChallengeRoutineService {
 	public RoutineCompletionResponseDto toggleCompletion(Long userId, Long routineId) {
 		ChallengeRoutine routine = getRoutineByIdWithStatistics(routineId);
 
-		routine.getChallenge().validateOwner(userId);
-
-		LocalDate today = LocalDate.now(clock);
-		routine.validateOperationDateWithinChallengePeriod(today);
+		validateRoutineOwnerAndPeriod(routine, userId);
 
 		routine.toggleCompletion();
 
@@ -114,12 +117,161 @@ public class ChallengeRoutineService {
 	private void updateStatistics(ChallengeRoutine routine) {
 		ChallengeStatistics statistics = routine.getChallenge().getStatistics();
 
-		if (routine.getIsComplete()) {
-			statistics.incrementCompletedCount();
-		} else {
-			statistics.decrementCompletedCount();
+		int delta = routine.getIsComplete() ? 1 : -1;
+		statistics.adjustCompletedCount(delta);
+		statistics.updateCherryLevel();
+	}
+
+	/**
+	 * 현재 날짜 조회 (시간 개념 중앙화)
+	 */
+	private LocalDate getCurrentDate() {
+		return LocalDate.now(clock);
+	}
+
+	/**
+	 * 루틴 소유자 및 작업 가능 날짜 검증 (공통 메서드)
+	 */
+	private void validateRoutineOwnerAndPeriod(ChallengeRoutine routine, Long userId) {
+		routine.getChallenge().validateOwner(userId);
+
+		LocalDate today = getCurrentDate();
+		routine.validateOperationDateWithinChallengePeriod(today);
+	}
+
+	/**
+	 * 여러 루틴의 완료 상태 일괄 업데이트
+	 *
+	 * 동시성 제어:
+	 * - ChallengeStatistics에 낙관적 락(@Version) 적용
+	 * - 동시 수정 시 OptimisticLockingFailureException 발생 → 409 Conflict
+	 *
+	 * @param userId 사용자 ID (소유자 검증용)
+	 * @param request 업데이트 요청 (routineId와 isComplete 리스트)
+	 * @return 업데이트된 루틴 목록
+	 * @throws ChallengeException 검증 실패 시
+	 */
+	@Transactional
+	public RoutineBatchUpdateResponseDto updateMultipleRoutines(
+		Long userId,
+		RoutineUpdateRequestDto request
+	) {
+		List<Long> routineIds = extractRoutineIds(request);
+		List<ChallengeRoutine> routines = fetchAndValidateRoutines(routineIds);
+
+		Challenge challenge = validateAndGetChallenge(routines, userId);
+
+		int completedDelta = updateRoutineStates(routines, request);
+		updateChallengeStatistics(challenge, completedDelta);
+
+		return RoutineBatchUpdateResponseDto.from(routines);
+	}
+
+	// ===== Private 헬퍼 메서드 (Batch Update) =====
+
+	/**
+	 * 요청에서 루틴 ID 리스트 추출
+	 */
+	private List<Long> extractRoutineIds(RoutineUpdateRequestDto request) {
+		return request.routines().stream()
+			.map(RoutineUpdateItemRequestDto::routineId)
+			.toList();
+	}
+
+	/**
+	 * 루틴 조회 및 존재 여부 검증
+	 */
+	private List<ChallengeRoutine> fetchAndValidateRoutines(List<Long> routineIds) {
+		// 중복 ID 검증
+		if (routineIds.size() != new HashSet<>(routineIds).size()) {
+			throw new ChallengeException(ChallengeErrorCode.DUPLICATE_ROUTINE_IDS);
 		}
 
-		statistics.updateCherryLevel();
+		List<ChallengeRoutine> routines = routineRepository
+			.findByIdInWithChallengeAndStatistics(routineIds);
+
+		// 모든 루틴 존재 확인 (빈 리스트 케이스 포함)
+		if (routines.size() != routineIds.size()) {
+			throw new ChallengeException(ChallengeErrorCode.ROUTINE_NOT_FOUND);
+		}
+
+		return routines;
+	}
+
+	/**
+	 * 챌린지 검증 및 반환
+	 * - 모든 루틴이 같은 챌린지에 속하는지 확인
+	 * - 소유자 검증
+	 * - 챌린지 기간 내 날짜 검증
+	 */
+	private Challenge validateAndGetChallenge(List<ChallengeRoutine> routines, Long userId) {
+		Challenge challenge = routines.getFirst().getChallenge();
+
+		// 모든 루틴이 같은 챌린지에 속하는지 확인
+		validateAllSameChallenge(routines, challenge.getId());
+
+		// 소유자 검증 (한 번만)
+		challenge.validateOwner(userId);
+
+		// 각 루틴의 날짜 검증 (각 루틴의 scheduledDate가 다를 수 있음)
+		LocalDate today = getCurrentDate();
+		for (ChallengeRoutine routine : routines) {
+			routine.validateOperationDateWithinChallengePeriod(today);
+		}
+
+		return challenge;
+	}
+
+	/**
+	 * 모든 루틴이 같은 챌린지에 속하는지 검증
+	 */
+	private void validateAllSameChallenge(List<ChallengeRoutine> routines, Long expectedChallengeId) {
+		boolean allSameChallenge = routines.stream()
+			.allMatch(r -> r.getChallenge().getId().equals(expectedChallengeId));
+
+		if (!allSameChallenge) {
+			throw new ChallengeException(ChallengeErrorCode.ROUTINES_FROM_DIFFERENT_CHALLENGES);
+		}
+	}
+
+	/**
+	 * 루틴 상태 업데이트 및 delta 계산
+	 */
+	private int updateRoutineStates(List<ChallengeRoutine> routines, RoutineUpdateRequestDto request) {
+		Map<Long, Boolean> updateMap = request.routines().stream()
+			.collect(Collectors.toMap(
+				RoutineUpdateItemRequestDto::routineId,
+				RoutineUpdateItemRequestDto::isComplete
+			));
+
+		int completedDelta = 0;
+
+		for (ChallengeRoutine routine : routines) {
+			Boolean targetComplete = updateMap.get(routine.getId());
+			Boolean currentComplete = routine.getIsComplete();
+
+			// 상태가 변경되는 경우만 처리
+			if (!currentComplete.equals(targetComplete)) {
+				if (targetComplete) {
+					completedDelta++;  // 미완료 → 완료
+				} else {
+					completedDelta--;  // 완료 → 미완료
+				}
+				routine.toggleCompletion();
+			}
+		}
+
+		return completedDelta;
+	}
+
+	/**
+	 * 챌린지 통계 업데이트 (delta 기반)
+	 */
+	private void updateChallengeStatistics(Challenge challenge, int completedDelta) {
+		if (completedDelta != 0) {
+			ChallengeStatistics statistics = challenge.getStatistics();
+			statistics.adjustCompletedCount(completedDelta);
+			statistics.updateCherryLevel();
+		}
 	}
 }
