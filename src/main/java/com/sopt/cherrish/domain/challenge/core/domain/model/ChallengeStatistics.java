@@ -67,6 +67,22 @@ public class ChallengeStatistics extends BaseTimeEntity {
 		}
 	}
 
+	/**
+	 * 완료 개수 조정 (delta 값만큼 증가/감소)
+	 *
+	 * @param delta 증가/감소할 값 (양수: 증가, 음수: 감소)
+	 */
+	public void adjustCompletedCount(int delta) {
+		long newCount = (long) this.completedCount + (long) delta;
+		if (newCount < 0) {
+			this.completedCount = 0;
+		} else if (newCount > this.totalRoutineCount) {
+			this.completedCount = this.totalRoutineCount;
+		} else {
+			this.completedCount = (int) newCount;
+		}
+	}
+
 	public double getProgressPercentage() {
 		if (totalRoutineCount == 0) {
 			return 0.0;

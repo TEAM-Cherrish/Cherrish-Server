@@ -46,7 +46,7 @@ class UserProcedureControllerTest {
 	private UserProcedureService userProcedureService;
 
 	@Nested
-	@DisplayName("POST /api/users/{userId}/procedures - 사용자 시술 일정 등록")
+	@DisplayName("POST /api/users/procedures - 사용자 시술 일정 등록")
 	class CreateUserProcedures {
 
 		@Test
@@ -61,7 +61,8 @@ class UserProcedureControllerTest {
 				.willReturn(response);
 
 			// when & then
-			mockMvc.perform(post("/api/users/{userId}/procedures", userId)
+			mockMvc.perform(post("/api/users/procedures")
+				.header("X-User-Id", userId)
 					.contentType(MediaType.APPLICATION_JSON)
 					.content(objectMapper.writeValueAsString(request)))
 				.andExpect(status().isOk())
@@ -94,7 +95,8 @@ class UserProcedureControllerTest {
 				.willThrow(new UserException(UserErrorCode.USER_NOT_FOUND));
 
 			// when & then
-			mockMvc.perform(post("/api/users/{userId}/procedures", userId)
+			mockMvc.perform(post("/api/users/procedures")
+				.header("X-User-Id", userId)
 					.contentType(MediaType.APPLICATION_JSON)
 					.content(objectMapper.writeValueAsString(request)))
 				.andExpect(status().isNotFound());
@@ -111,7 +113,8 @@ class UserProcedureControllerTest {
 				.willThrow(new ProcedureException(ProcedureErrorCode.PROCEDURE_NOT_FOUND));
 
 			// when & then
-			mockMvc.perform(post("/api/users/{userId}/procedures", userId)
+			mockMvc.perform(post("/api/users/procedures")
+				.header("X-User-Id", userId)
 					.contentType(MediaType.APPLICATION_JSON)
 					.content(objectMapper.writeValueAsString(request)))
 				.andExpect(status().isNotFound());
@@ -124,7 +127,8 @@ class UserProcedureControllerTest {
 			String invalidRequest = createInvalidRequestWithEmptyProcedures();
 
 			// when & then
-			mockMvc.perform(post("/api/users/{userId}/procedures", 1L)
+			mockMvc.perform(post("/api/users/procedures")
+				.header("X-User-Id", 1L)
 					.contentType(MediaType.APPLICATION_JSON)
 					.content(invalidRequest))
 				.andExpect(status().isBadRequest())
@@ -140,7 +144,8 @@ class UserProcedureControllerTest {
 			String invalidRequest = createInvalidRequestWithNegativeDowntime();
 
 			// when & then
-			mockMvc.perform(post("/api/users/{userId}/procedures", 1L)
+			mockMvc.perform(post("/api/users/procedures")
+				.header("X-User-Id", 1L)
 					.contentType(MediaType.APPLICATION_JSON)
 					.content(invalidRequest))
 				.andExpect(status().isBadRequest())
@@ -156,7 +161,8 @@ class UserProcedureControllerTest {
 			String invalidRequest = createInvalidRequestMissingScheduledAt();
 
 			// when & then
-			mockMvc.perform(post("/api/users/{userId}/procedures", 1L)
+			mockMvc.perform(post("/api/users/procedures")
+				.header("X-User-Id", 1L)
 					.contentType(MediaType.APPLICATION_JSON)
 					.content(invalidRequest))
 				.andExpect(status().isBadRequest())
