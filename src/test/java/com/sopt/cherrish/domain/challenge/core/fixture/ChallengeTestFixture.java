@@ -10,6 +10,7 @@ import com.sopt.cherrish.domain.challenge.core.presentation.dto.request.RoutineU
 import com.sopt.cherrish.domain.challenge.core.presentation.dto.response.ChallengeCreateResponseDto;
 import com.sopt.cherrish.domain.challenge.core.presentation.dto.response.ChallengeDetailResponseDto;
 import com.sopt.cherrish.domain.challenge.core.presentation.dto.response.ChallengeRoutineResponseDto;
+import com.sopt.cherrish.domain.challenge.core.presentation.dto.response.CustomRoutineAddResponseDto;
 import com.sopt.cherrish.domain.challenge.core.presentation.dto.response.RoutineBatchUpdateResponseDto;
 import com.sopt.cherrish.domain.challenge.core.presentation.dto.response.RoutineCompletionResponseDto;
 import com.sopt.cherrish.domain.challenge.homecare.domain.model.HomecareRoutine;
@@ -231,5 +232,24 @@ public class ChallengeTestFixture {
 		);
 
 		return new RoutineBatchUpdateResponseDto(routines, 1, createRoutineBatchUpdateMessage(1));
+	}
+
+	/**
+	 * Mock 커스텀 루틴 추가 응답
+	 */
+	public static CustomRoutineAddResponseDto createMockCustomRoutineAddResponse() {
+		Challenge challenge = Challenge.builder()
+			.userId(DEFAULT_USER_ID)
+			.homecareRoutine(HomecareRoutine.SKIN_MOISTURIZING)
+			.title("테스트 챌린지")
+			.startDate(FIXED_START_DATE)
+			.build();
+
+		return CustomRoutineAddResponseDto.from(
+			challenge,
+			"저녁 마사지",
+			List.of(),
+			26
+		);
 	}
 }
