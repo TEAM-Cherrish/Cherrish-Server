@@ -18,7 +18,8 @@ public enum ChallengeErrorCode implements ErrorType {
 	ROUTINE_OUT_OF_CHALLENGE_PERIOD("CH007", "챌린지 기간 외의 루틴은 수정할 수 없습니다", 400),
 	ROUTINES_FROM_DIFFERENT_CHALLENGES("CH008", "서로 다른 챌린지의 루틴은 함께 업데이트할 수 없습니다", 400),
 	DUPLICATE_ROUTINE_IDS("CH009", "중복된 루틴 ID가 포함되어 있습니다", 400),
-	CHALLENGE_NOT_ACTIVE("CH010", "비활성 챌린지에는 루틴을 추가할 수 없습니다", 400);
+	CHALLENGE_NOT_ACTIVE("CH010", "비활성 챌린지에는 루틴을 추가할 수 없습니다", 400),
+	CUSTOM_ROUTINE_LIMIT_EXCEEDED("CH011", "하루에 추가할 수 있는 루틴은 최대 20개입니다", 400);
 
 	private final String code;
 	private final String message;
