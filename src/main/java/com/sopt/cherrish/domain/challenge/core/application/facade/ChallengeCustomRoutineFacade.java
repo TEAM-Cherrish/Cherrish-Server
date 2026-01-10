@@ -25,6 +25,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ChallengeCustomRoutineFacade {
 
+	static final int MAX_DAILY_ROUTINE_COUNT = 20;
+
 	private final UserService userService;
 	private final ChallengeService challengeService;
 	private final ChallengeRoutineService routineService;
@@ -54,11 +56,11 @@ public class ChallengeCustomRoutineFacade {
 		// 3. 오늘 날짜 계산
 		LocalDate today = LocalDate.now(clock);
 
-		// 4. 하루 최대 루틴 개수 제한 검증 (20개)
+		// 4. 하루 최대 루틴 개수 제한 검증
 		long todayRoutineCount = routineRepository.countByChallengeIdAndScheduledDate(
 			challenge.getId(), today
 		);
-		if (todayRoutineCount >= 20) {
+		if (todayRoutineCount >= MAX_DAILY_ROUTINE_COUNT) {
 			throw new ChallengeException(ChallengeErrorCode.CUSTOM_ROUTINE_LIMIT_EXCEEDED);
 		}
 
