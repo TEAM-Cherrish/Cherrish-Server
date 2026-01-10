@@ -240,6 +240,10 @@ public class ChallengeTestFixture {
 	 * Mock 커스텀 루틴 추가 응답
 	 */
 	public static CustomRoutineAddResponseDto createMockCustomRoutineAddResponse() {
+
+		// 테스트용 총 루틴 수: 기존 21개 + 커스텀 루틴 5개 (테스트 시나리오 가정)
+		int mockTotalRoutineCount = 26;
+
 		Challenge challenge = Challenge.builder()
 			.userId(DEFAULT_USER_ID)
 			.homecareRoutine(HomecareRoutine.SKIN_MOISTURIZING)
@@ -250,8 +254,8 @@ public class ChallengeTestFixture {
 		return CustomRoutineAddResponseDto.from(
 			challenge,
 			"저녁 마사지",
-			List.of(),
-			26
+			List.of(), // Mock 응답이므로 생성된 루틴 리스트는 빈 값으로 처리
+			mockTotalRoutineCount
 		);
 	}
 }
