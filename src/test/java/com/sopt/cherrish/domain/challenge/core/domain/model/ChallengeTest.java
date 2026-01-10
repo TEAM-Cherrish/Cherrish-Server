@@ -4,6 +4,7 @@ import static com.sopt.cherrish.domain.challenge.core.fixture.ChallengeTestFixtu
 import static com.sopt.cherrish.domain.challenge.core.fixture.ChallengeTestFixture.DEFAULT_USER_ID;
 import static com.sopt.cherrish.domain.challenge.core.fixture.ChallengeTestFixture.FIXED_START_DATE;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.catchThrowable;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -11,6 +12,8 @@ import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import com.sopt.cherrish.domain.challenge.core.exception.ChallengeErrorCode;
+import com.sopt.cherrish.domain.challenge.core.exception.ChallengeException;
 import com.sopt.cherrish.domain.challenge.homecare.domain.model.HomecareRoutine;
 
 @DisplayName("Challenge 도메인 단위 테스트")
@@ -166,5 +169,83 @@ class ChallengeTest {
 
 		// then
 		assertThat(currentDay).isEqualTo(7); // totalDays
+	}
+
+	@Test
+	@DisplayName("커스텀 루틴 생성 - 오늘부터 종료일까지 생성")
+	void createCustomRoutinesFromTodayCreatesRoutinesUntilEndDate() {
+		// given
+		Challenge challenge = createTestChallenge(); // startDate: 2024-01-01, endDate: 2024-01-07
+		LocalDate today = LocalDate.of(2024, 1, 3); // 3일차
+
+		// when
+		List<ChallengeRoutine> routines = challenge.createCustomRoutinesFromToday("저녁 마사지", today);
+
+		// then
+		assertThat(routines).hasSize(5); // 3일차부터 7일차까지 = 5개
+		assertThat(routines.get(0).getScheduledDate()).isEqualTo(LocalDate.of(2024, 1, 3));
+		assertThat(routines.get(0).getName()).isEqualTo("저녁 마사지");
+		assertThat(routines.get(4).getScheduledDate()).isEqualTo(LocalDate.of(2024, 1, 7));
+	}
+
+	@Test
+	@DisplayName("커스텀 루틴 생성 - 마지막 날에 추가하면 1개만 생성")
+	void createCustomRoutinesFromTodayOnLastDayCreatesOneRoutine() {
+		// given
+		Challenge challenge = createTestChallenge(); // endDate: 2024-01-07
+		LocalDate lastDay = LocalDate.of(2024, 1, 7);
+
+		// when
+		List<ChallengeRoutine> routines = challenge.createCustomRoutinesFromToday("아침 스트레칭", lastDay);
+
+		// then
+		assertThat(routines).hasSize(1);
+		assertThat(routines.get(0).getScheduledDate()).isEqualTo(lastDay);
+	}
+
+	@Test
+	@DisplayName("커스텀 루틴 생성 - 모든 루틴은 미완료 상태로 생성")
+	void createCustomRoutinesFromTodayAllRoutinesAreIncomplete() {
+		// given
+		Challenge challenge = createTestChallenge();
+		LocalDate today = LocalDate.of(2024, 1, 1);
+
+		// when
+		List<ChallengeRoutine> routines = challenge.createCustomRoutinesFromToday("저녁 운동", today);
+
+		// then
+		assertThat(routines).allMatch(routine -> !routine.getIsComplete());
+	}
+
+	@Test
+	@DisplayName("커스텀 루틴 생성 실패 - 챌린지 시작 전 날짜")
+	void createCustomRoutinesFromTodayBeforeStartDateThrowsException() {
+		// given
+		Challenge challenge = createTestChallenge(); // startDate: 2024-01-01
+		LocalDate beforeStart = LocalDate.of(2023, 12, 31);
+
+		// when & then
+		assertThat(catchThrowable(
+			() -> challenge.createCustomRoutinesFromToday("루틴", beforeStart)
+		))
+			.isInstanceOf(ChallengeException.class)
+			.hasFieldOrPropertyWithValue("errorCode",
+				ChallengeErrorCode.ROUTINE_OUT_OF_CHALLENGE_PERIOD);
+	}
+
+	@Test
+	@DisplayName("커스텀 루틴 생성 실패 - 챌린지 종료 후 날짜")
+	void createCustomRoutinesFromTodayAfterEndDateThrowsException() {
+		// given
+		Challenge challenge = createTestChallenge(); // endDate: 2024-01-07
+		LocalDate afterEnd = LocalDate.of(2024, 1, 8);
+
+		// when & then
+		assertThat(catchThrowable(
+			() -> challenge.createCustomRoutinesFromToday("루틴", afterEnd)
+		))
+			.isInstanceOf(ChallengeException.class)
+			.hasFieldOrPropertyWithValue("errorCode",
+				ChallengeErrorCode.ROUTINE_OUT_OF_CHALLENGE_PERIOD);
 	}
 }

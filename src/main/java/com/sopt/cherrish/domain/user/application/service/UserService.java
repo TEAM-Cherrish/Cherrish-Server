@@ -20,6 +20,18 @@ public class UserService {
 	private final UserRepository userRepository;
 
 	/**
+	 * 사용자 존재 여부 검증
+	 *
+	 * @param id 사용자 ID
+	 * @throws UserException 사용자를 찾을 수 없는 경우
+	 */
+	public void validateUserExists(Long id) {
+		if (!userRepository.existsById(id)) {
+			throw new UserException(UserErrorCode.USER_NOT_FOUND);
+		}
+	}
+
+	/**
 	 * 사용자 조회
 	 *
 	 * @param id 사용자 ID

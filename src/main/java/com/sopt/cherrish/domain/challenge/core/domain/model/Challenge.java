@@ -128,4 +128,41 @@ public class Challenge extends BaseTimeEntity {
 
 		return (int) ChronoUnit.DAYS.between(startDate, today) + 1;
 	}
+
+	/**
+	 * 오늘부터 챌린지 종료일까지 커스텀 루틴 생성
+	 * @param routineName 루틴명
+	 * @param today 현재 날짜
+	 * @return 생성된 챌린지 루틴 리스트
+	 */
+	public List<ChallengeRoutine> createCustomRoutinesFromToday(String routineName, LocalDate today) {
+		validateDateWithinChallengePeriod(today);
+
+		List<ChallengeRoutine> routines = new ArrayList<>();
+		LocalDate currentDate = today;
+
+		while (!currentDate.isAfter(endDate)) {
+			routines.add(ChallengeRoutine.builder()
+				.challenge(this)
+				.name(routineName)
+				.scheduledDate(currentDate)
+				.build());
+			currentDate = currentDate.plusDays(1);
+		}
+
+		return routines;
+	}
+
+	/**
+	 * 날짜가 챌린지 기간 내인지 검증
+	 * @param date 검증할 날짜
+	 * @throws ChallengeException 챌린지 기간 외의 날짜인 경우
+	 */
+	private void validateDateWithinChallengePeriod(LocalDate date) {
+		if (date.isBefore(startDate) || date.isAfter(endDate)) {
+			throw new ChallengeException(
+				ChallengeErrorCode.ROUTINE_OUT_OF_CHALLENGE_PERIOD
+			);
+		}
+	}
 }
