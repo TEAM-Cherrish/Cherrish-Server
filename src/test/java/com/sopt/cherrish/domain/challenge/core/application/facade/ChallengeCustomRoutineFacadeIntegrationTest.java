@@ -28,6 +28,7 @@ import com.sopt.cherrish.domain.challenge.core.exception.ChallengeException;
 import com.sopt.cherrish.domain.challenge.core.presentation.dto.request.CustomRoutineAddRequestDto;
 import com.sopt.cherrish.domain.challenge.core.presentation.dto.response.CustomRoutineAddResponseDto;
 import com.sopt.cherrish.domain.challenge.homecare.domain.model.HomecareRoutine;
+import com.sopt.cherrish.domain.user.application.service.UserService;
 import com.sopt.cherrish.domain.user.domain.model.User;
 import com.sopt.cherrish.domain.user.domain.repository.UserRepository;
 import com.sopt.cherrish.domain.user.exception.UserErrorCode;
@@ -44,7 +45,8 @@ import com.sopt.cherrish.global.config.TestJpaAuditConfig;
 	ChallengeCustomRoutineFacade.class,
 	ChallengeService.class,
 	ChallengeRoutineService.class,
-	ChallengeStatisticsService.class
+	ChallengeStatisticsService.class,
+	UserService.class
 })
 @DisplayName("ChallengeCustomRoutineFacade 통합 테스트")
 class ChallengeCustomRoutineFacadeIntegrationTest {
@@ -64,6 +66,9 @@ class ChallengeCustomRoutineFacadeIntegrationTest {
 	@Autowired
 	private UserRepository userRepository;
 
+	@Autowired
+	private jakarta.persistence.EntityManager entityManager;
+
 	private User createTestUser() {
 		return userRepository.save(User.builder()
 			.name("테스트 유저")
@@ -80,8 +85,8 @@ class ChallengeCustomRoutineFacadeIntegrationTest {
 			.startDate(FIXED_START_DATE)
 			.build());
 
-		// 초기 루틴 생성 (1일차부터 3일차까지)
-		for (int day = 0; day < 3; day++) {
+		// 초기 루틴 생성 (1일차부터 7일차까지)
+		for (int day = 0; day < 7; day++) {
 			for (int i = 0; i < initialRoutineCount; i++) {
 				routineRepository.save(ChallengeRoutine.builder()
 					.challenge(challenge)
@@ -97,6 +102,10 @@ class ChallengeCustomRoutineFacadeIntegrationTest {
 			.totalRoutineCount(initialRoutineCount * 7) // 3개 루틴 × 7일
 			.build());
 
+		// 영속성 컨텍스트 비우기 - 이후 조회 시 DB에서 Fetch Join 수행
+		entityManager.flush();
+		entityManager.clear();
+
 		return challenge;
 	}
 
@@ -109,7 +118,7 @@ class ChallengeCustomRoutineFacadeIntegrationTest {
 
 		CustomRoutineAddRequestDto request = new CustomRoutineAddRequestDto("저녁 마사지");
 
-		// when - 오늘이 2024-01-03 (3일차)라고 가정 -> 3일차부터 7일차까지 5개 생성
+		// when - 오늘이 2024-01-01 (1일차, TestClockConfig에서 고정) -> 1일차부터 7일차까지 7개 생성
 		CustomRoutineAddResponseDto response = challengeCustomRoutineFacade.addCustomRoutine(
 			user.getId(),
 			request
@@ -118,24 +127,24 @@ class ChallengeCustomRoutineFacadeIntegrationTest {
 		// then - Response 검증
 		assertThat(response.challengeId()).isEqualTo(challenge.getId());
 		assertThat(response.routineName()).isEqualTo("저녁 마사지");
-		assertThat(response.addedCount()).isEqualTo(5); // 2024-01-03 ~ 2024-01-07 = 5일
-		assertThat(response.routines()).hasSize(5);
-		assertThat(response.totalRoutineCount()).isEqualTo(26); // 기존 21 + 추가 5 = 26
-		assertThat(response.message()).contains("5일간");
+		assertThat(response.addedCount()).isEqualTo(7); // 2024-01-01 ~ 2024-01-07 = 7일
+		assertThat(response.routines()).hasSize(7);
+		assertThat(response.totalRoutineCount()).isEqualTo(28); // 기존 21 + 추가 7 = 28
+		assertThat(response.message()).contains("7일간");
 
 		// then - DB 실제 저장 확인
 		List<ChallengeRoutine> allRoutines = routineRepository.findAll();
-		assertThat(allRoutines).hasSize(26); // 기존 21 + 새로 추가된 5
+		assertThat(allRoutines).hasSize(28); // 기존 21 + 새로 추가된 7
 
 		List<ChallengeRoutine> customRoutines = allRoutines.stream()
 			.filter(r -> r.getName().equals("저녁 마사지"))
 			.toList();
-		assertThat(customRoutines).hasSize(5);
+		assertThat(customRoutines).hasSize(7);
 		assertThat(customRoutines).allMatch(r -> !r.getIsComplete());
 
 		ChallengeStatistics savedStatistics = statisticsRepository.findByChallengeId(challenge.getId())
 			.orElseThrow();
-		assertThat(savedStatistics.getTotalRoutineCount()).isEqualTo(26);
+		assertThat(savedStatistics.getTotalRoutineCount()).isEqualTo(28);
 	}
 
 	@Test
@@ -232,11 +241,11 @@ class ChallengeCustomRoutineFacadeIntegrationTest {
 		);
 
 		// then
-		assertThat(response.totalRoutineCount()).isEqualTo(26); // 21 + 5
+		assertThat(response.totalRoutineCount()).isEqualTo(28); // 21 + 7
 
 		ChallengeStatistics updatedStatistics = statisticsRepository.findByChallengeId(challenge.getId())
 			.orElseThrow();
-		assertThat(updatedStatistics.getTotalRoutineCount()).isEqualTo(26);
+		assertThat(updatedStatistics.getTotalRoutineCount()).isEqualTo(28);
 		// cherryLevel은 completedCount / totalRoutineCount로 계산되므로 totalRoutineCount 증가 시 재계산됨
 	}
 
