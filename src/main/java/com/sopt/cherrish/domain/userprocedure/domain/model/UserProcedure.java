@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 
 import com.sopt.cherrish.domain.procedure.domain.model.Procedure;
 import com.sopt.cherrish.domain.user.domain.model.User;
+import com.sopt.cherrish.domain.userprocedure.domain.vo.DowntimePeriod;
 import com.sopt.cherrish.global.entity.BaseTimeEntity;
 
 import jakarta.persistence.Column;
@@ -50,5 +51,15 @@ public class UserProcedure extends BaseTimeEntity {
 		this.procedure = procedure;
 		this.scheduledAt = scheduledAt;
 		this.downtimeDays = downtimeDays;
+	}
+
+	/**
+	 * 다운타임 기간 계산
+	 * 시술 시작일로부터 민감기/주의기/회복기를 계산합니다.
+	 *
+	 * @return 다운타임 기간 (민감기, 주의기, 회복기 날짜 목록)
+	 */
+	public DowntimePeriod calculateDowntimePeriod() {
+		return DowntimePeriod.calculate(this.downtimeDays, this.scheduledAt.toLocalDate());
 	}
 }
