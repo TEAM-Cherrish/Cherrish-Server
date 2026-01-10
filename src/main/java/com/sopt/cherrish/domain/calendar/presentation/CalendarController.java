@@ -1,16 +1,15 @@
 package com.sopt.cherrish.domain.calendar.presentation;
 
-import java.time.LocalDate;
-
-import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.validation.annotation.Validated;
 
 import com.sopt.cherrish.domain.calendar.application.service.CalendarService;
+import com.sopt.cherrish.domain.calendar.presentation.dto.request.CalendarDailyRequestDto;
+import com.sopt.cherrish.domain.calendar.presentation.dto.request.CalendarMonthlyRequestDto;
 import com.sopt.cherrish.domain.calendar.presentation.dto.response.CalendarDailyResponseDto;
 import com.sopt.cherrish.domain.calendar.presentation.dto.response.CalendarMonthlyResponseDto;
 import com.sopt.cherrish.domain.user.exception.UserErrorCode;
@@ -22,8 +21,7 @@ import com.sopt.cherrish.global.response.success.SuccessCode;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -44,12 +42,13 @@ public class CalendarController {
 	public CommonApiResponse<CalendarMonthlyResponseDto> getMonthlyCalendar(
 		@Parameter(description = "사용자 ID (X-User-Id 헤더)", required = true, example = "1")
 		@RequestHeader("X-User-Id") Long userId,
-		@Parameter(description = "연도", required = true, example = "2026")
-		@RequestParam @Min(2000) @Max(2100) int year,
-		@Parameter(description = "월", required = true, example = "1")
-		@RequestParam @Min(1) @Max(12) int month
+		@Valid @ModelAttribute CalendarMonthlyRequestDto request
 	) {
-		CalendarMonthlyResponseDto response = calendarService.getMonthlyCalendar(userId, year, month);
+		CalendarMonthlyResponseDto response = calendarService.getMonthlyCalendar(
+			userId,
+			request.year(),
+			request.month()
+		);
 		return CommonApiResponse.success(SuccessCode.SUCCESS, response);
 	}
 
@@ -62,10 +61,9 @@ public class CalendarController {
 	public CommonApiResponse<CalendarDailyResponseDto> getDailyCalendar(
 		@Parameter(description = "사용자 ID (X-User-Id 헤더)", required = true, example = "1")
 		@RequestHeader("X-User-Id") Long userId,
-		@Parameter(description = "날짜", required = true, example = "2026-01-15")
-		@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date
+		@Valid @ModelAttribute CalendarDailyRequestDto request
 	) {
-		CalendarDailyResponseDto response = calendarService.getDailyCalendar(userId, date);
+		CalendarDailyResponseDto response = calendarService.getDailyCalendar(userId, request.date());
 		return CommonApiResponse.success(SuccessCode.SUCCESS, response);
 	}
 }
