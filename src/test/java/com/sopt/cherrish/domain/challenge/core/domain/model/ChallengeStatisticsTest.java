@@ -7,6 +7,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 import com.sopt.cherrish.domain.challenge.homecare.domain.model.HomecareRoutine;
 
@@ -99,84 +101,30 @@ class ChallengeStatisticsTest {
 		assertThat(statistics.getCompletedCount()).isEqualTo(0);
 	}
 
-	@Test
-	@DisplayName("진행률 계산 - 0%")
-	void getProgressPercentageZeroCompletedReturns0() {
+	@ParameterizedTest
+	@CsvSource({
+		"0, 21, 0.0",      // 0%
+		"10, 20, 50.0",    // 50%
+		"21, 21, 100.0",   // 100%
+		"0, 0, 0.0"        // totalCount=0
+	})
+	@DisplayName("진행률 계산")
+	void getProgressPercentage(int completed, int total, double expected) {
 		// given
 		Challenge challenge = createTestChallenge();
 
 		ChallengeStatistics statistics = ChallengeStatistics.builder()
 			.challenge(challenge)
-			.totalRoutineCount(21)
+			.totalRoutineCount(total)
 			.build();
+
+		statistics.adjustCompletedCount(completed);
 
 		// when
 		double percentage = statistics.getProgressPercentage();
 
 		// then
-		assertThat(percentage).isEqualTo(0.0);
-	}
-
-	@Test
-	@DisplayName("진행률 계산 - 50%")
-	void getProgressPercentageHalfCompletedReturns50() {
-		// given
-		Challenge challenge = createTestChallenge();
-
-		ChallengeStatistics statistics = ChallengeStatistics.builder()
-			.challenge(challenge)
-			.totalRoutineCount(20)
-			.build();
-
-		for (int i = 0; i < 10; i++) {
-			statistics.incrementCompletedCount();
-		}
-
-		// when
-		double percentage = statistics.getProgressPercentage();
-
-		// then
-		assertThat(percentage).isEqualTo(50.0);
-	}
-
-	@Test
-	@DisplayName("진행률 계산 - 100%")
-	void getProgressPercentageAllCompletedReturns100() {
-		// given
-		Challenge challenge = createTestChallenge();
-
-		ChallengeStatistics statistics = ChallengeStatistics.builder()
-			.challenge(challenge)
-			.totalRoutineCount(21)
-			.build();
-
-		for (int i = 0; i < 21; i++) {
-			statistics.incrementCompletedCount();
-		}
-
-		// when
-		double percentage = statistics.getProgressPercentage();
-
-		// then
-		assertThat(percentage).isEqualTo(100.0);
-	}
-
-	@Test
-	@DisplayName("진행률 계산 - 총 개수가 0인 경우 0% 반환")
-	void getProgressPercentageTotalCountZeroReturns0() {
-		// given
-		Challenge challenge = createTestChallenge();
-
-		ChallengeStatistics statistics = ChallengeStatistics.builder()
-			.challenge(challenge)
-			.totalRoutineCount(0)
-			.build();
-
-		// when
-		double percentage = statistics.getProgressPercentage();
-
-		// then
-		assertThat(percentage).isEqualTo(0.0);
+		assertThat(percentage).isEqualTo(expected);
 	}
 
 	@Test
@@ -302,100 +250,31 @@ class ChallengeStatisticsTest {
 		assertThat(statistics.getCompletedCount()).isEqualTo(0);
 	}
 
-	@Test
-	@DisplayName("체리 레벨 계산 - 총 루틴 개수가 0이면 레벨 1")
-	void calculateCherryLevelTotalCountZeroReturnsLevel1() {
+	@ParameterizedTest
+	@CsvSource({
+		"0, 0, 1",        // totalCount=0 → Level 1
+		"0, 21, 1",       // 0% → Level 1
+		"30, 100, 2",     // 30% → Level 2
+		"60, 100, 3",     // 60% → Level 3
+		"80, 100, 4"      // 80% → Level 4
+	})
+	@DisplayName("체리 레벨 계산")
+	void calculateCherryLevel(int completed, int total, int expectedLevel) {
 		// given
 		Challenge challenge = createTestChallenge();
 
 		ChallengeStatistics statistics = ChallengeStatistics.builder()
 			.challenge(challenge)
-			.totalRoutineCount(0)
+			.totalRoutineCount(total)
 			.build();
+
+		statistics.adjustCompletedCount(completed);
 
 		// when
 		int level = statistics.calculateCherryLevel();
 
 		// then
-		assertThat(level).isEqualTo(1);
-	}
-
-	@Test
-	@DisplayName("체리 레벨 계산 - 진행률 0% → 레벨 1")
-	void calculateCherryLevel0PercentReturnsLevel1() {
-		// given
-		Challenge challenge = createTestChallenge();
-
-		ChallengeStatistics statistics = ChallengeStatistics.builder()
-			.challenge(challenge)
-			.totalRoutineCount(21)
-			.build();
-
-		// when
-		int level = statistics.calculateCherryLevel();
-
-		// then
-		assertThat(level).isEqualTo(1);
-	}
-
-	@Test
-	@DisplayName("체리 레벨 계산 - 진행률 30% → 레벨 2")
-	void calculateCherryLevel30PercentReturnsLevel2() {
-		// given
-		Challenge challenge = createTestChallenge();
-
-		ChallengeStatistics statistics = ChallengeStatistics.builder()
-			.challenge(challenge)
-			.totalRoutineCount(100)
-			.build();
-
-		statistics.adjustCompletedCount(30);
-
-		// when
-		int level = statistics.calculateCherryLevel();
-
-		// then
-		assertThat(level).isEqualTo(2);
-	}
-
-	@Test
-	@DisplayName("체리 레벨 계산 - 진행률 60% → 레벨 3")
-	void calculateCherryLevel60PercentReturnsLevel3() {
-		// given
-		Challenge challenge = createTestChallenge();
-
-		ChallengeStatistics statistics = ChallengeStatistics.builder()
-			.challenge(challenge)
-			.totalRoutineCount(100)
-			.build();
-
-		statistics.adjustCompletedCount(60);
-
-		// when
-		int level = statistics.calculateCherryLevel();
-
-		// then
-		assertThat(level).isEqualTo(3);
-	}
-
-	@Test
-	@DisplayName("체리 레벨 계산 - 진행률 80% → 레벨 4")
-	void calculateCherryLevel80PercentReturnsLevel4() {
-		// given
-		Challenge challenge = createTestChallenge();
-
-		ChallengeStatistics statistics = ChallengeStatistics.builder()
-			.challenge(challenge)
-			.totalRoutineCount(100)
-			.build();
-
-		statistics.adjustCompletedCount(80);
-
-		// when
-		int level = statistics.calculateCherryLevel();
-
-		// then
-		assertThat(level).isEqualTo(4);
+		assertThat(level).isEqualTo(expectedLevel);
 	}
 
 	@Test
@@ -454,5 +333,65 @@ class ChallengeStatisticsTest {
 
 		// then
 		assertThat(progress).isEqualTo(100.0);
+	}
+
+	@Test
+	@DisplayName("총 루틴 개수 증가 - 양수 값으로 증가")
+	void incrementTotalRoutineCountIncreasesTotalCount() {
+		// given
+		Challenge challenge = createTestChallenge();
+
+		ChallengeStatistics statistics = ChallengeStatistics.builder()
+			.challenge(challenge)
+			.totalRoutineCount(21)
+			.build();
+
+		// when
+		statistics.incrementTotalRoutineCount(5);
+
+		// then
+		assertThat(statistics.getTotalRoutineCount()).isEqualTo(26);
+	}
+
+	@Test
+	@DisplayName("총 루틴 개수 증가 - 0 이하 값은 무시")
+	void incrementTotalRoutineCountIgnoresZeroOrNegative() {
+		// given
+		Challenge challenge = createTestChallenge();
+
+		ChallengeStatistics statistics = ChallengeStatistics.builder()
+			.challenge(challenge)
+			.totalRoutineCount(21)
+			.build();
+
+		// when
+		statistics.incrementTotalRoutineCount(0);
+		statistics.incrementTotalRoutineCount(-5);
+
+		// then
+		assertThat(statistics.getTotalRoutineCount()).isEqualTo(21); // 변화 없음
+	}
+
+	@Test
+	@DisplayName("총 루틴 개수 증가 후 체리 레벨 재계산")
+	void incrementTotalRoutineCountAffectsCherryLevel() {
+		// given
+		Challenge challenge = createTestChallenge();
+
+		ChallengeStatistics statistics = ChallengeStatistics.builder()
+			.challenge(challenge)
+			.totalRoutineCount(100)
+			.build();
+
+		statistics.adjustCompletedCount(60); // 60% → Level 3
+		assertThat(statistics.calculateCherryLevel()).isEqualTo(3);
+
+		// when
+		statistics.incrementTotalRoutineCount(100); // totalRoutineCount: 100 → 200
+
+		// then
+		// completedCount는 60으로 동일하므로 진행률 60/200 = 30% → Level 2
+		statistics.updateCherryLevel();
+		assertThat(statistics.getCherryLevel()).isEqualTo(2);
 	}
 }
