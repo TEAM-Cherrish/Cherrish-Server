@@ -44,7 +44,7 @@ public class CalendarController {
 	public CommonApiResponse<CalendarMonthlyResponseDto> getMonthlyCalendar(
 		@Parameter(description = "사용자 ID (X-User-Id 헤더)", required = true, example = "1")
 		@RequestHeader("X-User-Id") Long userId,
-		@Parameter(description = "연도", required = true, example = "2025")
+		@Parameter(description = "연도", required = true, example = "2026")
 		@RequestParam @Min(2000) @Max(2100) int year,
 		@Parameter(description = "월", required = true, example = "1")
 		@RequestParam @Min(1) @Max(12) int month
@@ -62,7 +62,7 @@ public class CalendarController {
 	public CommonApiResponse<CalendarDailyResponseDto> getDailyCalendar(
 		@Parameter(description = "사용자 ID (X-User-Id 헤더)", required = true, example = "1")
 		@RequestHeader("X-User-Id") Long userId,
-		@Parameter(description = "날짜", required = true, example = "2025-01-15")
+		@Parameter(description = "날짜", required = true, example = "2026-01-15")
 		@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date
 	) {
 		CalendarDailyResponseDto response = calendarService.getDailyCalendar(userId, date);
