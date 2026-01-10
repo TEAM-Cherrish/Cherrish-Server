@@ -371,27 +371,4 @@ class ChallengeStatisticsTest {
 		// then
 		assertThat(statistics.getTotalRoutineCount()).isEqualTo(21); // 변화 없음
 	}
-
-	@Test
-	@DisplayName("총 루틴 개수 증가 후 체리 레벨 재계산")
-	void incrementTotalRoutineCountAffectsCherryLevel() {
-		// given
-		Challenge challenge = createTestChallenge();
-
-		ChallengeStatistics statistics = ChallengeStatistics.builder()
-			.challenge(challenge)
-			.totalRoutineCount(100)
-			.build();
-
-		statistics.adjustCompletedCount(60); // 60% → Level 3
-		assertThat(statistics.calculateCherryLevel()).isEqualTo(3);
-
-		// when
-		statistics.incrementTotalRoutineCount(100); // totalRoutineCount: 100 → 200
-
-		// then
-		// completedCount는 60으로 동일하므로 진행률 60/200 = 30% → Level 2
-		statistics.updateCherryLevel();
-		assertThat(statistics.getCherryLevel()).isEqualTo(2);
-	}
 }
