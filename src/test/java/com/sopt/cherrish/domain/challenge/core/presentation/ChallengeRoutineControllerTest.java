@@ -371,5 +371,23 @@ class ChallengeRoutineControllerTest {
 					.content(objectMapper.writeValueAsString(request)))
 				.andExpect(status().isBadRequest());
 		}
+
+		@Test
+		@DisplayName("실패 - 하루 루틴 개수 제한 초과")
+		void failCustomRoutineLimitExceeded() throws Exception {
+			// given
+			CustomRoutineAddRequestDto request = new CustomRoutineAddRequestDto("초과 루틴");
+
+			given(challengeCustomRoutineFacade.addCustomRoutine(eq(DEFAULT_USER_ID), any(CustomRoutineAddRequestDto.class)))
+				.willThrow(new ChallengeException(ChallengeErrorCode.CUSTOM_ROUTINE_LIMIT_EXCEEDED));
+
+			// when & then
+			mockMvc.perform(post("/api/challenges/routines")
+					.header("X-User-Id", DEFAULT_USER_ID)
+					.contentType(MediaType.APPLICATION_JSON)
+					.content(objectMapper.writeValueAsString(request)))
+				.andExpect(status().isBadRequest())
+				.andExpect(jsonPath("$.code").value("CH011"));
+		}
 	}
 }
