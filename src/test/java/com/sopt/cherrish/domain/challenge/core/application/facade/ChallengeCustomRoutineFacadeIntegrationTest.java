@@ -5,7 +5,6 @@ import static com.sopt.cherrish.domain.challenge.core.fixture.ChallengeTestFixtu
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import java.time.LocalDate;
 import java.util.List;
 
 import org.junit.jupiter.api.DisplayName;
@@ -194,7 +193,7 @@ class ChallengeCustomRoutineFacadeIntegrationTest {
 		// when & then
 		assertThatThrownBy(() -> challengeCustomRoutineFacade.addCustomRoutine(user.getId(), request))
 			.isInstanceOf(ChallengeException.class)
-			.hasFieldOrPropertyWithValue("errorCode", ChallengeErrorCode.CHALLENGE_NOT_FOUND); // getActiveChallengeWithStatistics에서 isActive=true만 조회하므로
+			.hasFieldOrPropertyWithValue("errorCode", ChallengeErrorCode.CHALLENGE_NOT_FOUND);
 
 		// 루틴이 추가되지 않음
 		assertThat(routineRepository.count()).isEqualTo(initialRoutineCount);

@@ -4,7 +4,7 @@ import static com.sopt.cherrish.domain.challenge.core.fixture.ChallengeTestFixtu
 import static com.sopt.cherrish.domain.challenge.core.fixture.ChallengeTestFixture.DEFAULT_USER_ID;
 import static com.sopt.cherrish.domain.challenge.core.fixture.ChallengeTestFixture.FIXED_START_DATE;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.AssertionsForClassTypes.*;
+import static org.assertj.core.api.AssertionsForClassTypes.catchThrowable;
 
 import java.time.LocalDate;
 import java.util.List;
