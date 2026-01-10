@@ -5,6 +5,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import com.sopt.cherrish.domain.calendar.domain.model.CalendarEventType;
 import com.sopt.cherrish.domain.userprocedure.domain.model.UserProcedure;
 import com.sopt.cherrish.domain.userprocedure.domain.vo.DowntimePeriod;
@@ -38,15 +40,15 @@ public class ProcedureEventResponseDto {
 	private Integer downtimeDays;
 
 	@Schema(description = "민감기 날짜 목록", example = "[\"2026-01-15\", \"2026-01-16\", \"2026-01-17\"]")
-	@JsonFormat(pattern = "yyyy-MM-dd")
+	@JsonSerialize(contentUsing = LocalDateSerializer.class)
 	private List<LocalDate> sensitiveDays;
 
 	@Schema(description = "주의기 날짜 목록", example = "[\"2026-01-18\", \"2026-01-19\"]")
-	@JsonFormat(pattern = "yyyy-MM-dd")
+	@JsonSerialize(contentUsing = LocalDateSerializer.class)
 	private List<LocalDate> cautionDays;
 
 	@Schema(description = "회복기 날짜 목록", example = "[\"2026-01-20\", \"2026-01-21\"]")
-	@JsonFormat(pattern = "yyyy-MM-dd")
+	@JsonSerialize(contentUsing = LocalDateSerializer.class)
 	private List<LocalDate> recoveryDays;
 
 	public static ProcedureEventResponseDto from(UserProcedure userProcedure) {
