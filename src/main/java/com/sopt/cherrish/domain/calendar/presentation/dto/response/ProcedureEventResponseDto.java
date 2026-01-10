@@ -7,6 +7,7 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.sopt.cherrish.domain.calendar.domain.model.CalendarEventType;
 import com.sopt.cherrish.domain.userprocedure.domain.model.UserProcedure;
+import com.sopt.cherrish.domain.userprocedure.domain.vo.DowntimePeriod;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
@@ -49,38 +50,8 @@ public class ProcedureEventResponseDto {
 	private List<LocalDate> recoveryDays;
 
 	public static ProcedureEventResponseDto from(UserProcedure userProcedure) {
-		LocalDate scheduledDate = userProcedure.getScheduledAt().toLocalDate();
-		Integer downtimeDays = userProcedure.getDowntimeDays();
-
-		// 다운타임이 null이거나 0이면 모든 날짜 목록을 빈 리스트로
-		if (downtimeDays == null || downtimeDays == 0) {
-			return ProcedureEventResponseDto.builder()
-				.type(CalendarEventType.PROCEDURE)
-				.id(userProcedure.getId())
-				.procedureId(userProcedure.getProcedure().getId())
-				.name(userProcedure.getProcedure().getName())
-				.scheduledAt(userProcedure.getScheduledAt())
-				.downtimeDays(downtimeDays)
-				.sensitiveDays(List.of())
-				.cautionDays(List.of())
-				.recoveryDays(List.of())
-				.build();
-		}
-
-		// 다운타임을 3으로 나누어 기간 계산
-		int baseDays = downtimeDays / 3;
-		int remainder = downtimeDays % 3;
-
-		int sensitiveDaysCount = baseDays + (remainder >= 1 ? 1 : 0);
-		int cautionDaysCount = baseDays + (remainder >= 2 ? 1 : 0);
-		int recoveryDaysCount = baseDays;
-
-		// 날짜 목록 생성
-		List<LocalDate> sensitiveDays = generateDateRange(scheduledDate, sensitiveDaysCount);
-		List<LocalDate> cautionDays = generateDateRange(scheduledDate.plusDays(sensitiveDaysCount),
-			cautionDaysCount);
-		List<LocalDate> recoveryDays = generateDateRange(
-			scheduledDate.plusDays(sensitiveDaysCount + cautionDaysCount), recoveryDaysCount);
+		// Entity로부터 다운타임 기간 계산 (비즈니스 로직은 Entity에서 처리)
+		DowntimePeriod downtimePeriod = userProcedure.calculateDowntimePeriod();
 
 		return ProcedureEventResponseDto.builder()
 			.type(CalendarEventType.PROCEDURE)
@@ -88,19 +59,10 @@ public class ProcedureEventResponseDto {
 			.procedureId(userProcedure.getProcedure().getId())
 			.name(userProcedure.getProcedure().getName())
 			.scheduledAt(userProcedure.getScheduledAt())
-			.downtimeDays(downtimeDays)
-			.sensitiveDays(sensitiveDays)
-			.cautionDays(cautionDays)
-			.recoveryDays(recoveryDays)
+			.downtimeDays(userProcedure.getDowntimeDays())
+			.sensitiveDays(downtimePeriod.getSensitiveDays())
+			.cautionDays(downtimePeriod.getCautionDays())
+			.recoveryDays(downtimePeriod.getRecoveryDays())
 			.build();
-	}
-
-	private static List<LocalDate> generateDateRange(LocalDate startDate, int days) {
-		if (days <= 0) {
-			return List.of();
-		}
-		return java.util.stream.IntStream.range(0, days)
-			.mapToObj(startDate::plusDays)
-			.toList();
 	}
 }
