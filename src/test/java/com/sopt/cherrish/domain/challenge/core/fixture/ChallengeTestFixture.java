@@ -10,14 +10,17 @@ import com.sopt.cherrish.domain.challenge.core.presentation.dto.request.RoutineU
 import com.sopt.cherrish.domain.challenge.core.presentation.dto.response.ChallengeCreateResponseDto;
 import com.sopt.cherrish.domain.challenge.core.presentation.dto.response.ChallengeDetailResponseDto;
 import com.sopt.cherrish.domain.challenge.core.presentation.dto.response.ChallengeRoutineResponseDto;
+import com.sopt.cherrish.domain.challenge.core.presentation.dto.response.CustomRoutineAddResponseDto;
 import com.sopt.cherrish.domain.challenge.core.presentation.dto.response.RoutineBatchUpdateResponseDto;
 import com.sopt.cherrish.domain.challenge.core.presentation.dto.response.RoutineCompletionResponseDto;
 import com.sopt.cherrish.domain.challenge.homecare.domain.model.HomecareRoutine;
+import com.sopt.cherrish.global.config.TestClockConfig;
 
 public class ChallengeTestFixture {
 
 	// 공통 테스트 상수
-	public static final LocalDate FIXED_START_DATE = LocalDate.of(2024, 1, 1);
+	// TestClockConfig의 고정 날짜를 참조하여 일관성 유지
+	public static final LocalDate FIXED_START_DATE = TestClockConfig.FIXED_TEST_DATE;
 	public static final Long DEFAULT_USER_ID = 1L;
 	public static final Long DEFAULT_CHALLENGE_ID = 1L;
 	public static final Long DEFAULT_ROUTINE_ID = 1L;
@@ -231,5 +234,28 @@ public class ChallengeTestFixture {
 		);
 
 		return new RoutineBatchUpdateResponseDto(routines, 1, createRoutineBatchUpdateMessage(1));
+	}
+
+	/**
+	 * Mock 커스텀 루틴 추가 응답
+	 */
+	public static CustomRoutineAddResponseDto createMockCustomRoutineAddResponse() {
+
+		// 테스트용 총 루틴 수: 기존 21개 + 커스텀 루틴 5개 (테스트 시나리오 가정)
+		int mockTotalRoutineCount = 26;
+
+		Challenge challenge = Challenge.builder()
+			.userId(DEFAULT_USER_ID)
+			.homecareRoutine(HomecareRoutine.SKIN_MOISTURIZING)
+			.title("테스트 챌린지")
+			.startDate(FIXED_START_DATE)
+			.build();
+
+		return CustomRoutineAddResponseDto.from(
+			challenge,
+			"저녁 마사지",
+			List.of(), // Mock 응답이므로 생성된 루틴 리스트는 빈 값으로 처리
+			mockTotalRoutineCount
+		);
 	}
 }
