@@ -13,6 +13,9 @@ import com.sopt.cherrish.domain.userprocedure.domain.model.UserProcedure;
 
 public class CalendarTestFixture {
 
+	private CalendarTestFixture() {
+	}
+
 	public static User createMockUser(String name, int age) {
 		return User.builder()
 			.name(name)
