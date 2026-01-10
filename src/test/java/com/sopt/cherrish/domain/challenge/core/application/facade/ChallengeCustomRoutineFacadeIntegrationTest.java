@@ -1,0 +1,275 @@
+package com.sopt.cherrish.domain.challenge.core.application.facade;
+
+import static com.sopt.cherrish.domain.challenge.core.fixture.ChallengeTestFixture.DEFAULT_CHALLENGE_TITLE;
+import static com.sopt.cherrish.domain.challenge.core.fixture.ChallengeTestFixture.FIXED_START_DATE;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
+import java.time.LocalDate;
+import java.util.List;
+
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.context.annotation.Import;
+
+import com.sopt.cherrish.domain.challenge.core.application.service.ChallengeRoutineService;
+import com.sopt.cherrish.domain.challenge.core.application.service.ChallengeService;
+import com.sopt.cherrish.domain.challenge.core.application.service.ChallengeStatisticsService;
+import com.sopt.cherrish.domain.challenge.core.domain.model.Challenge;
+import com.sopt.cherrish.domain.challenge.core.domain.model.ChallengeRoutine;
+import com.sopt.cherrish.domain.challenge.core.domain.model.ChallengeStatistics;
+import com.sopt.cherrish.domain.challenge.core.domain.repository.ChallengeRepository;
+import com.sopt.cherrish.domain.challenge.core.domain.repository.ChallengeRoutineRepository;
+import com.sopt.cherrish.domain.challenge.core.domain.repository.ChallengeStatisticsRepository;
+import com.sopt.cherrish.domain.challenge.core.exception.ChallengeErrorCode;
+import com.sopt.cherrish.domain.challenge.core.exception.ChallengeException;
+import com.sopt.cherrish.domain.challenge.core.presentation.dto.request.CustomRoutineAddRequestDto;
+import com.sopt.cherrish.domain.challenge.core.presentation.dto.response.CustomRoutineAddResponseDto;
+import com.sopt.cherrish.domain.challenge.homecare.domain.model.HomecareRoutine;
+import com.sopt.cherrish.domain.user.domain.model.User;
+import com.sopt.cherrish.domain.user.domain.repository.UserRepository;
+import com.sopt.cherrish.domain.user.exception.UserErrorCode;
+import com.sopt.cherrish.domain.user.exception.UserException;
+import com.sopt.cherrish.global.config.QueryDslConfig;
+import com.sopt.cherrish.global.config.TestClockConfig;
+import com.sopt.cherrish.global.config.TestJpaAuditConfig;
+
+@DataJpaTest
+@Import({
+	TestJpaAuditConfig.class,
+	TestClockConfig.class,
+	QueryDslConfig.class,
+	ChallengeCustomRoutineFacade.class,
+	ChallengeService.class,
+	ChallengeRoutineService.class,
+	ChallengeStatisticsService.class
+})
+@DisplayName("ChallengeCustomRoutineFacade 통합 테스트")
+class ChallengeCustomRoutineFacadeIntegrationTest {
+
+	@Autowired
+	private ChallengeCustomRoutineFacade challengeCustomRoutineFacade;
+
+	@Autowired
+	private ChallengeRepository challengeRepository;
+
+	@Autowired
+	private ChallengeRoutineRepository routineRepository;
+
+	@Autowired
+	private ChallengeStatisticsRepository statisticsRepository;
+
+	@Autowired
+	private UserRepository userRepository;
+
+	private User createTestUser() {
+		return userRepository.save(User.builder()
+			.name("테스트 유저")
+			.age(25)
+			.build());
+	}
+
+	private Challenge createActiveChallengeWithRoutines(User user, int initialRoutineCount) {
+		// FIXED_START_DATE(2024-01-01)부터 2024-01-07까지 챌린지
+		Challenge challenge = challengeRepository.save(Challenge.builder()
+			.userId(user.getId())
+			.homecareRoutine(HomecareRoutine.SKIN_MOISTURIZING)
+			.title(DEFAULT_CHALLENGE_TITLE)
+			.startDate(FIXED_START_DATE)
+			.build());
+
+		// 초기 루틴 생성 (1일차부터 3일차까지)
+		for (int day = 0; day < 3; day++) {
+			for (int i = 0; i < initialRoutineCount; i++) {
+				routineRepository.save(ChallengeRoutine.builder()
+					.challenge(challenge)
+					.name("기본 루틴 " + (i + 1))
+					.scheduledDate(challenge.getStartDate().plusDays(day))
+					.build());
+			}
+		}
+
+		// 통계 생성
+		statisticsRepository.save(ChallengeStatistics.builder()
+			.challenge(challenge)
+			.totalRoutineCount(initialRoutineCount * 7) // 3개 루틴 × 7일
+			.build());
+
+		return challenge;
+	}
+
+	@Test
+	@DisplayName("성공 - 커스텀 루틴 추가 전체 플로우 (DB 저장 확인)")
+	void addCustomRoutineSuccessSavesToDatabase() {
+		// given
+		User user = createTestUser();
+		Challenge challenge = createActiveChallengeWithRoutines(user, 3);
+
+		CustomRoutineAddRequestDto request = new CustomRoutineAddRequestDto("저녁 마사지");
+
+		// when - 오늘이 2024-01-03 (3일차)라고 가정 -> 3일차부터 7일차까지 5개 생성
+		CustomRoutineAddResponseDto response = challengeCustomRoutineFacade.addCustomRoutine(
+			user.getId(),
+			request
+		);
+
+		// then - Response 검증
+		assertThat(response.challengeId()).isEqualTo(challenge.getId());
+		assertThat(response.routineName()).isEqualTo("저녁 마사지");
+		assertThat(response.addedCount()).isEqualTo(5); // 2024-01-03 ~ 2024-01-07 = 5일
+		assertThat(response.routines()).hasSize(5);
+		assertThat(response.totalRoutineCount()).isEqualTo(26); // 기존 21 + 추가 5 = 26
+		assertThat(response.message()).contains("5일간");
+
+		// then - DB 실제 저장 확인
+		List<ChallengeRoutine> allRoutines = routineRepository.findAll();
+		assertThat(allRoutines).hasSize(26); // 기존 21 + 새로 추가된 5
+
+		List<ChallengeRoutine> customRoutines = allRoutines.stream()
+			.filter(r -> r.getName().equals("저녁 마사지"))
+			.toList();
+		assertThat(customRoutines).hasSize(5);
+		assertThat(customRoutines).allMatch(r -> !r.getIsComplete());
+
+		ChallengeStatistics savedStatistics = statisticsRepository.findByChallengeId(challenge.getId())
+			.orElseThrow();
+		assertThat(savedStatistics.getTotalRoutineCount()).isEqualTo(26);
+	}
+
+	@Test
+	@DisplayName("실패 - 존재하지 않는 사용자")
+	void addCustomRoutineUserNotFoundThrowsException() {
+		// given
+		Long nonExistentUserId = 999L;
+		CustomRoutineAddRequestDto request = new CustomRoutineAddRequestDto("저녁 마사지");
+
+		// when & then
+		assertThatThrownBy(() -> challengeCustomRoutineFacade.addCustomRoutine(nonExistentUserId, request))
+			.isInstanceOf(UserException.class)
+			.hasFieldOrPropertyWithValue("errorCode", UserErrorCode.USER_NOT_FOUND);
+
+		// DB에 아무것도 추가되지 않음
+		assertThat(routineRepository.findAll()).isEmpty();
+	}
+
+	@Test
+	@DisplayName("실패 - 활성 챌린지가 존재하지 않음")
+	void addCustomRoutineNoChallengeThrowsException() {
+		// given
+		User user = createTestUser();
+		CustomRoutineAddRequestDto request = new CustomRoutineAddRequestDto("저녁 마사지");
+
+		// when & then
+		assertThatThrownBy(() -> challengeCustomRoutineFacade.addCustomRoutine(user.getId(), request))
+			.isInstanceOf(ChallengeException.class)
+			.hasFieldOrPropertyWithValue("errorCode", ChallengeErrorCode.CHALLENGE_NOT_FOUND);
+	}
+
+	@Test
+	@DisplayName("실패 - 비활성 챌린지에 추가 시도")
+	void addCustomRoutineInactiveChallengeThrowsException() {
+		// given
+		User user = createTestUser();
+		Challenge challenge = createActiveChallengeWithRoutines(user, 3);
+
+		// 챌린지를 비활성화
+		challenge.complete();
+		challengeRepository.save(challenge);
+
+		CustomRoutineAddRequestDto request = new CustomRoutineAddRequestDto("저녁 마사지");
+
+		long initialRoutineCount = routineRepository.count();
+
+		// when & then
+		assertThatThrownBy(() -> challengeCustomRoutineFacade.addCustomRoutine(user.getId(), request))
+			.isInstanceOf(ChallengeException.class)
+			.hasFieldOrPropertyWithValue("errorCode", ChallengeErrorCode.CHALLENGE_NOT_FOUND); // getActiveChallengeWithStatistics에서 isActive=true만 조회하므로
+
+		// 루틴이 추가되지 않음
+		assertThat(routineRepository.count()).isEqualTo(initialRoutineCount);
+	}
+
+	@Test
+	@DisplayName("실패 - 다른 사용자의 챌린지에 접근")
+	void addCustomRoutineUnauthorizedAccessThrowsException() {
+		// given
+		User owner = createTestUser();
+		User other = userRepository.save(User.builder()
+			.name("다른 유저")
+			.age(30)
+			.build());
+
+		createActiveChallengeWithRoutines(owner, 3);
+
+		CustomRoutineAddRequestDto request = new CustomRoutineAddRequestDto("저녁 마사지");
+
+		// when & then
+		assertThatThrownBy(() -> challengeCustomRoutineFacade.addCustomRoutine(other.getId(), request))
+			.isInstanceOf(ChallengeException.class)
+			.hasFieldOrPropertyWithValue("errorCode", ChallengeErrorCode.CHALLENGE_NOT_FOUND); // 다른 유저의 활성 챌린지를 찾을 수 없음
+	}
+
+	@Test
+	@DisplayName("성공 - 통계 업데이트 확인 (totalRoutineCount 증가, cherryLevel 재계산)")
+	void addCustomRoutineUpdatesStatistics() {
+		// given
+		User user = createTestUser();
+		Challenge challenge = createActiveChallengeWithRoutines(user, 3);
+
+		ChallengeStatistics statistics = statisticsRepository.findByChallengeId(challenge.getId())
+			.orElseThrow();
+		int initialTotalRoutineCount = statistics.getTotalRoutineCount();
+		assertThat(initialTotalRoutineCount).isEqualTo(21);
+
+		CustomRoutineAddRequestDto request = new CustomRoutineAddRequestDto("저녁 운동");
+
+		// when
+		CustomRoutineAddResponseDto response = challengeCustomRoutineFacade.addCustomRoutine(
+			user.getId(),
+			request
+		);
+
+		// then
+		assertThat(response.totalRoutineCount()).isEqualTo(26); // 21 + 5
+
+		ChallengeStatistics updatedStatistics = statisticsRepository.findByChallengeId(challenge.getId())
+			.orElseThrow();
+		assertThat(updatedStatistics.getTotalRoutineCount()).isEqualTo(26);
+		// cherryLevel은 completedCount / totalRoutineCount로 계산되므로 totalRoutineCount 증가 시 재계산됨
+	}
+
+	@Test
+	@DisplayName("트랜잭션 롤백 - 예외 발생 시 모든 변경사항 롤백")
+	void addCustomRoutineExceptionOccursRollbacksAllChanges() {
+		// given
+		User user = createTestUser();
+		Challenge challenge = createActiveChallengeWithRoutines(user, 3);
+
+		// 챌린지를 비활성화
+		challenge.complete();
+		challengeRepository.save(challenge);
+
+		CustomRoutineAddRequestDto request = new CustomRoutineAddRequestDto("저녁 마사지");
+
+		long initialRoutineCount = routineRepository.count();
+		ChallengeStatistics initialStatistics = statisticsRepository.findByChallengeId(challenge.getId())
+			.orElseThrow();
+		int initialTotalRoutineCount = initialStatistics.getTotalRoutineCount();
+
+		// when
+		try {
+			challengeCustomRoutineFacade.addCustomRoutine(user.getId(), request);
+		} catch (ChallengeException e) {
+			// expected
+		}
+
+		// then - 개수가 변하지 않음 (롤백됨)
+		assertThat(routineRepository.count()).isEqualTo(initialRoutineCount);
+
+		ChallengeStatistics statistics = statisticsRepository.findByChallengeId(challenge.getId())
+			.orElseThrow();
+		assertThat(statistics.getTotalRoutineCount()).isEqualTo(initialTotalRoutineCount);
+	}
+}
