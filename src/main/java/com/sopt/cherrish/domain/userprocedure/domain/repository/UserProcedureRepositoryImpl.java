@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.querydsl.core.Tuple;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.sopt.cherrish.domain.userprocedure.domain.model.UserProcedure;
 
@@ -23,20 +24,24 @@ public class UserProcedureRepositoryImpl implements UserProcedureRepositoryCusto
 		LocalDateTime startOfMonth = LocalDateTime.of(year, month, 1, 0, 0, 0);
 		LocalDateTime endOfMonth = startOfMonth.plusMonths(1);
 
-		List<UserProcedure> procedures = queryFactory
-			.selectFrom(userProcedure)
+		List<Tuple> results = queryFactory
+			.select(
+				userProcedure.scheduledAt.dayOfMonth(),
+				userProcedure.count()
+			)
+			.from(userProcedure)
 			.where(
 				userProcedure.user.id.eq(userId),
 				userProcedure.scheduledAt.goe(startOfMonth),
 				userProcedure.scheduledAt.lt(endOfMonth)
 			)
+			.groupBy(userProcedure.scheduledAt.dayOfMonth())
 			.fetch();
 
-		// 일자별로 그룹핑하여 개수 집계
-		return procedures.stream()
-			.collect(Collectors.groupingBy(
-				procedure -> procedure.getScheduledAt().getDayOfMonth(),
-				Collectors.counting()
+		return results.stream()
+			.collect(Collectors.toMap(
+				tuple -> tuple.get(userProcedure.scheduledAt.dayOfMonth()),
+				tuple -> tuple.get(userProcedure.count())
 			));
 	}
 
