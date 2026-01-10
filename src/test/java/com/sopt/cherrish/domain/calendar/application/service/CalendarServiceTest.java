@@ -132,6 +132,26 @@ class CalendarServiceTest {
 		assertThat(result.getEvents().get(1).getRecoveryDays()).hasSize(2);
 	}
 
+	@Test
+	@DisplayName("일자별 시술 상세 조회 성공 - 시술 없음")
+	void getDailyCalendarSuccessWithNoProcedures() {
+		// given
+		Long userId = 1L;
+		LocalDate date = LocalDate.of(2025, 1, 15);
+
+		given(userRepository.existsById(userId)).willReturn(true);
+		given(userProcedureRepository.findDailyProcedures(userId, date))
+			.willReturn(List.of());
+
+		// when
+		CalendarDailyResponseDto result = calendarService.getDailyCalendar(userId, date);
+
+		// then
+		assertThat(result).isNotNull();
+		assertThat(result.getEventCount()).isZero();
+		assertThat(result.getEvents()).isEmpty();
+	}
+
 	@ParameterizedTest
 	@DisplayName("일자별 시술 상세 조회 성공 - 다운타임 기간 계산 검증")
 	@CsvSource({
