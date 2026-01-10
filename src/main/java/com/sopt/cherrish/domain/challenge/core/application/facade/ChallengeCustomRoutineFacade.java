@@ -44,26 +44,20 @@ public class ChallengeCustomRoutineFacade {
 		// 1. 활성 챌린지 조회 (통계와 함께)
 		Challenge challenge = challengeService.getActiveChallengeWithStatistics(userId);
 
-		// 2. 소유자 검증
-		challenge.validateOwner(userId);
-
-		// 3. 활성 챌린지 검증
-		challenge.validateActive();
-
-		// 4. 오늘 날짜 계산
+		// 2. 오늘 날짜 계산
 		LocalDate today = LocalDate.now(clock);
 
-		// 5. 커스텀 루틴 Batch Insert
+		// 3. 커스텀 루틴 Batch Insert
 		List<ChallengeRoutine> routines = routineService.createAndSaveCustomRoutine(
 			challenge, request.routineName(), today
 		);
 
-		// 6. 통계 업데이트 (totalRoutineCount 증가, cherryLevel 재계산)
+		// 4. 통계 업데이트 (totalRoutineCount 증가, cherryLevel 재계산)
 		ChallengeStatistics statistics = challenge.getStatistics();
 		statistics.incrementTotalRoutineCount(routines.size());
 		statistics.updateCherryLevel();
 
-		// 7. Response DTO 변환
+		// 5. Response DTO 변환
 		return CustomRoutineAddResponseDto.from(
 			challenge,
 			request.routineName(),
