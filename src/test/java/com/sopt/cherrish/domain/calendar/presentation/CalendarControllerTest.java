@@ -1,5 +1,6 @@
 package com.sopt.cherrish.domain.calendar.presentation;
 
+import static com.sopt.cherrish.domain.calendar.fixture.CalendarTestFixture.createDailyResponseWithSingleEvent;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -18,10 +19,8 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.sopt.cherrish.domain.calendar.application.service.CalendarService;
-import com.sopt.cherrish.domain.calendar.domain.model.CalendarEventType;
 import com.sopt.cherrish.domain.calendar.presentation.dto.response.CalendarDailyResponseDto;
 import com.sopt.cherrish.domain.calendar.presentation.dto.response.CalendarMonthlyResponseDto;
-import com.sopt.cherrish.domain.calendar.presentation.dto.response.ProcedureEventResponseDto;
 
 @WebMvcTest(CalendarController.class)
 @DisplayName("CalendarController 통합 테스트")
@@ -96,31 +95,29 @@ class CalendarControllerTest {
 		Long userId = 1L;
 		LocalDate date = LocalDate.of(2025, 1, 15);
 
-		ProcedureEventResponseDto event1 = ProcedureEventResponseDto.builder()
-			.type(CalendarEventType.PROCEDURE)
-			.id(123L)
-			.procedureId(5L)
-			.name("레이저 토닝")
-			.scheduledAt(LocalDateTime.of(2025, 1, 15, 14, 0))
-			.downtimeDays(9)
-			.sensitiveDays(List.of(
+		CalendarDailyResponseDto response = createDailyResponseWithSingleEvent(
+			123L,
+			5L,
+			"레이저 토닝",
+			LocalDateTime.of(2025, 1, 15, 14, 0),
+			9,
+			List.of(
 				LocalDate.of(2025, 1, 15),
 				LocalDate.of(2025, 1, 16),
 				LocalDate.of(2025, 1, 17)
-			))
-			.cautionDays(List.of(
+			),
+			List.of(
 				LocalDate.of(2025, 1, 18),
 				LocalDate.of(2025, 1, 19),
 				LocalDate.of(2025, 1, 20)
-			))
-			.recoveryDays(List.of(
+			),
+			List.of(
 				LocalDate.of(2025, 1, 21),
 				LocalDate.of(2025, 1, 22),
 				LocalDate.of(2025, 1, 23)
-			))
-			.build();
+			)
+		);
 
-		CalendarDailyResponseDto response = CalendarDailyResponseDto.from(List.of(event1));
 		given(calendarService.getDailyCalendar(userId, date)).willReturn(response);
 
 		// when & then
