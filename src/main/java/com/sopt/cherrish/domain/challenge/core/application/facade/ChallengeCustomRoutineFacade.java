@@ -14,6 +14,7 @@ import com.sopt.cherrish.domain.challenge.core.domain.model.ChallengeRoutine;
 import com.sopt.cherrish.domain.challenge.core.domain.model.ChallengeStatistics;
 import com.sopt.cherrish.domain.challenge.core.presentation.dto.request.CustomRoutineAddRequestDto;
 import com.sopt.cherrish.domain.challenge.core.presentation.dto.response.CustomRoutineAddResponseDto;
+import com.sopt.cherrish.domain.user.application.service.UserService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -21,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ChallengeCustomRoutineFacade {
 
+	private final UserService userService;
 	private final ChallengeService challengeService;
 	private final ChallengeRoutineService routineService;
 	private final Clock clock;
@@ -39,23 +41,26 @@ public class ChallengeCustomRoutineFacade {
 		Long userId,
 		CustomRoutineAddRequestDto request
 	) {
-		// 1. 활성 챌린지 조회 (통계와 함께)
+		// 1. 사용자 존재 여부 검증
+		userService.validateUserExists(userId);
+
+		// 2. 활성 챌린지 조회 (통계와 함께)
 		Challenge challenge = challengeService.getActiveChallengeWithStatistics(userId);
 
-		// 2. 오늘 날짜 계산
+		// 3. 오늘 날짜 계산
 		LocalDate today = LocalDate.now(clock);
 
-		// 3. 커스텀 루틴 Batch Insert
+		// 4. 커스텀 루틴 Batch Insert
 		List<ChallengeRoutine> routines = routineService.createAndSaveCustomRoutine(
 			challenge, request.routineName(), today
 		);
 
-		// 4. 통계 업데이트 (totalRoutineCount 증가, cherryLevel 재계산)
+		// 5. 통계 업데이트 (totalRoutineCount 증가, cherryLevel 재계산)
 		ChallengeStatistics statistics = challenge.getStatistics();
 		statistics.incrementTotalRoutineCount(routines.size());
 		statistics.updateCherryLevel();
 
-		// 5. Response DTO 변환
+		// 6. Response DTO 변환
 		return CustomRoutineAddResponseDto.from(
 			challenge,
 			request.routineName(),
