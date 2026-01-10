@@ -165,16 +165,4 @@ public class Challenge extends BaseTimeEntity {
 			);
 		}
 	}
-
-	/**
-	 * 챌린지가 활성 상태인지 검증
-	 * @throws ChallengeException 비활성 챌린지인 경우
-	 */
-	public void validateActive() {
-		if (!this.isActive) {
-			throw new ChallengeException(
-				ChallengeErrorCode.CHALLENGE_NOT_ACTIVE
-			);
-		}
-	}
 }
