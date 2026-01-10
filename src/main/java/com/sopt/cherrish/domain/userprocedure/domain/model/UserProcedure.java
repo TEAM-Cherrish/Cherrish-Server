@@ -42,7 +42,7 @@ public class UserProcedure extends BaseTimeEntity {
 	@Column(nullable = false, name = "scheduled_at")
 	private LocalDateTime scheduledAt;
 
-	@Column(name = "downtime_days")
+	@Column(name = "downtime_days", nullable = false)
 	private Integer downtimeDays;
 
 	@Builder

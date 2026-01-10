@@ -8,7 +8,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum UserProcedureErrorCode implements ErrorType {
 	// UserProcedure 도메인 에러 (UP001 ~ UP099)
-	USER_PROCEDURE_NOT_FOUND("UP001", "사용자 시술 일정을 찾을 수 없습니다", 404);
+	USER_PROCEDURE_NOT_FOUND("UP001", "사용자 시술 일정을 찾을 수 없습니다", 404),
+	INVALID_DOWNTIME_DAYS("UP002", "다운타임 일수는 0일 이상 30일 이하여야 합니다", 400);
 
 	private final String code;
 	private final String message;
