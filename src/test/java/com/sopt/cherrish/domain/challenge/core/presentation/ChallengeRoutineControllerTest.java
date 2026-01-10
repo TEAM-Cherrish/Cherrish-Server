@@ -258,7 +258,7 @@ class ChallengeRoutineControllerTest {
 	class CustomRoutineAddTest {
 
 		@Test
-		@DisplayName("성공 - 커스텀 루틴 추가 (5개 생성)")
+		@DisplayName("성공 - 커스텀 루틴 추가")
 		void successAddCustomRoutine() throws Exception {
 			// given
 			CustomRoutineAddRequestDto request = new CustomRoutineAddRequestDto("저녁 마사지");
