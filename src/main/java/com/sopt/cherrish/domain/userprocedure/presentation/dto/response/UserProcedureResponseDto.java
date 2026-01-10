@@ -23,7 +23,7 @@ public class UserProcedureResponseDto {
 	@Schema(description = "시술명", example = "레이저 토닝")
 	private String procedureName;
 
-	@Schema(description = "예약 날짜 및 시간", example = "2025-01-01T16:00:00", type = "string")
+	@Schema(description = "예약 날짜 및 시간", example = "2026-01-01T16:00:00", type = "string")
 	@JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
 	private LocalDateTime scheduledAt;
 
