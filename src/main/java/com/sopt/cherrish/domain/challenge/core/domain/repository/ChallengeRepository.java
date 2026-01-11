@@ -1,5 +1,7 @@
 package com.sopt.cherrish.domain.challenge.core.domain.repository;
 
+import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -32,5 +34,12 @@ public interface ChallengeRepository extends JpaRepository<Challenge, Long> {
 	 */
 	@Query("SELECT c FROM Challenge c LEFT JOIN FETCH c.statistics WHERE c.userId = :userId AND c.isActive = true")
 	Optional<Challenge> findActiveChallengeWithStatistics(@Param("userId") Long userId);
+
+	/**
+	 * 종료일이 지난 활성 챌린지 목록 조회
+	 * @param currentDate 현재 날짜
+	 * @return 만료된 활성 챌린지 목록
+	 */
+	List<Challenge> findByIsActiveTrueAndEndDateBefore(LocalDate currentDate);
 
 }
