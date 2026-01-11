@@ -37,13 +37,6 @@ public interface ChallengeRepository extends JpaRepository<Challenge, Long> {
 	Optional<Challenge> findActiveChallengeWithStatistics(@Param("userId") Long userId);
 
 	/**
-	 * 종료일이 지난 활성 챌린지 목록 조회
-	 * @param currentDate 현재 날짜
-	 * @return 만료된 활성 챌린지 목록
-	 */
-	List<Challenge> findByIsActiveTrueAndEndDateBefore(LocalDate currentDate);
-
-	/**
 	 * 종료일이 지난 활성 챌린지를 벌크 업데이트로 비활성화
 	 * 단일 UPDATE 쿼리로 모든 만료된 챌린지를 한 번에 처리합니다.
 	 * @param currentDate 현재 날짜
