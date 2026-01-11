@@ -6,13 +6,16 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.time.Clock;
+import java.time.Instant;
 import java.time.LocalDate;
+import java.time.ZoneId;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -22,11 +25,29 @@ import com.sopt.cherrish.domain.challenge.core.domain.repository.ChallengeReposi
 @DisplayName("ChallengeSchedulerService 단위 테스트")
 class ChallengeSchedulerServiceTest {
 
+	private static final LocalDate FIXED_DATE = LocalDate.of(2024, 1, 15);
+	private static final ZoneId ZONE_ID = ZoneId.of("Asia/Seoul");
+
 	@Mock
 	private ChallengeRepository challengeRepository;
 
-	@InjectMocks
+	@Mock
+	private Clock clock;
+
 	private ChallengeSchedulerService challengeSchedulerService;
+
+	@BeforeEach
+	void setUp() {
+		// 고정된 날짜의 Clock 설정
+		Clock fixedClock = Clock.fixed(
+			FIXED_DATE.atStartOfDay(ZONE_ID).toInstant(),
+			ZONE_ID
+		);
+		when(clock.instant()).thenReturn(fixedClock.instant());
+		when(clock.getZone()).thenReturn(fixedClock.getZone());
+
+		challengeSchedulerService = new ChallengeSchedulerService(challengeRepository, clock);
+	}
 
 	@Test
 	@DisplayName("만료된 챌린지 벌크 업데이트 실행 성공")
@@ -38,13 +59,13 @@ class ChallengeSchedulerServiceTest {
 		// When: 스케줄러 메서드 실행
 		challengeSchedulerService.expireCompletedChallenges();
 
-		// Then: bulkUpdateExpiredChallenges가 오늘 날짜로 1번 호출됨
+		// Then: bulkUpdateExpiredChallenges가 고정된 날짜로 1번 호출됨
 		ArgumentCaptor<LocalDate> dateCaptor = ArgumentCaptor.forClass(LocalDate.class);
 		verify(challengeRepository, times(1)).bulkUpdateExpiredChallenges(dateCaptor.capture());
 
-		// 호출된 날짜가 오늘인지 검증
+		// 호출된 날짜가 고정된 날짜인지 검증 (시간에 의존하지 않는 결정론적 테스트)
 		LocalDate capturedDate = dateCaptor.getValue();
-		assertThat(capturedDate).isEqualTo(LocalDate.now());
+		assertThat(capturedDate).isEqualTo(FIXED_DATE);
 	}
 
 	@Test
