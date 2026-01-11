@@ -76,7 +76,7 @@ class ChallengeRepositoryTest {
 
 	@Test
 	@DisplayName("만료된 활성 챌린지만 벌크 업데이트로 비활성화")
-	void bulkUpdateExpiredChallenges_Success() {
+	void bulkUpdateExpiredChallengesSuccess() {
 		// Given
 		LocalDate today = LocalDate.now();
 
@@ -103,7 +103,7 @@ class ChallengeRepositoryTest {
 
 	@Test
 	@DisplayName("만료된 챌린지가 없으면 업데이트 없음")
-	void bulkUpdateExpiredChallenges_NoExpiredChallenges() {
+	void bulkUpdateExpiredChallengesNoExpiredChallenges() {
 		// Given: 모든 챌린지가 만료되지 않은 상태로 설정
 		LocalDate futureDate = LocalDate.now().minusDays(100); // 모든 챌린지보다 과거 날짜
 
@@ -116,7 +116,7 @@ class ChallengeRepositoryTest {
 
 	@Test
 	@DisplayName("여러 만료된 챌린지를 한 번에 처리")
-	void bulkUpdateExpiredChallenges_MultipleExpired() {
+	void bulkUpdateExpiredChallengesMultipleExpired() {
 		// Given: 추가로 만료된 챌린지 2개 생성
 		LocalDate today = LocalDate.now();
 

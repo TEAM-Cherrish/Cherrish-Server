@@ -7,7 +7,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.time.Clock;
-import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 
@@ -51,7 +50,7 @@ class ChallengeSchedulerServiceTest {
 
 	@Test
 	@DisplayName("만료된 챌린지 벌크 업데이트 실행 성공")
-	void expireCompletedChallenges_Success() {
+	void expireCompletedChallengesSuccess() {
 		// Given: 3개의 챌린지가 업데이트될 것으로 예상
 		when(challengeRepository.bulkUpdateExpiredChallenges(any(LocalDate.class)))
 			.thenReturn(3);
@@ -70,7 +69,7 @@ class ChallengeSchedulerServiceTest {
 
 	@Test
 	@DisplayName("만료된 챌린지가 없을 때 정상 동작")
-	void expireCompletedChallenges_NoExpiredChallenges() {
+	void expireCompletedChallengesNoExpiredChallenges() {
 		// Given: 만료된 챌린지 없음
 		when(challengeRepository.bulkUpdateExpiredChallenges(any(LocalDate.class)))
 			.thenReturn(0);
@@ -84,7 +83,7 @@ class ChallengeSchedulerServiceTest {
 
 	@Test
 	@DisplayName("많은 수의 챌린지 업데이트 처리")
-	void expireCompletedChallenges_LargeNumber() {
+	void expireCompletedChallengesLargeNumber() {
 		// Given: 100개의 챌린지가 업데이트될 것으로 예상
 		when(challengeRepository.bulkUpdateExpiredChallenges(any(LocalDate.class)))
 			.thenReturn(100);
