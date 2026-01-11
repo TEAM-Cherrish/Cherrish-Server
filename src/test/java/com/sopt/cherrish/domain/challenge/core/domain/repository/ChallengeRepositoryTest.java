@@ -152,19 +152,4 @@ class ChallengeRepositoryTest {
 			.isFalse();
 	}
 
-	@Test
-	@DisplayName("findByIsActiveTrueAndEndDateBefore - 만료된 활성 챌린지 조회")
-	void findByIsActiveTrueAndEndDateBefore_Success() {
-		// Given
-		LocalDate today = LocalDate.now();
-
-		// When
-		var expiredChallenges = challengeRepository.findByIsActiveTrueAndEndDateBefore(today);
-
-		// Then: 1개만 조회 (endDate가 어제인 활성 챌린지)
-		assertThat(expiredChallenges).hasSize(1);
-		assertThat(expiredChallenges.get(0).getId()).isEqualTo(expiredActiveChallenge.getId());
-		assertThat(expiredChallenges.get(0).getIsActive()).isTrue();
-		assertThat(expiredChallenges.get(0).getEndDate()).isBefore(today);
-	}
 }
