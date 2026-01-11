@@ -11,16 +11,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 import com.sopt.cherrish.domain.challenge.core.domain.model.Challenge;
 import com.sopt.cherrish.domain.challenge.homecare.domain.model.HomecareRoutine;
+import com.sopt.cherrish.global.config.JpaAuditConfig;
 import com.sopt.cherrish.global.config.QueryDslConfig;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@Import(QueryDslConfig.class)
-@EnableJpaAuditing
+@Import({QueryDslConfig.class, JpaAuditConfig.class})
 @DisplayName("ChallengeRepository 통합 테스트")
 class ChallengeRepositoryTest {
 
