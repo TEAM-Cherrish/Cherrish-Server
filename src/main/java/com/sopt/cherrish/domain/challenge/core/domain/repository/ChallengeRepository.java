@@ -1,8 +1,10 @@
 package com.sopt.cherrish.domain.challenge.core.domain.repository;
 
+import java.time.LocalDate;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -32,5 +34,15 @@ public interface ChallengeRepository extends JpaRepository<Challenge, Long> {
 	 */
 	@Query("SELECT c FROM Challenge c LEFT JOIN FETCH c.statistics WHERE c.userId = :userId AND c.isActive = true")
 	Optional<Challenge> findActiveChallengeWithStatistics(@Param("userId") Long userId);
+
+	/**
+	 * 종료일이 지난 활성 챌린지를 벌크 업데이트로 비활성화
+	 * 단일 UPDATE 쿼리로 모든 만료된 챌린지를 한 번에 처리합니다.
+	 * @param currentDate 현재 날짜
+	 * @return 업데이트된 챌린지 개수
+	 */
+	@Modifying(clearAutomatically = true)
+	@Query("UPDATE Challenge c SET c.isActive = false WHERE c.isActive = true AND c.endDate < :currentDate")
+	int bulkUpdateExpiredChallenges(@Param("currentDate") LocalDate currentDate);
 
 }
