@@ -1,6 +1,7 @@
 package com.sopt.cherrish.domain.challenge.core.application.scheduler;
 
 import java.time.LocalDate;
+import java.time.ZoneId;
 
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -25,7 +26,7 @@ public class ChallengeSchedulerService {
 	@Scheduled(cron = "0 0 0 * * *", zone = "Asia/Seoul")
 	@Transactional
 	public void expireCompletedChallenges() {
-		LocalDate today = LocalDate.now();
+		LocalDate today = LocalDate.now(ZoneId.of("Asia/Seoul"));
 		log.info("챌린지 만료 스케줄러 시작: {}", today);
 
 		int updatedCount = challengeRepository.bulkUpdateExpiredChallenges(today);
