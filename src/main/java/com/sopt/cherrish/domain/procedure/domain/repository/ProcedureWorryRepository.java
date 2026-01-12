@@ -17,4 +17,16 @@ public interface ProcedureWorryRepository extends JpaRepository<ProcedureWorry, 
 		where pw.procedure.id in :procedureIds
 		""")
 	List<ProcedureWorry> findAllByProcedureIdInWithWorry(@Param("procedureIds") List<Long> procedureIds);
+
+	@Query("""
+		select pw
+		from ProcedureWorry pw
+		join fetch pw.worry
+		where pw.procedure.id in :procedureIds
+		and pw.worry.id = :worryId
+		""")
+	List<ProcedureWorry> findAllByProcedureIdInWithWorryAndWorryId(
+		@Param("procedureIds") List<Long> procedureIds,
+		@Param("worryId") Long worryId
+	);
 }

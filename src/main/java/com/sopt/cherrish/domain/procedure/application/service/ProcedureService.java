@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.sopt.cherrish.domain.procedure.domain.model.Procedure;
+import com.sopt.cherrish.domain.procedure.domain.model.ProcedureWorry;
 import com.sopt.cherrish.domain.procedure.domain.repository.ProcedureRepository;
 import com.sopt.cherrish.domain.procedure.domain.repository.ProcedureWorryRepository;
 import com.sopt.cherrish.domain.procedure.presentation.dto.response.ProcedureListResponseDto;
@@ -29,7 +30,10 @@ public class ProcedureService {
 
 	public ProcedureListResponseDto searchProcedures(String keyword, Long worryId) {
 		List<Procedure> procedures = procedureRepository.searchProcedures(keyword, worryId);
-		Map<Long, List<ProcedureWorryResponseDto>> worriesByProcedureId = fetchWorriesByProcedure(procedures);
+		Map<Long, List<ProcedureWorryResponseDto>> worriesByProcedureId = fetchWorriesByProcedure(
+			procedures,
+			worryId
+		);
 		List<ProcedureResponseDto> responses = procedures.stream()
 			.map(procedure -> ProcedureResponseDto.from(
 				procedure,
@@ -45,7 +49,10 @@ public class ProcedureService {
 		);
 	}
 
-	private Map<Long, List<ProcedureWorryResponseDto>> fetchWorriesByProcedure(List<Procedure> procedures) {
+	private Map<Long, List<ProcedureWorryResponseDto>> fetchWorriesByProcedure(
+		List<Procedure> procedures,
+		Long worryId
+	) {
 		List<Long> procedureIds = procedures.stream()
 			.map(Procedure::getId)
 			.toList();
@@ -53,7 +60,11 @@ public class ProcedureService {
 			return Map.of();
 		}
 
-		return procedureWorryRepository.findAllByProcedureIdInWithWorry(procedureIds).stream()
+		List<ProcedureWorry> procedureWorries = worryId == null
+			? procedureWorryRepository.findAllByProcedureIdInWithWorry(procedureIds)
+			: procedureWorryRepository.findAllByProcedureIdInWithWorryAndWorryId(procedureIds, worryId);
+
+		return procedureWorries.stream()
 			.collect(Collectors.groupingBy(
 				procedureWorry -> procedureWorry.getProcedure().getId(),
 				Collectors.mapping(

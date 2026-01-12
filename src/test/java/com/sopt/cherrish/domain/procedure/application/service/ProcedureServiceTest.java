@@ -89,7 +89,7 @@ class ProcedureServiceTest {
 		Procedure procedure = ProcedureFixture.createProcedure("레이저 토닝", "레이저", 0, 1);
 
 		given(procedureRepository.searchProcedures(null, worryId)).willReturn(Collections.singletonList(procedure));
-		given(procedureWorryRepository.findAllByProcedureIdInWithWorry(any()))
+		given(procedureWorryRepository.findAllByProcedureIdInWithWorryAndWorryId(any(), any()))
 			.willReturn(List.of(procedureWorry(procedure, "여드름/트러블")));
 
 		// when
@@ -110,7 +110,7 @@ class ProcedureServiceTest {
 
         given(procedureRepository.searchProcedures(keyword, worryId))
                 .willReturn(Collections.singletonList(procedure));
-		given(procedureWorryRepository.findAllByProcedureIdInWithWorry(any()))
+		given(procedureWorryRepository.findAllByProcedureIdInWithWorryAndWorryId(any(), any()))
 			.willReturn(List.of(procedureWorry(procedure, "여드름/트러블")));
 
         // when
