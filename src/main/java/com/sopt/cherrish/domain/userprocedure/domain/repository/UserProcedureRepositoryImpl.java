@@ -61,4 +61,36 @@ public class UserProcedureRepositoryImpl implements UserProcedureRepositoryCusto
 			.orderBy(userProcedure.scheduledAt.asc())
 			.fetch();
 	}
+
+	@Override
+	public List<UserProcedure> findAllPastProcedures(Long userId, LocalDate fromDate, LocalDate toDate) {
+		LocalDateTime startOfDay = fromDate.atStartOfDay();
+		LocalDateTime endOfDay = toDate.plusDays(1).atStartOfDay();
+
+		return queryFactory
+			.selectFrom(userProcedure)
+			.join(userProcedure.procedure).fetchJoin()  // N+1 방지
+			.where(
+				userProcedure.user.id.eq(userId),
+				userProcedure.scheduledAt.goe(startOfDay),
+				userProcedure.scheduledAt.lt(endOfDay)
+			)
+			.orderBy(userProcedure.scheduledAt.desc())
+			.fetch();
+	}
+
+	@Override
+	public List<UserProcedure> findUpcomingProceduresGroupedByDate(Long userId, LocalDate fromDate) {
+		LocalDateTime startOfDay = fromDate.atStartOfDay();
+
+		return queryFactory
+			.selectFrom(userProcedure)
+			.join(userProcedure.procedure).fetchJoin()  // N+1 방지
+			.where(
+				userProcedure.user.id.eq(userId),
+				userProcedure.scheduledAt.goe(startOfDay)
+			)
+			.orderBy(userProcedure.scheduledAt.asc())
+			.fetch();
+	}
 }

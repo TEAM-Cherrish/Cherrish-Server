@@ -1,6 +1,7 @@
 package com.sopt.cherrish.domain.challenge.core.application.service;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -73,6 +74,16 @@ public class ChallengeService {
 	public Challenge getActiveChallengeWithStatistics(Long userId) {
 		return challengeRepository.findActiveChallengeWithStatistics(userId)
 			.orElseThrow(() -> new ChallengeException(ChallengeErrorCode.CHALLENGE_NOT_FOUND));
+	}
+
+	/**
+	 * 활성 챌린지 조회 (통계와 함께 Fetch Join) - Optional 반환
+	 * 챌린지가 없어도 예외를 던지지 않음 (Facade에서 사용)
+	 * @param userId 사용자 ID
+	 * @return Optional로 감싼 활성 챌린지 (통계 포함)
+	 */
+	public Optional<Challenge> findActiveChallengeWithStatistics(Long userId) {
+		return challengeRepository.findActiveChallengeWithStatistics(userId);
 	}
 
 	/**
