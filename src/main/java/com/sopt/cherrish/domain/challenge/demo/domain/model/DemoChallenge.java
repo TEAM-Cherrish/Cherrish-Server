@@ -99,18 +99,25 @@ public class DemoChallenge extends BaseTimeEntity {
 
 	/**
 	 * 다음 날로 진행 (데모용)
-	 * @throws ChallengeException 종료일을 넘는 경우
+	 * 종료일을 넘으면 챌린지를 종료시킴 (isActive = false)
 	 */
 	public void advanceDay() {
 		LocalDate nextDay = currentVirtualDate.plusDays(1);
 
 		if (nextDay.isAfter(endDate)) {
-			throw new ChallengeException(
-				ChallengeErrorCode.ROUTINE_OUT_OF_CHALLENGE_PERIOD
-			);
+			// 종료일을 넘으면 챌린지 종료
+			this.isActive = false;
+			return;
 		}
 
 		this.currentVirtualDate = nextDay;
+	}
+
+	/**
+	 * 챌린지 완료 처리
+	 */
+	public void complete() {
+		this.isActive = false;
 	}
 
 	/**
