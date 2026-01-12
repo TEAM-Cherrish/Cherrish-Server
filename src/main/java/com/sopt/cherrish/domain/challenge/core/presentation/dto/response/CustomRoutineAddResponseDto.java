@@ -22,10 +22,7 @@ public record CustomRoutineAddResponseDto(
 	List<ChallengeRoutineResponseDto> routines,
 
 	@Schema(description = "업데이트된 총 루틴 개수", example = "26")
-	int totalRoutineCount,
-
-	@Schema(description = "상태 메시지", example = "오늘부터 5일간 '저녁 마사지' 루틴이 추가되었습니다.")
-	String message
+	int totalRoutineCount
 ) {
 	public static CustomRoutineAddResponseDto from(
 		Challenge challenge,
@@ -38,19 +35,13 @@ public record CustomRoutineAddResponseDto(
 			.toList();
 
 		int addedCount = addedRoutines.size();
-		String message = String.format(
-			"오늘부터 %d일간 '%s' 루틴이 추가되었습니다.",
-			addedCount,
-			routineName
-		);
 
 		return new CustomRoutineAddResponseDto(
 			challenge.getId(),
 			routineName,
 			addedCount,
 			routineDtos,
-			totalRoutineCount,
-			message
+			totalRoutineCount
 		);
 	}
 }
