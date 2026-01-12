@@ -98,6 +98,11 @@ public class DemoChallengeRoutineService {
 	 * 루틴 조회 및 존재 여부 검증
 	 */
 	private List<DemoChallengeRoutine> fetchAndValidateRoutines(List<Long> routineIds) {
+
+		if (routineIds.isEmpty()) {
+				throw new ChallengeException(ChallengeErrorCode.ROUTINE_NOT_FOUND);
+		}
+
 		// 중복 ID 검증
 		if (routineIds.size() != new HashSet<>(routineIds).size()) {
 			throw new ChallengeException(ChallengeErrorCode.DUPLICATE_ROUTINE_IDS);
