@@ -30,14 +30,16 @@ public class ProcedureService {
 	public ProcedureListResponseDto searchProcedures(String keyword, Long worryId) {
 		List<Procedure> procedures = procedureRepository.searchProcedures(keyword, worryId);
 		Map<Long, List<ProcedureWorryResponseDto>> worriesByProcedureId = fetchWorriesByProcedure(procedures);
+		List<ProcedureResponseDto> responses = procedures.stream()
+			.map(procedure -> ProcedureResponseDto.from(
+				procedure,
+				worriesByProcedureId.getOrDefault(procedure.getId(), List.of())
+			))
+			.toList();
 
 		// DB의 한글 collation 설정과 무관하게 정확한 한글 정렬을 보장하기 위해 Java에서 정렬
 		return ProcedureListResponseDto.of(
-			procedures.stream()
-				.map(procedure -> ProcedureResponseDto.from(
-					procedure,
-					worriesByProcedureId.getOrDefault(procedure.getId(), List.of())
-				))
+			responses.stream()
 				.sorted((p1, p2) -> KOREAN_COLLATOR.compare(p1.getName(), p2.getName()))
 				.toList()
 		);
