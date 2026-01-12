@@ -14,6 +14,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import com.sopt.cherrish.domain.procedure.domain.model.Procedure;
 import com.sopt.cherrish.domain.procedure.domain.model.ProcedureWorry;
@@ -178,6 +179,7 @@ class ProcedureServiceTest {
 		Worry worry = Worry.builder()
 			.content(worryContent)
 			.build();
+		ReflectionTestUtils.setField(worry, "id", 1L);
 		return ProcedureWorry.builder()
 			.procedure(procedure)
 			.worry(worry)
