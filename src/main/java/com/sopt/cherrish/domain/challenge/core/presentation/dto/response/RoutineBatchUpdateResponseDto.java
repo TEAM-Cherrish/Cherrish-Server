@@ -3,6 +3,7 @@ package com.sopt.cherrish.domain.challenge.core.presentation.dto.response;
 import java.util.List;
 
 import com.sopt.cherrish.domain.challenge.core.domain.model.ChallengeRoutine;
+import com.sopt.cherrish.domain.challenge.demo.domain.model.DemoChallengeRoutine;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
@@ -18,6 +19,17 @@ public record RoutineBatchUpdateResponseDto(
 	String message
 ) {
 	public static RoutineBatchUpdateResponseDto from(List<ChallengeRoutine> routines) {
+		List<ChallengeRoutineResponseDto> routineDtos = routines.stream()
+			.map(ChallengeRoutineResponseDto::from)
+			.toList();
+
+		int count = routines.size();
+		String message = count + "개의 루틴이 업데이트되었습니다.";
+
+		return new RoutineBatchUpdateResponseDto(routineDtos, count, message);
+	}
+
+	public static RoutineBatchUpdateResponseDto fromDemoRoutines(List<DemoChallengeRoutine> routines) {
 		List<ChallengeRoutineResponseDto> routineDtos = routines.stream()
 			.map(ChallengeRoutineResponseDto::from)
 			.toList();
