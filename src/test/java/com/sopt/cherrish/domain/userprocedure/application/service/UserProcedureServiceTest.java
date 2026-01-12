@@ -6,8 +6,10 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.verify;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -29,6 +31,7 @@ import com.sopt.cherrish.domain.user.fixture.UserFixture;
 import com.sopt.cherrish.domain.userprocedure.domain.model.UserProcedure;
 import com.sopt.cherrish.domain.userprocedure.domain.repository.UserProcedureRepository;
 import com.sopt.cherrish.domain.userprocedure.fixture.UserProcedureFixture;
+import com.sopt.cherrish.domain.userprocedure.domain.model.ProcedurePhase;
 import com.sopt.cherrish.domain.userprocedure.presentation.dto.request.UserProcedureCreateRequestDto;
 import com.sopt.cherrish.domain.userprocedure.presentation.dto.request.UserProcedureCreateRequestItemDto;
 import com.sopt.cherrish.domain.userprocedure.presentation.dto.response.UserProcedureCreateResponseDto;
@@ -208,5 +211,111 @@ class UserProcedureServiceTest {
 			.extracting("downtimeDays")
 			.containsExactlyInAnyOrder(5, 7, 10);
 		verify(userProcedureRepository).saveAll(any());
+	}
+
+	@Test
+	@DisplayName("최근 시술 조회 - COMPLETED 제외 및 단계/시간 순 정렬")
+	void findRecentProceduresFiltersAndSorts() {
+		// given
+		Long userId = 1L;
+		LocalDate today = LocalDate.of(2026, 1, 15);
+		User user = UserFixture.createUser();
+
+		LocalDateTime baseDate = LocalDateTime.of(2026, 1, 13, 0, 0);
+		UserProcedure sensitive = UserProcedureFixture.createUserProcedure(
+			user,
+			ProcedureFixture.createProcedure("민감", "레이저", 0, 10),
+			baseDate.plusHours(10),
+			7
+		);
+		UserProcedure cautionLate = UserProcedureFixture.createUserProcedure(
+			user,
+			ProcedureFixture.createProcedure("주의-늦게", "레이저", 0, 10),
+			baseDate.plusHours(18),
+			6
+		);
+		UserProcedure cautionEarly = UserProcedureFixture.createUserProcedure(
+			user,
+			ProcedureFixture.createProcedure("주의-이르게", "레이저", 0, 10),
+			baseDate.plusHours(9),
+			5
+		);
+		UserProcedure recovery = UserProcedureFixture.createUserProcedure(
+			user,
+			ProcedureFixture.createProcedure("회복", "레이저", 0, 10),
+			baseDate.plusHours(12),
+			3
+		);
+		UserProcedure completed = UserProcedureFixture.createUserProcedure(
+			user,
+			ProcedureFixture.createProcedure("완료", "레이저", 0, 10),
+			baseDate.plusHours(8),
+			2
+		);
+
+		given(userProcedureRepository.findProceduresOnMostRecentDate(userId, today))
+			.willReturn(List.of(cautionEarly, completed, recovery, sensitive, cautionLate));
+
+		// when
+		List<UserProcedure> result = userProcedureService.findRecentProcedures(userId, today);
+
+		// then
+		assertThat(result).hasSize(4);
+		assertThat(result.get(0).calculateCurrentPhase(today)).isEqualTo(ProcedurePhase.SENSITIVE);
+		assertThat(result.get(1).getProcedure().getName()).isEqualTo("주의-늦게");
+		assertThat(result.get(2).getProcedure().getName()).isEqualTo("주의-이르게");
+		assertThat(result.get(3).calculateCurrentPhase(today)).isEqualTo(ProcedurePhase.RECOVERY);
+	}
+
+	@Test
+	@DisplayName("다가오는 시술 조회 - 날짜별 그룹핑 및 최대 3개 날짜 제한")
+	void findUpcomingProceduresGroupedByDateLimits() {
+		// given
+		Long userId = 1L;
+		LocalDate today = LocalDate.of(2026, 1, 15);
+		User user = UserFixture.createUser();
+
+		List<UserProcedure> allUpcoming = List.of(
+			UserProcedureFixture.createUserProcedure(
+				user,
+				ProcedureFixture.createProcedure("나흘뒤", "레이저", 0, 10),
+				LocalDateTime.of(2026, 1, 19, 10, 0),
+				3
+			),
+			UserProcedureFixture.createUserProcedure(
+				user,
+				ProcedureFixture.createProcedure("내일", "레이저", 0, 10),
+				LocalDateTime.of(2026, 1, 16, 9, 0),
+				1
+			),
+			UserProcedureFixture.createUserProcedure(
+				user,
+				ProcedureFixture.createProcedure("모레", "레이저", 0, 10),
+				LocalDateTime.of(2026, 1, 17, 9, 0),
+				2
+			),
+			UserProcedureFixture.createUserProcedure(
+				user,
+				ProcedureFixture.createProcedure("사흘뒤", "레이저", 0, 10),
+				LocalDateTime.of(2026, 1, 18, 9, 0),
+				4
+			)
+		);
+
+		given(userProcedureRepository.findUpcomingProceduresGroupedByDate(userId, today.plusDays(1)))
+			.willReturn(allUpcoming);
+
+		// when
+		Map<LocalDate, List<UserProcedure>> result =
+			userProcedureService.findUpcomingProceduresGroupedByDate(userId, today, 3);
+
+		// then
+		assertThat(result).hasSize(3);
+		assertThat(result.keySet())
+			.containsExactly(
+				LocalDate.of(2026, 1, 16),
+				LocalDate.of(2026, 1, 17),
+				LocalDate.of(2026, 1, 18)
+			);
 	}
 }
