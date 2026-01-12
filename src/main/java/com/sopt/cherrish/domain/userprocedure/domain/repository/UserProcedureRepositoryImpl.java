@@ -63,14 +63,16 @@ public class UserProcedureRepositoryImpl implements UserProcedureRepositoryCusto
 	}
 
 	@Override
-	public List<UserProcedure> findAllPastProcedures(Long userId, LocalDate beforeDate) {
-		LocalDateTime endOfDay = beforeDate.plusDays(1).atStartOfDay();
+	public List<UserProcedure> findAllPastProcedures(Long userId, LocalDate fromDate, LocalDate toDate) {
+		LocalDateTime startOfDay = fromDate.atStartOfDay();
+		LocalDateTime endOfDay = toDate.plusDays(1).atStartOfDay();
 
 		return queryFactory
 			.selectFrom(userProcedure)
 			.join(userProcedure.procedure).fetchJoin()  // N+1 방지
 			.where(
 				userProcedure.user.id.eq(userId),
+				userProcedure.scheduledAt.goe(startOfDay),
 				userProcedure.scheduledAt.lt(endOfDay)
 			)
 			.orderBy(userProcedure.scheduledAt.desc())

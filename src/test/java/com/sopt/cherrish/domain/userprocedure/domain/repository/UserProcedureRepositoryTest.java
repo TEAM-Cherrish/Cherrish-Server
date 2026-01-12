@@ -102,8 +102,10 @@ class UserProcedureRepositoryTest {
 		entityManager.clear();
 
 		// when
+		LocalDate toDate = LocalDate.of(2026, 1, 15);
+		LocalDate fromDate = toDate.minusDays(30);
 		List<UserProcedure> result = userProcedureRepository.findAllPastProcedures(
-			user.getId(), LocalDate.of(2026, 1, 15)
+			user.getId(), fromDate, toDate
 		);
 
 		// then
@@ -120,8 +122,10 @@ class UserProcedureRepositoryTest {
 		User user = createAndPersistUser("홍길동", 25);
 
 		// when
+		LocalDate toDate = LocalDate.of(2026, 1, 15);
+		LocalDate fromDate = toDate.minusDays(30);
 		List<UserProcedure> result = userProcedureRepository.findAllPastProcedures(
-			user.getId(), LocalDate.of(2026, 1, 15)
+			user.getId(), fromDate, toDate
 		);
 
 		// then

@@ -219,6 +219,7 @@ class UserProcedureServiceTest {
 		// given
 		Long userId = 1L;
 		LocalDate today = LocalDate.of(2026, 1, 15);
+		LocalDate fromDate = today.minusDays(30);
 		User user = UserFixture.createUser();
 
 		LocalDateTime baseDate = LocalDateTime.of(2026, 1, 13, 0, 0);
@@ -253,7 +254,7 @@ class UserProcedureServiceTest {
 			2
 		);
 
-		given(userProcedureRepository.findAllPastProcedures(userId, today))
+		given(userProcedureRepository.findAllPastProcedures(userId, fromDate, today))
 			.willReturn(List.of(cautionEarly, completed, recovery, sensitive, cautionLate));
 
 		// when
@@ -273,6 +274,7 @@ class UserProcedureServiceTest {
 		// given
 		Long userId = 1L;
 		LocalDate today = LocalDate.of(2026, 1, 15);
+		LocalDate fromDate = today.minusDays(30);
 		User user = UserFixture.createUser();
 
 		// 1/10 시술 (다운타임 7일) - 1/15 기준 RECOVERY
@@ -308,7 +310,7 @@ class UserProcedureServiceTest {
 			5
 		);
 
-		given(userProcedureRepository.findAllPastProcedures(userId, today))
+		given(userProcedureRepository.findAllPastProcedures(userId, fromDate, today))
 			.willReturn(List.of(jan14, jan12, jan10, jan8));
 
 		// when

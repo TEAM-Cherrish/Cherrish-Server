@@ -36,6 +36,8 @@ import lombok.extern.slf4j.Slf4j;
 @Transactional(readOnly = true)
 public class UserProcedureService {
 
+	private static final int MAX_DOWNTIME_DAYS = 30;
+
 	private final UserRepository userRepository;
 	private final ProcedureRepository procedureRepository;
 	private final UserProcedureRepository userProcedureRepository;
@@ -84,9 +86,11 @@ public class UserProcedureService {
 	 * @return 정렬된 시술 엔티티 리스트
 	 */
 	public List<UserProcedure> findRecentProcedures(Long userId, LocalDate today) {
-		// 오늘까지의 모든 과거 시술 조회
+		LocalDate fromDate = today.minusDays(MAX_DOWNTIME_DAYS);
+
+		// 최근 다운타임 기간 내의 과거 시술 조회
 		return userProcedureRepository
-			.findAllPastProcedures(userId, today)
+			.findAllPastProcedures(userId, fromDate, today)
 			.stream()
 			.filter(up -> up.calculateCurrentPhase(today) != ProcedurePhase.COMPLETED)
 			.sorted(Comparator
@@ -112,21 +116,24 @@ public class UserProcedureService {
 		List<UserProcedure> allUpcoming = userProcedureRepository
 			.findUpcomingProceduresGroupedByDate(userId, tomorrow);
 
-		// 날짜별로 그룹핑 후 가장 가까운 N개 날짜만 선택
+		// 날짜별로 그룹핑
 		Map<LocalDate, List<UserProcedure>> grouped = allUpcoming.stream()
 			.collect(Collectors.groupingBy(
 				up -> up.getScheduledAt().toLocalDate()
 			));
 
-		return grouped.entrySet().stream()
-			.sorted(Map.Entry.comparingByKey()) // 날짜 오름차순 정렬
+		// 가장 가까운 N개 날짜 추출 (정렬된 상태)
+		List<LocalDate> closestDates = grouped.keySet().stream()
+			.sorted()
 			.limit(limitDates)
-			.collect(Collectors.toMap(
-				Map.Entry::getKey,
-				Map.Entry::getValue,
-				(e1, e2) -> e1,
-				LinkedHashMap::new
-			));
+			.toList();
+
+		// 결과 Map 생성
+		Map<LocalDate, List<UserProcedure>> result = new LinkedHashMap<>();
+		for (LocalDate date : closestDates) {
+			result.put(date, grouped.get(date));
+		}
+		return result;
 
 	}
 }
