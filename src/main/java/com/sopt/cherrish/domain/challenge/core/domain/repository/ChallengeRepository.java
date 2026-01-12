@@ -29,10 +29,11 @@ public interface ChallengeRepository extends JpaRepository<Challenge, Long> {
 	/**
 	 * 사용자의 활성 챌린지 조회 (통계와 함께 Fetch Join)
 	 * N+1 쿼리 방지를 위해 ChallengeStatistics를 함께 로드
+	 * INNER JOIN을 사용하여 통계가 없는 챌린지는 조회하지 않음 (데이터 정합성 보장)
 	 * @param userId 사용자 ID
 	 * @return 활성 챌린지 (통계 포함, Optional)
 	 */
-	@Query("SELECT c FROM Challenge c LEFT JOIN FETCH c.statistics WHERE c.userId = :userId AND c.isActive = true")
+	@Query("SELECT c FROM Challenge c INNER JOIN FETCH c.statistics WHERE c.userId = :userId AND c.isActive = true")
 	Optional<Challenge> findActiveChallengeWithStatistics(@Param("userId") Long userId);
 
 	/**
