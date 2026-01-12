@@ -17,12 +17,6 @@ public interface DemoChallengeRepository extends JpaRepository<DemoChallenge, Lo
 	 */
 	boolean existsByUserIdAndIsActiveTrue(Long userId);
 
-	/**
-	 * 사용자의 활성 데모 챌린지 조회
-	 * @param userId 사용자 ID
-	 * @return 활성 챌린지 (Optional)
-	 */
-	Optional<DemoChallenge> findByUserIdAndIsActiveTrue(Long userId);
 
 	/**
 	 * 사용자의 활성 데모 챌린지 조회 (통계와 함께 Fetch Join)
