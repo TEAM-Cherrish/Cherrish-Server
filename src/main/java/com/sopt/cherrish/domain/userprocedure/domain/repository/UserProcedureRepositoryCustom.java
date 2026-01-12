@@ -26,12 +26,12 @@ public interface UserProcedureRepositoryCustom {
 	List<UserProcedure> findDailyProcedures(Long userId, LocalDate date);
 
 	/**
-	 * 가장 최근 날짜(당일 포함)에 받은 모든 시술 조회
+	 * 특정 날짜 이전(당일 포함)의 모든 과거 시술 조회
 	 * @param userId 사용자 ID
-	 * @param date 기준 날짜 (당일 포함)
-	 * @return 가장 최근 날짜의 모든 시술 목록
+	 * @param beforeDate 기준 날짜 (이 날짜 이전 시술 조회, 당일 포함)
+	 * @return 과거 시술 목록
 	 */
-	List<UserProcedure> findProceduresOnMostRecentDate(Long userId, LocalDate date);
+	List<UserProcedure> findAllPastProcedures(Long userId, LocalDate beforeDate);
 
 	/**
 	 * 특정 날짜 이후의 모든 미래 시술 조회 (날짜별 그룹핑용)

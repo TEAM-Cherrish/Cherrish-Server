@@ -65,7 +65,7 @@ public class MainDashboardFacade {
 			log.info("사용자 {}의 활성 챌린지 없음 (cherryLevel=0)", userId);
 		}
 
-		// 4. 최근 시술 (가장 최근 날짜의 모든 시술, COMPLETED 제외)
+		// 4. 최근 시술 (다운타임 진행 중인 모든 시술, Phase/시간순 정렬)
 		List<UserProcedure> recentProcedureEntities =
 			userProcedureService.findRecentProcedures(userId, today);
 		List<RecentProcedureResponseDto> recentProcedures = recentProcedureEntities.stream()

@@ -67,8 +67,8 @@ class UserProcedureRepositoryTest {
 	}
 
 	@Test
-	@DisplayName("가장 최근 날짜의 시술 목록 조회 성공")
-	void findProceduresOnMostRecentDate() {
+	@DisplayName("과거 모든 시술 조회 성공")
+	void findAllPastProcedures() {
 		// given
 		User user = createAndPersistUser("홍길동", 25);
 		Procedure procedure = createAndPersistProcedure("레이저 토닝", "레이저", 0, 1);
@@ -76,13 +76,13 @@ class UserProcedureRepositoryTest {
 		userProcedureRepository.save(UserProcedure.builder()
 			.user(user)
 			.procedure(procedure)
-			.scheduledAt(LocalDateTime.of(2026, 1, 14, 10, 0))
+			.scheduledAt(LocalDateTime.of(2026, 1, 10, 10, 0))
 			.downtimeDays(3)
 			.build());
 		userProcedureRepository.save(UserProcedure.builder()
 			.user(user)
 			.procedure(procedure)
-			.scheduledAt(LocalDateTime.of(2026, 1, 15, 9, 0))
+			.scheduledAt(LocalDateTime.of(2026, 1, 14, 9, 0))
 			.downtimeDays(5)
 			.build());
 		userProcedureRepository.save(UserProcedure.builder()
@@ -91,29 +91,36 @@ class UserProcedureRepositoryTest {
 			.scheduledAt(LocalDateTime.of(2026, 1, 15, 18, 0))
 			.downtimeDays(1)
 			.build());
+		userProcedureRepository.save(UserProcedure.builder()
+			.user(user)
+			.procedure(procedure)
+			.scheduledAt(LocalDateTime.of(2026, 1, 16, 9, 0))
+			.downtimeDays(2)
+			.build());
 
 		entityManager.flush();
 		entityManager.clear();
 
 		// when
-		List<UserProcedure> result = userProcedureRepository.findProceduresOnMostRecentDate(
+		List<UserProcedure> result = userProcedureRepository.findAllPastProcedures(
 			user.getId(), LocalDate.of(2026, 1, 15)
 		);
 
 		// then
-		assertThat(result).hasSize(2);
-		assertThat(result)
-			.allMatch(up -> up.getScheduledAt().toLocalDate().equals(LocalDate.of(2026, 1, 15)));
+		assertThat(result).hasSize(3);
+		assertThat(result.get(0).getScheduledAt()).isEqualTo(LocalDateTime.of(2026, 1, 15, 18, 0));
+		assertThat(result.get(1).getScheduledAt()).isEqualTo(LocalDateTime.of(2026, 1, 14, 9, 0));
+		assertThat(result.get(2).getScheduledAt()).isEqualTo(LocalDateTime.of(2026, 1, 10, 10, 0));
 	}
 
 	@Test
-	@DisplayName("가장 최근 날짜 조회 시 시술이 없으면 빈 리스트 반환")
-	void findProceduresOnMostRecentDateEmpty() {
+	@DisplayName("과거 시술 조회 시 시술이 없으면 빈 리스트 반환")
+	void findAllPastProceduresEmpty() {
 		// given
 		User user = createAndPersistUser("홍길동", 25);
 
 		// when
-		List<UserProcedure> result = userProcedureRepository.findProceduresOnMostRecentDate(
+		List<UserProcedure> result = userProcedureRepository.findAllPastProcedures(
 			user.getId(), LocalDate.of(2026, 1, 15)
 		);
 

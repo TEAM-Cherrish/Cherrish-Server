@@ -186,6 +186,70 @@ class MainDashboardFacadeTest {
 	}
 
 	@Test
+	@DisplayName("여러 날짜에 걸친 다운타임 진행 중인 시술 응답")
+	void getMainDashboardWithMultipleDateRecentProcedures() {
+		// given
+		Long userId = 5L;
+		Challenge challenge = org.mockito.Mockito.mock(Challenge.class);
+		ChallengeStatistics stats = org.mockito.Mockito.mock(ChallengeStatistics.class);
+		given(challengeService.findActiveChallengeWithStatistics(userId))
+			.willReturn(Optional.of(challenge));
+		given(challenge.getStatistics()).willReturn(stats);
+		given(stats.calculateCherryLevel()).willReturn(3);
+		given(stats.getProgressPercentage()).willReturn(65.0);
+
+		var user = UserFixture.createUser();
+		// 1/10 시술 (다운타임 7일) - 1/15 기준 RECOVERY
+		UserProcedure jan10 = UserProcedureFixture.createUserProcedure(
+			user,
+			ProcedureFixture.createProcedure("필러", "주사", 0, 5),
+			LocalDateTime.of(2026, 1, 10, 9, 0),
+			7
+		);
+		// 1/12 시술 (다운타임 5일) - 1/15 기준 CAUTION
+		UserProcedure jan12 = UserProcedureFixture.createUserProcedure(
+			user,
+			ProcedureFixture.createProcedure("보톡스", "주사", 0, 5),
+			LocalDateTime.of(2026, 1, 12, 10, 0),
+			5
+		);
+		// 1/14 시술 (다운타임 4일) - 1/15 기준 SENSITIVE
+		UserProcedure jan14 = UserProcedureFixture.createUserProcedure(
+			user,
+			ProcedureFixture.createProcedure("레이저", "레이저", 0, 5),
+			LocalDateTime.of(2026, 1, 14, 14, 0),
+			4
+		);
+
+		given(userProcedureService.findRecentProcedures(userId, today))
+			.willReturn(List.of(jan14, jan12, jan10));
+		given(userProcedureService.findUpcomingProceduresGroupedByDate(userId, today, 3))
+			.willReturn(Map.of());
+
+		// when
+		MainDashboardResponseDto result = mainDashboardFacade.getMainDashboard(userId);
+
+		// then
+		assertThat(result.getCherryLevel()).isEqualTo(3);
+		assertThat(result.getChallengeRate()).isEqualTo(65.0);
+
+		List<RecentProcedureResponseDto> recent = result.getRecentProcedures();
+		assertThat(recent).hasSize(3);
+
+		// SENSITIVE - 레이저 (1/14 시술, 2일차)
+		assertThat(recent.get(0).getName()).isEqualTo("레이저");
+		assertThat(recent.get(0).getDaysSince()).isEqualTo(2);  // 1/14 → 1/15 = 1일 경과 + 1 = 2일차
+
+		// CAUTION - 보톡스 (1/12 시술, 4일차)
+		assertThat(recent.get(1).getName()).isEqualTo("보톡스");
+		assertThat(recent.get(1).getDaysSince()).isEqualTo(4);  // 1/12 → 1/15 = 3일 경과 + 1 = 4일차
+
+		// RECOVERY - 필러 (1/10 시술, 6일차)
+		assertThat(recent.get(2).getName()).isEqualTo("필러");
+		assertThat(recent.get(2).getDaysSince()).isEqualTo(6);  // 1/10 → 1/15 = 5일 경과 + 1 = 6일차
+	}
+
+	@Test
 	@DisplayName("챌린지/시술 데이터가 있으면 응답 매핑")
 	void getMainDashboardWithChallengeAndProcedures() {
 		// given

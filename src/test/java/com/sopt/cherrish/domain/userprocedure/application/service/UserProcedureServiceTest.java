@@ -214,7 +214,7 @@ class UserProcedureServiceTest {
 	}
 
 	@Test
-	@DisplayName("최근 시술 조회 - COMPLETED 제외 및 단계/시간 순 정렬")
+	@DisplayName("다운타임 진행 중인 시술 조회 - COMPLETED 제외 및 단계/시간 순 정렬")
 	void findRecentProceduresFiltersAndSorts() {
 		// given
 		Long userId = 1L;
@@ -253,7 +253,7 @@ class UserProcedureServiceTest {
 			2
 		);
 
-		given(userProcedureRepository.findProceduresOnMostRecentDate(userId, today))
+		given(userProcedureRepository.findAllPastProcedures(userId, today))
 			.willReturn(List.of(cautionEarly, completed, recovery, sensitive, cautionLate));
 
 		// when
@@ -265,6 +265,67 @@ class UserProcedureServiceTest {
 		assertThat(result.get(1).getProcedure().getName()).isEqualTo("주의-늦게");
 		assertThat(result.get(2).getProcedure().getName()).isEqualTo("주의-이르게");
 		assertThat(result.get(3).calculateCurrentPhase(today)).isEqualTo(ProcedurePhase.RECOVERY);
+	}
+
+	@Test
+	@DisplayName("여러 날짜에 걸친 다운타임 진행 중인 시술 조회")
+	void findRecentProceduresFromMultipleDates() {
+		// given
+		Long userId = 1L;
+		LocalDate today = LocalDate.of(2026, 1, 15);
+		User user = UserFixture.createUser();
+
+		// 1/10 시술 (다운타임 7일) - 1/15 기준 RECOVERY
+		// sensitive: 1/10-1/12 (3일), caution: 1/13-1/14 (2일), recovery: 1/15-1/16 (2일)
+		UserProcedure jan10 = UserProcedureFixture.createUserProcedure(
+			user,
+			ProcedureFixture.createProcedure("필러", "주사", 0, 10),
+			LocalDateTime.of(2026, 1, 10, 9, 0),
+			7
+		);
+		// 1/12 시술 (다운타임 5일) - 1/15 기준 CAUTION
+		// sensitive: 1/12-1/13 (2일), caution: 1/14-1/15 (2일), recovery: 1/16 (1일)
+		UserProcedure jan12 = UserProcedureFixture.createUserProcedure(
+			user,
+			ProcedureFixture.createProcedure("보톡스", "주사", 0, 10),
+			LocalDateTime.of(2026, 1, 12, 10, 0),
+			5
+		);
+		// 1/14 시술 (다운타임 4일) - 1/15 기준 SENSITIVE
+		// sensitive: 1/14-1/15 (2일), caution: 1/16 (1일), recovery: 1/17 (1일)
+		UserProcedure jan14 = UserProcedureFixture.createUserProcedure(
+			user,
+			ProcedureFixture.createProcedure("레이저", "레이저", 0, 10),
+			LocalDateTime.of(2026, 1, 14, 14, 0),
+			4
+		);
+		// 1/8 시술 (다운타임 5일) - 1/15 기준 COMPLETED (제외되어야 함)
+		// sensitive: 1/8-1/9 (2일), caution: 1/10-1/11 (2일), recovery: 1/12 (1일), 1/15 = COMPLETED
+		UserProcedure jan8 = UserProcedureFixture.createUserProcedure(
+			user,
+			ProcedureFixture.createProcedure("리프팅", "시술", 0, 10),
+			LocalDateTime.of(2026, 1, 8, 9, 0),
+			5
+		);
+
+		given(userProcedureRepository.findAllPastProcedures(userId, today))
+			.willReturn(List.of(jan14, jan12, jan10, jan8));
+
+		// when
+		List<UserProcedure> result = userProcedureService.findRecentProcedures(userId, today);
+
+		// then
+		assertThat(result).hasSize(3);
+		// SENSITIVE 먼저 - 레이저 (1/14 시술)
+		assertThat(result.get(0).getProcedure().getName()).isEqualTo("레이저");
+		assertThat(result.get(0).calculateCurrentPhase(today)).isEqualTo(ProcedurePhase.SENSITIVE);
+		// CAUTION 두 번째 - 보톡스 (1/12 시술)
+		assertThat(result.get(1).getProcedure().getName()).isEqualTo("보톡스");
+		assertThat(result.get(1).calculateCurrentPhase(today)).isEqualTo(ProcedurePhase.CAUTION);
+		// RECOVERY 마지막 - 필러 (1/10 시술)
+		assertThat(result.get(2).getProcedure().getName()).isEqualTo("필러");
+		assertThat(result.get(2).calculateCurrentPhase(today)).isEqualTo(ProcedurePhase.RECOVERY);
+		// COMPLETED인 리프팅은 제외됨
 	}
 
 	@Test

@@ -63,34 +63,17 @@ public class UserProcedureRepositoryImpl implements UserProcedureRepositoryCusto
 	}
 
 	@Override
-	public List<UserProcedure> findProceduresOnMostRecentDate(Long userId, LocalDate date) {
-		LocalDateTime endOfDay = date.plusDays(1).atStartOfDay();
+	public List<UserProcedure> findAllPastProcedures(Long userId, LocalDate beforeDate) {
+		LocalDateTime endOfDay = beforeDate.plusDays(1).atStartOfDay();
 
-		// 1. 가장 최근 날짜 찾기
-		LocalDateTime mostRecentDateTime = queryFactory
-			.select(userProcedure.scheduledAt.max())
-			.from(userProcedure)
-			.where(
-				userProcedure.user.id.eq(userId),
-				userProcedure.scheduledAt.lt(endOfDay)
-			)
-			.fetchOne();
-
-		if (mostRecentDateTime == null) {
-			return List.of();
-		}
-
-		LocalDate mostRecentDate = mostRecentDateTime.toLocalDate();
-
-		// 2. 해당 날짜의 모든 시술 조회
 		return queryFactory
 			.selectFrom(userProcedure)
 			.join(userProcedure.procedure).fetchJoin()  // N+1 방지
 			.where(
 				userProcedure.user.id.eq(userId),
-				userProcedure.scheduledAt.goe(mostRecentDate.atStartOfDay()),
-				userProcedure.scheduledAt.lt(mostRecentDate.plusDays(1).atStartOfDay())
+				userProcedure.scheduledAt.lt(endOfDay)
 			)
+			.orderBy(userProcedure.scheduledAt.desc())
 			.fetch();
 	}
 

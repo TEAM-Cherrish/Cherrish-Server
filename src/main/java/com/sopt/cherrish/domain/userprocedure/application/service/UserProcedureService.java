@@ -76,15 +76,16 @@ public class UserProcedureService {
 	}
 
 	/**
-	 * 최근 시술 조회 (가장 최근 날짜의 모든 시술, COMPLETED 제외, 정렬됨)
-	 * 정렬 순서: 1) ProcedurePhase (SENSITIVE > CAUTION > RECOVERY) 2) 최근 시술부터
+	 * 다운타임 진행 중인 모든 시술 조회 (COMPLETED 제외, 정렬됨)
+	 * 정렬 순서: 1) ProcedurePhase (SENSITIVE > CAUTION > RECOVERY) 2) 같은 Phase면 최근 시술부터
 	 * @param userId 사용자 ID
 	 * @param today 오늘 날짜
 	 * @return 정렬된 시술 엔티티 리스트
 	 */
 	public List<UserProcedure> findRecentProcedures(Long userId, LocalDate today) {
+		// 오늘까지의 모든 과거 시술 조회
 		return userProcedureRepository
-			.findProceduresOnMostRecentDate(userId, today)
+			.findAllPastProcedures(userId, today)
 			.stream()
 			.filter(up -> up.calculateCurrentPhase(today) != ProcedurePhase.COMPLETED)
 			.sorted(Comparator
