@@ -3,7 +3,6 @@ package com.sopt.cherrish.domain.procedure.domain.repository;
 import java.util.List;
 
 import com.sopt.cherrish.domain.procedure.domain.model.Procedure;
-import com.sopt.cherrish.domain.procedure.domain.model.ProcedureWorry;
 
 public interface ProcedureRepositoryCustom {
 
@@ -15,9 +14,4 @@ public interface ProcedureRepositoryCustom {
 	 */
 	List<Procedure> searchProcedures(String keyword, Long worryId);
 
-	/**
-	 * 시술 ID 목록으로 ProcedureWorry 조회 (Worry fetch join)
-	 * - N+1 문제 방지를 위해 Worry를 한 번에 가져옴
-	 */
-	List<ProcedureWorry> findAllByProcedureIdInWithWorry(List<Long> procedureIds);
 }

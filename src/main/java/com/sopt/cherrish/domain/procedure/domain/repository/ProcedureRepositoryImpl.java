@@ -5,13 +5,11 @@ import java.util.List;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.sopt.cherrish.domain.procedure.domain.model.Procedure;
-import com.sopt.cherrish.domain.procedure.domain.model.ProcedureWorry;
 
 import lombok.RequiredArgsConstructor;
 
 import static com.sopt.cherrish.domain.procedure.domain.model.QProcedure.procedure;
 import static com.sopt.cherrish.domain.procedure.domain.model.QProcedureWorry.procedureWorry;
-import static com.sopt.cherrish.domain.worry.domain.model.QWorry.worry;
 
 @RequiredArgsConstructor
 public class ProcedureRepositoryImpl implements ProcedureRepositoryCustom {
@@ -36,15 +34,6 @@ public class ProcedureRepositoryImpl implements ProcedureRepositoryCustom {
 		return queryFactory
 			.selectFrom(procedure)
 			.where(containsKeyword(keyword))
-			.fetch();
-	}
-
-	@Override
-	public List<ProcedureWorry> findAllByProcedureIdInWithWorry(List<Long> procedureIds) {
-		return queryFactory
-			.selectFrom(procedureWorry)
-			.join(procedureWorry.worry, worry).fetchJoin()
-			.where(procedureWorry.procedure.id.in(procedureIds))
 			.fetch();
 	}
 
