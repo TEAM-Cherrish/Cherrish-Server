@@ -7,13 +7,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.sopt.cherrish.domain.ai.exception.AiErrorCode;
 import com.sopt.cherrish.domain.challenge.core.exception.ChallengeErrorCode;
+import com.sopt.cherrish.domain.challenge.core.response.success.ChallengeSuccessCode;
 import com.sopt.cherrish.domain.challenge.recommendation.application.service.AiChallengeRecommendationService;
 import com.sopt.cherrish.domain.challenge.recommendation.presentation.dto.request.AiRecommendationRequestDto;
 import com.sopt.cherrish.domain.challenge.recommendation.presentation.dto.response.AiRecommendationResponseDto;
 import com.sopt.cherrish.global.annotation.ApiExceptions;
 import com.sopt.cherrish.global.response.CommonApiResponse;
 import com.sopt.cherrish.global.response.error.ErrorCode;
-import com.sopt.cherrish.global.response.success.SuccessCode;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -39,6 +39,6 @@ public class ChallengeRecommendationController {
 	) {
 		AiRecommendationResponseDto response = aiRecommendationService.generateRecommendation(
 			request.homecareRoutineId());
-		return CommonApiResponse.success(SuccessCode.SUCCESS, response);
+		return CommonApiResponse.success(ChallengeSuccessCode.AI_RECOMMENDATION_GENERATED, response);
 	}
 }
