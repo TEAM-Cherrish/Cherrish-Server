@@ -17,7 +17,7 @@ public class RecentProcedureResponseDto {
 	@Schema(description = "시술명", example = "레이저 토닝")
 	private String name;
 
-	@Schema(description = "시술 후 경과 일수", example = "3")
+	@Schema(description = "회복 N일차 (시술 당일 = 1일차)", example = "3")
 	private Integer daysSince;
 
 	@Schema(description = "현재 단계", example = "SENSITIVE")
@@ -35,7 +35,7 @@ public class RecentProcedureResponseDto {
 
 		return RecentProcedureResponseDto.builder()
 			.name(userProcedure.getProcedure().getName())
-			.daysSince(daysSince)
+			.daysSince(daysSince + 1)  // 회복 N일차 (시술 당일 = 1일차)
 			.currentPhase(phase)
 			.build();
 	}
