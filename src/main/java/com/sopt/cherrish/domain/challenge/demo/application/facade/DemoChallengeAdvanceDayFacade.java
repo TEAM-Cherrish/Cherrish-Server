@@ -28,26 +28,26 @@ public class DemoChallengeAdvanceDayFacade {
 
 	/**
 	 * 다음 날로 넘어가기 및 통계 재계산
-	 * 1. 가상 날짜 +1일
-	 * 2. 통계 재계산
-	 * 3. 새 날짜의 루틴 조회 및 반환
+	 * 1. 활성 데모 챌린지 조회
+	 * 2. 가상 날짜 +1일
+	 * 3. 통계 재계산
+	 * 4. 새 날짜의 루틴 조회 및 반환
 	 */
 	@Transactional
-	public ChallengeDetailResponseDto advanceDay(Long userId, Long demoChallengeId) {
-		// 1. 챌린지 조회 및 검증
+	public ChallengeDetailResponseDto advanceDay(Long userId) {
+		// 1. 활성 챌린지 조회 (통계와 함께 Fetch Join)
 		DemoChallenge challenge = challengeService.getActiveChallengeWithStatistics(userId);
-		challenge.validateOwner(userId);
 
 		// 2. 다음 날로 진행
 		challenge.advanceDay();
 
 		// 3. 통계 재계산
-		statisticsService.recalculateStatistics(demoChallengeId);
+		statisticsService.recalculateStatistics(challenge.getId());
 
 		// 4. 새 날짜 기준으로 데이터 조회
 		LocalDate currentDate = challenge.getCurrentVirtualDate();
 		List<DemoChallengeRoutine> todayRoutines =
-			routineService.getRoutinesByDate(demoChallengeId, currentDate);
+			routineService.getRoutinesByDate(challenge.getId(), currentDate);
 
 		DemoChallengeStatistics statistics = challenge.getStatistics();
 		int currentDay = challenge.getCurrentDay();
