@@ -1,6 +1,7 @@
 package com.sopt.cherrish.domain.challenge.core.application.service;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -81,7 +82,7 @@ public class ChallengeService {
 	 * @param userId 사용자 ID
 	 * @return Optional로 감싼 활성 챌린지 (통계 포함)
 	 */
-	public java.util.Optional<Challenge> findActiveChallengeWithStatistics(Long userId) {
+	public Optional<Challenge> findActiveChallengeWithStatistics(Long userId) {
 		return challengeRepository.findActiveChallengeWithStatistics(userId);
 	}
 

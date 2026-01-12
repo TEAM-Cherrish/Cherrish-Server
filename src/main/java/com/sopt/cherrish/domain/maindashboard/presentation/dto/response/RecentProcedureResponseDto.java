@@ -1,5 +1,6 @@
 package com.sopt.cherrish.domain.maindashboard.presentation.dto.response;
 
+import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 
 import com.sopt.cherrish.domain.userprocedure.domain.model.ProcedurePhase;
@@ -25,7 +26,7 @@ public class RecentProcedureResponseDto {
 
 	public static RecentProcedureResponseDto from(
 		UserProcedure userProcedure,
-		java.time.LocalDate today,
+		LocalDate today,
 		ProcedurePhase phase
 	) {
 		int daysSince = (int) ChronoUnit.DAYS.between(
