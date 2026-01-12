@@ -158,8 +158,7 @@ public class ChallengeTestFixture {
 		return new RoutineCompletionResponseDto(
 			DEFAULT_ROUTINE_ID,
 			DEFAULT_ROUTINE_NAME,
-			isComplete,
-			createRoutineCompletionMessage(isComplete)
+			isComplete
 		);
 	}
 
@@ -224,7 +223,7 @@ public class ChallengeTestFixture {
 			new ChallengeRoutineResponseDto(3L, "크림 바르기", FIXED_START_DATE, true)
 		);
 
-		return new RoutineBatchUpdateResponseDto(routines, 3, createRoutineBatchUpdateMessage(3));
+		return new RoutineBatchUpdateResponseDto(routines, 3);
 	}
 
 	/**
@@ -235,7 +234,7 @@ public class ChallengeTestFixture {
 			new ChallengeRoutineResponseDto(1L, "아침 세안", FIXED_START_DATE, true)
 		);
 
-		return new RoutineBatchUpdateResponseDto(routines, 1, createRoutineBatchUpdateMessage(1));
+		return new RoutineBatchUpdateResponseDto(routines, 1);
 	}
 
 	/**
