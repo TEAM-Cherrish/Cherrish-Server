@@ -37,7 +37,7 @@ class ProcedureControllerTest {
 		ProcedureResponseDto procedure1 = ProcedureResponseDto.builder()
 			.id(1L)
 			.name("레이저 토닝")
-			.category("레이저")
+			.worries(Collections.emptyList())
 			.minDowntimeDays(0)
 			.maxDowntimeDays(1)
 			.build();
@@ -45,7 +45,7 @@ class ProcedureControllerTest {
 		ProcedureResponseDto procedure2 = ProcedureResponseDto.builder()
 			.id(2L)
 			.name("필러")
-			.category("주사")
+			.worries(Collections.emptyList())
 			.minDowntimeDays(1)
 			.maxDowntimeDays(3)
 			.build();
@@ -72,7 +72,7 @@ class ProcedureControllerTest {
 		ProcedureResponseDto procedure = ProcedureResponseDto.builder()
 			.id(1L)
 			.name("레이저 토닝")
-			.category("레이저")
+			.worries(Collections.emptyList())
 			.minDowntimeDays(0)
 			.maxDowntimeDays(1)
 			.build();
@@ -88,7 +88,7 @@ class ProcedureControllerTest {
 			.andExpect(jsonPath("$.data.procedures").isArray())
 			.andExpect(jsonPath("$.data.procedures.length()").value(1))
 			.andExpect(jsonPath("$.data.procedures[0].name").value("레이저 토닝"))
-			.andExpect(jsonPath("$.data.procedures[0].category").value("레이저"));
+			.andExpect(jsonPath("$.data.procedures[0].worries").isArray());
 	}
 
 	@Test
@@ -100,7 +100,7 @@ class ProcedureControllerTest {
 		ProcedureResponseDto procedure = ProcedureResponseDto.builder()
 			.id(1L)
 			.name("레이저 토닝")
-			.category("레이저")
+			.worries(Collections.emptyList())
 			.minDowntimeDays(0)
 			.maxDowntimeDays(1)
 			.build();
@@ -143,7 +143,7 @@ class ProcedureControllerTest {
 		ProcedureResponseDto procedure = ProcedureResponseDto.builder()
 			.id(2L)
 			.name("프락셀 레이저")
-			.category("레이저")
+			.worries(Collections.emptyList())
 			.minDowntimeDays(3)
 			.maxDowntimeDays(7)
 			.build();
@@ -157,7 +157,7 @@ class ProcedureControllerTest {
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.data.procedures[0].id").value(2))
 			.andExpect(jsonPath("$.data.procedures[0].name").value("프락셀 레이저"))
-			.andExpect(jsonPath("$.data.procedures[0].category").value("레이저"))
+			.andExpect(jsonPath("$.data.procedures[0].worries").isArray())
 			.andExpect(jsonPath("$.data.procedures[0].minDowntimeDays").value(3))
 			.andExpect(jsonPath("$.data.procedures[0].maxDowntimeDays").value(7));
 	}

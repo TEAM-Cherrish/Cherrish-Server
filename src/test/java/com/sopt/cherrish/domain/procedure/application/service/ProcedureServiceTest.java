@@ -2,6 +2,7 @@ package com.sopt.cherrish.domain.procedure.application.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.ArgumentMatchers.any;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -16,6 +17,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.sopt.cherrish.domain.procedure.domain.model.Procedure;
 import com.sopt.cherrish.domain.procedure.domain.repository.ProcedureRepository;
+import com.sopt.cherrish.domain.procedure.domain.repository.ProcedureWorryRepository;
 import com.sopt.cherrish.domain.procedure.fixture.ProcedureFixture;
 import com.sopt.cherrish.domain.procedure.presentation.dto.response.ProcedureListResponseDto;
 
@@ -29,6 +31,9 @@ class ProcedureServiceTest {
 	@Mock
 	private ProcedureRepository procedureRepository;
 
+	@Mock
+	private ProcedureWorryRepository procedureWorryRepository;
+
 	@Test
 	@DisplayName("시술 검색 성공 - keyword, worryId 둘 다 null")
 	void searchProceduresWithNoFilters() {
@@ -38,6 +43,7 @@ class ProcedureServiceTest {
 
         List<Procedure> procedures = Arrays.asList(procedure1, procedure2);
 		given(procedureRepository.searchProcedures(null, null)).willReturn(procedures);
+		given(procedureWorryRepository.findAllByProcedureIdInWithWorry(any())).willReturn(Collections.emptyList());
 
 		// when
 		ProcedureListResponseDto result = procedureService.searchProcedures(null, null);
@@ -57,6 +63,7 @@ class ProcedureServiceTest {
 		Procedure procedure = ProcedureFixture.createProcedure("레이저 토닝", "레이저", 0, 1);
 
 		given(procedureRepository.searchProcedures(keyword, null)).willReturn(Collections.singletonList(procedure));
+		given(procedureWorryRepository.findAllByProcedureIdInWithWorry(any())).willReturn(Collections.emptyList());
 
 		// when
 		ProcedureListResponseDto result = procedureService.searchProcedures(keyword, null);
@@ -64,7 +71,7 @@ class ProcedureServiceTest {
 		// then
 		assertThat(result.getProcedures()).hasSize(1);
 		assertThat(result.getProcedures().get(0).getName()).isEqualTo("레이저 토닝");
-		assertThat(result.getProcedures().get(0).getCategory()).isEqualTo("레이저");
+		assertThat(result.getProcedures().get(0).getWorries()).isEmpty();
 	}
 
 	@Test
@@ -75,6 +82,7 @@ class ProcedureServiceTest {
 		Procedure procedure = ProcedureFixture.createProcedure("레이저 토닝", "레이저", 0, 1);
 
 		given(procedureRepository.searchProcedures(null, worryId)).willReturn(Collections.singletonList(procedure));
+		given(procedureWorryRepository.findAllByProcedureIdInWithWorry(any())).willReturn(Collections.emptyList());
 
 		// when
 		ProcedureListResponseDto result = procedureService.searchProcedures(null, worryId);
@@ -94,6 +102,7 @@ class ProcedureServiceTest {
 
         given(procedureRepository.searchProcedures(keyword, worryId))
                 .willReturn(Collections.singletonList(procedure));
+		given(procedureWorryRepository.findAllByProcedureIdInWithWorry(any())).willReturn(Collections.emptyList());
 
         // when
         ProcedureListResponseDto result = procedureService.searchProcedures(keyword, worryId);
@@ -101,7 +110,7 @@ class ProcedureServiceTest {
         // then
         assertThat(result.getProcedures()).hasSize(1);
         assertThat(result.getProcedures().get(0).getName()).isEqualTo("레이저 토닝");
-        assertThat(result.getProcedures().get(0).getCategory()).isEqualTo("레이저");
+        assertThat(result.getProcedures().get(0).getWorries()).isEmpty();
     }
 
     @Test
@@ -141,6 +150,7 @@ class ProcedureServiceTest {
 
 		given(procedureRepository.searchProcedures(null, null))
 			.willReturn(Collections.singletonList(procedure));
+		given(procedureWorryRepository.findAllByProcedureIdInWithWorry(any())).willReturn(Collections.emptyList());
 
 		// when
 		ProcedureListResponseDto result = procedureService.searchProcedures(null, null);
@@ -149,7 +159,7 @@ class ProcedureServiceTest {
 		assertThat(result.getProcedures()).hasSize(1);
 		assertThat(result.getProcedures().get(0).getId()).isNotNull();
 		assertThat(result.getProcedures().get(0).getName()).isEqualTo("프락셀 레이저");
-		assertThat(result.getProcedures().get(0).getCategory()).isEqualTo("레이저");
+		assertThat(result.getProcedures().get(0).getWorries()).isEmpty();
 		assertThat(result.getProcedures().get(0).getMinDowntimeDays()).isEqualTo(3);
 		assertThat(result.getProcedures().get(0).getMaxDowntimeDays()).isEqualTo(7);
 	}
