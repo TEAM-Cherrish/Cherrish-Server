@@ -139,6 +139,6 @@ public class DemoChallenge extends BaseTimeEntity {
 			return totalDays;
 		}
 
-		return (int)ChronoUnit.DAYS.between(startDate, currentVirtualDate) + 1;
+		return (int) ChronoUnit.DAYS.between(startDate, currentVirtualDate) + 1;
 	}
 }

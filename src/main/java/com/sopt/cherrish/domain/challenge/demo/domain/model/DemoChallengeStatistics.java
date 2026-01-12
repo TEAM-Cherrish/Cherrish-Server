@@ -81,7 +81,7 @@ public class DemoChallengeStatistics extends BaseTimeEntity {
 		if (totalRoutineCount == 0) {
 			return 0.0;
 		}
-		double percentage = (double)completedCount / totalRoutineCount * 100;
+		double percentage = (double) completedCount / totalRoutineCount * 100;
 		return Math.round(percentage * 10.0) / 10.0;
 	}
 
@@ -144,7 +144,7 @@ public class DemoChallengeStatistics extends BaseTimeEntity {
 			default -> 100.0;
 		};
 
-		int requiredCompletedCount = (int)Math.ceil(totalRoutineCount * nextThreshold / 100.0);
+		int requiredCompletedCount = (int) Math.ceil(totalRoutineCount * nextThreshold / 100.0);
 
 		return Math.max(0, requiredCompletedCount - completedCount);
 	}
