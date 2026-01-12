@@ -18,7 +18,7 @@ public class MainDashboardResponseDto {
 	@JsonFormat(pattern = "yyyy-MM-dd")
 	private LocalDate date;
 
-	@Schema(description = "체리 레벨 (0-4, 챌린지 없으면 0)", example = "2")
+	@Schema(description = "체리 레벨 (1-4, 챌린지 없으면 0)", example = "2")
 	private Integer cherryLevel;
 
 	@Schema(description = "챌린지 완료율 (%)", example = "40.3")

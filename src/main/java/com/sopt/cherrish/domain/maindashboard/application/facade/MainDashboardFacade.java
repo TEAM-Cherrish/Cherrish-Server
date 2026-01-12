@@ -29,6 +29,8 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class MainDashboardFacade {
 
+    private static final int MAX_UPCOMING_PROCEDURE_DATES = 3;
+
 	private final UserService userService;
 	private final ChallengeService challengeService;
 	private final UserProcedureService userProcedureService;
@@ -66,7 +68,7 @@ public class MainDashboardFacade {
 
 		// 5. 다가오는 시술 (날짜별 그룹, 가장 가까운 3개 날짜)
 		List<UpcomingProcedureResponseDto> upcomingProcedures =
-			userProcedureService.findUpcomingProceduresGroupedByDate(userId, today, 3);
+			userProcedureService.findUpcomingProceduresGroupedByDate(userId, today, MAX_UPCOMING_PROCEDURE_DATES);
 
 		// 6. 응답 생성
 		return MainDashboardResponseDto.from(
