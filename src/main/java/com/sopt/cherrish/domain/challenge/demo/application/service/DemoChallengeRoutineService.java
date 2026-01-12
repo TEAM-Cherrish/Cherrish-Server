@@ -75,7 +75,7 @@ public class DemoChallengeRoutineService {
 		List<Long> routineIds = extractRoutineIds(request);
 		List<DemoChallengeRoutine> routines = fetchAndValidateRoutines(routineIds);
 
-		DemoChallenge challenge = validateAndGetChallenge(routines, userId);
+		validateChallenge(routines, userId);
 
 		updateRoutineStates(routines, request);
 		// 데모에서는 통계를 즉시 업데이트하지 않음 (advanceDay 시에만 업데이트)
@@ -115,11 +115,11 @@ public class DemoChallengeRoutineService {
 	}
 
 	/**
-	 * 챌린지 검증 및 반환
+	 * 챌린지 검증
 	 * - 모든 루틴이 같은 챌린지에 속하는지 확인
 	 * - 소유자 검증
 	 */
-	private DemoChallenge validateAndGetChallenge(List<DemoChallengeRoutine> routines, Long userId) {
+	private void validateChallenge(List<DemoChallengeRoutine> routines, Long userId) {
 		DemoChallenge challenge = routines.getFirst().getDemoChallenge();
 
 		// 모든 루틴이 같은 챌린지에 속하는지 확인
@@ -127,8 +127,6 @@ public class DemoChallengeRoutineService {
 
 		// 소유자 검증 (한 번만)
 		challenge.validateOwner(userId);
-
-		return challenge;
 	}
 
 	/**
