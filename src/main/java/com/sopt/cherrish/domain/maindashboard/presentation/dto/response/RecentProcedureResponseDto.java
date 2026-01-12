@@ -2,7 +2,7 @@ package com.sopt.cherrish.domain.maindashboard.presentation.dto.response;
 
 import java.time.temporal.ChronoUnit;
 
-import com.sopt.cherrish.domain.maindashboard.domain.model.ProcedurePhase;
+import com.sopt.cherrish.domain.userprocedure.domain.model.ProcedurePhase;
 import com.sopt.cherrish.domain.userprocedure.domain.model.UserProcedure;
 
 import io.swagger.v3.oas.annotations.media.Schema;

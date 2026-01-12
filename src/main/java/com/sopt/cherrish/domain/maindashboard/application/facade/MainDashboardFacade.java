@@ -2,7 +2,9 @@ package com.sopt.cherrish.domain.maindashboard.application.facade;
 
 import java.time.Clock;
 import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,6 +17,7 @@ import com.sopt.cherrish.domain.maindashboard.presentation.dto.response.RecentPr
 import com.sopt.cherrish.domain.maindashboard.presentation.dto.response.UpcomingProcedureResponseDto;
 import com.sopt.cherrish.domain.user.application.service.UserService;
 import com.sopt.cherrish.domain.userprocedure.application.service.UserProcedureService;
+import com.sopt.cherrish.domain.userprocedure.domain.model.UserProcedure;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -63,12 +66,33 @@ public class MainDashboardFacade {
 		}
 
 		// 4. 최근 시술 (가장 최근 날짜의 모든 시술, COMPLETED 제외)
-		List<RecentProcedureResponseDto> recentProcedures =
+		List<UserProcedure> recentProcedureEntities =
 			userProcedureService.findRecentProcedures(userId, today);
+		List<RecentProcedureResponseDto> recentProcedures = recentProcedureEntities.stream()
+			.map(up -> RecentProcedureResponseDto.from(up, today, up.calculateCurrentPhase(today)))
+			.toList();
 
 		// 5. 다가오는 시술 (날짜별 그룹, 가장 가까운 3개 날짜)
-		List<UpcomingProcedureResponseDto> upcomingProcedures =
+		Map<LocalDate, List<UserProcedure>> upcomingProcedureMap =
 			userProcedureService.findUpcomingProceduresGroupedByDate(userId, today, MAX_UPCOMING_PROCEDURE_DATES);
+		List<UpcomingProcedureResponseDto> upcomingProcedures = upcomingProcedureMap.entrySet().stream()
+			.map(entry -> {
+				LocalDate date = entry.getKey();
+				List<UserProcedure> procedures = entry.getValue();
+
+				// 다운타임 가장 긴 시술 찾기
+				UserProcedure longest = procedures.stream()
+					.max(Comparator.comparing(UserProcedure::getDowntimeDays))
+					.orElseThrow();
+
+				return UpcomingProcedureResponseDto.of(
+					date,
+					longest.getProcedure().getName(),
+					procedures.size(),
+					today
+				);
+			})
+			.toList();
 
 		// 6. 응답 생성
 		return MainDashboardResponseDto.from(
