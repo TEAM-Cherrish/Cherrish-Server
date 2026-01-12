@@ -61,4 +61,51 @@ public class UserProcedureRepositoryImpl implements UserProcedureRepositoryCusto
 			.orderBy(userProcedure.scheduledAt.asc())
 			.fetch();
 	}
+
+	@Override
+	public List<UserProcedure> findProceduresOnMostRecentDate(Long userId, LocalDate date) {
+		LocalDateTime endOfDay = date.plusDays(1).atStartOfDay();
+
+		// 1. 가장 최근 날짜 찾기
+		LocalDateTime mostRecentDateTime = queryFactory
+			.select(userProcedure.scheduledAt.max())
+			.from(userProcedure)
+			.where(
+				userProcedure.user.id.eq(userId),
+				userProcedure.scheduledAt.lt(endOfDay)
+			)
+			.fetchOne();
+
+		if (mostRecentDateTime == null) {
+			return List.of();
+		}
+
+		LocalDate mostRecentDate = mostRecentDateTime.toLocalDate();
+
+		// 2. 해당 날짜의 모든 시술 조회
+		return queryFactory
+			.selectFrom(userProcedure)
+			.join(userProcedure.procedure).fetchJoin()  // N+1 방지
+			.where(
+				userProcedure.user.id.eq(userId),
+				userProcedure.scheduledAt.goe(mostRecentDate.atStartOfDay()),
+				userProcedure.scheduledAt.lt(mostRecentDate.plusDays(1).atStartOfDay())
+			)
+			.fetch();
+	}
+
+	@Override
+	public List<UserProcedure> findUpcomingProceduresGroupedByDate(Long userId, LocalDate fromDate) {
+		LocalDateTime startOfDay = fromDate.atStartOfDay();
+
+		return queryFactory
+			.selectFrom(userProcedure)
+			.join(userProcedure.procedure).fetchJoin()  // N+1 방지
+			.where(
+				userProcedure.user.id.eq(userId),
+				userProcedure.scheduledAt.goe(startOfDay)
+			)
+			.orderBy(userProcedure.scheduledAt.asc())
+			.fetch();
+	}
 }
