@@ -25,8 +25,7 @@ public interface DemoChallengeRoutineRepository extends JpaRepository<DemoChalle
 	 * @param demoChallengeId 데모 챌린지 ID
 	 * @return 완료된 루틴 개수
 	 */
-	@Query("SELECT COUNT(r) FROM DemoChallengeRoutine r WHERE r.demoChallenge.id = :demoChallengeId AND r.isComplete = true")
-	int countByDemoChallengeIdAndIsCompleteTrue(@Param("demoChallengeId") Long demoChallengeId);
+	int countByDemoChallengeIdAndIsCompleteTrue(Long demoChallengeId);
 
 	/**
 	 * 루틴 조회 (DemoChallenge와 함께 fetch)
