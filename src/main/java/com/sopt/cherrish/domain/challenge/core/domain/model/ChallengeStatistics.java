@@ -169,4 +169,30 @@ public class ChallengeStatistics extends BaseTimeEntity {
 			this.totalRoutineCount += count;
 		}
 	}
+
+	/**
+	 * 다음 레벨까지 남은 루틴 개수 계산
+	 *
+	 * @return 남은 루틴 개수 (최대 레벨이면 0)
+	 */
+	public int getRemainingRoutinesToNextLevel() {
+		// 최대 레벨(4)이면 0 반환
+		if (cherryLevel >= 4) {
+			return 0;
+		}
+
+		// 다음 레벨 임계값 선택 (기존 상수 재활용)
+		double nextThreshold = switch (cherryLevel) {
+			case 1 -> LEVEL_2_THRESHOLD;  // 25.0
+			case 2 -> LEVEL_3_THRESHOLD;  // 50.0
+			case 3 -> LEVEL_4_THRESHOLD;  // 75.0
+			default -> 100.0;
+		};
+
+		// 다음 레벨까지 필요한 총 완료 개수 (올림)
+		int requiredCompletedCount = (int) Math.ceil(totalRoutineCount * nextThreshold / 100.0);
+
+		// 남은 개수 (음수 방지)
+		return Math.max(0, requiredCompletedCount - completedCount);
+	}
 }

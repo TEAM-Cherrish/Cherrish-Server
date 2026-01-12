@@ -146,7 +146,9 @@ public class ChallengeTestFixture {
 			3,
 			42.5,
 			2,
+			"꽃핀 체리",
 			50.0,
+			3,
 			todayRoutines,
 			"3일차 루틴입니다. 오늘도 피부를 위해 힘내봐요!"
 		);
