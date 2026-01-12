@@ -24,7 +24,7 @@ public class MainDashboardResponseDto {
 	@Schema(description = "챌린지 완료율 (%)", example = "40.3")
 	private Double challengeRate;
 
-	@Schema(description = "최근 시술 목록 (가장 최근 날짜의 모든 시술, 다운타임 완료 시 null)")
+	@Schema(description = "최근 시술 목록 (가장 최근 날짜의 다운타임 진행 중인 시술, 없으면 빈 배열)")
 	private List<RecentProcedureResponseDto> recentProcedures;
 
 	@Schema(description = "예정된 시술 목록 (날짜별 그룹, 최대 3개 날짜)")
