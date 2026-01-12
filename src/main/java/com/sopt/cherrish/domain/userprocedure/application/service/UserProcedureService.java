@@ -3,6 +3,7 @@ package com.sopt.cherrish.domain.userprocedure.application.service;
 import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -117,12 +118,15 @@ public class UserProcedureService {
 				up -> up.getScheduledAt().toLocalDate()
 			));
 
-		Map<LocalDate, List<UserProcedure>> limited = new java.util.LinkedHashMap<>();
-		grouped.entrySet().stream()
-			.sorted(Map.Entry.comparingByKey()) // 날짜 오름차순
-			.limit(limitDates) // 최대 N개 날짜
-			.forEach(entry -> limited.put(entry.getKey(), entry.getValue()));
+		return grouped.entrySet().stream()
+			.sorted(Map.Entry.comparingByKey()) // 날짜 오름차순 정렬
+			.limit(limitDates)
+			.collect(Collectors.toMap(
+				Map.Entry::getKey,
+				Map.Entry::getValue,
+				(e1, e2) -> e1,
+				LinkedHashMap::new
+			));
 
-		return limited;
 	}
 }
