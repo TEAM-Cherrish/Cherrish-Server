@@ -8,11 +8,11 @@ import org.springframework.web.bind.annotation.RestController;
 import com.sopt.cherrish.domain.challenge.core.application.facade.ChallengeQueryFacade;
 import com.sopt.cherrish.domain.challenge.core.exception.ChallengeErrorCode;
 import com.sopt.cherrish.domain.challenge.core.presentation.dto.response.ChallengeDetailResponseDto;
+import com.sopt.cherrish.domain.challenge.core.response.success.ChallengeSuccessCode;
 import com.sopt.cherrish.domain.user.exception.UserErrorCode;
 import com.sopt.cherrish.global.annotation.ApiExceptions;
 import com.sopt.cherrish.global.response.CommonApiResponse;
 import com.sopt.cherrish.global.response.error.ErrorCode;
-import com.sopt.cherrish.global.response.success.SuccessCode;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -39,6 +39,6 @@ public class ChallengeQueryController {
 		@RequestHeader("X-User-Id") Long userId
 	) {
 		ChallengeDetailResponseDto response = challengeQueryFacade.getActiveChallengeDetail(userId);
-		return CommonApiResponse.success(SuccessCode.SUCCESS, response);
+		return CommonApiResponse.success(ChallengeSuccessCode.CHALLENGE_RETRIEVED, response);
 	}
 }
