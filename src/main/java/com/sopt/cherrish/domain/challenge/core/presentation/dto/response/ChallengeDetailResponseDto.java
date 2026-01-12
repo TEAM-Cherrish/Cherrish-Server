@@ -5,6 +5,7 @@ import java.util.List;
 import com.sopt.cherrish.domain.challenge.core.domain.model.Challenge;
 import com.sopt.cherrish.domain.challenge.core.domain.model.ChallengeRoutine;
 import com.sopt.cherrish.domain.challenge.core.domain.model.ChallengeStatistics;
+import com.sopt.cherrish.domain.challenge.core.domain.model.CherryLevel;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
@@ -25,8 +26,14 @@ public record ChallengeDetailResponseDto(
 	@Schema(description = "체리 레벨 (1-4)", example = "2")
 	int cherryLevel,
 
+	@Schema(description = "현재 체리 레벨 이름", example = "꽃핀 체리")
+	String cherryLevelName,
+
 	@Schema(description = "현재 레벨 내 진척도 (%)", example = "50.0")
 	double progressToNextLevel,
+
+	@Schema(description = "다음 레벨까지 남은 루틴 개수", example = "3")
+	int remainingRoutinesToNextLevel,
 
 	@Schema(description = "오늘의 루틴 리스트")
 	List<ChallengeRoutineResponseDto> todayRoutines,
@@ -51,7 +58,9 @@ public record ChallengeDetailResponseDto(
 			currentDay,
 			statistics.getProgressPercentage(),
 			statistics.getCherryLevel(),
+			CherryLevel.fromLevel(statistics.getCherryLevel()).getName(),
 			statistics.getProgressToNextLevel(),
+			statistics.getRemainingRoutinesToNextLevel(),
 			routineDtos,
 			cheeringMessage
 		);
