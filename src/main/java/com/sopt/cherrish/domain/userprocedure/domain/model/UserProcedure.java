@@ -1,5 +1,6 @@
 package com.sopt.cherrish.domain.userprocedure.domain.model;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import com.sopt.cherrish.domain.procedure.domain.model.Procedure;
@@ -61,5 +62,16 @@ public class UserProcedure extends BaseTimeEntity {
 	 */
 	public DowntimePeriod calculateDowntimePeriod() {
 		return DowntimePeriod.calculate(this.downtimeDays, this.scheduledAt.toLocalDate());
+	}
+
+	/**
+	 * 현재 날짜 기준 시술 후 회복 단계 계산
+	 *
+	 * @param today 현재 날짜
+	 * @return 현재 시술 단계 (SENSITIVE, CAUTION, RECOVERY, COMPLETED)
+	 */
+	public ProcedurePhase calculateCurrentPhase(LocalDate today) {
+		DowntimePeriod period = calculateDowntimePeriod();
+		return ProcedurePhase.calculate(period, today);
 	}
 }
