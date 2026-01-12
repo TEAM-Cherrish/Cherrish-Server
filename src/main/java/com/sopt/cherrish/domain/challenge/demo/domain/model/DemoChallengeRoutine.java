@@ -33,10 +33,6 @@ public class DemoChallengeRoutine extends BaseTimeEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@Column(nullable = false)
-	@Version
-	private Long version = 0L;
-
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
 	@JoinColumn(name = "demo_challenge_id", nullable = false)
 	private DemoChallenge demoChallenge;

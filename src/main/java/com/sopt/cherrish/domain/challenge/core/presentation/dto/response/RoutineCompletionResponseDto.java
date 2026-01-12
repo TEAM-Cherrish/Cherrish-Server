@@ -1,6 +1,7 @@
 package com.sopt.cherrish.domain.challenge.core.presentation.dto.response;
 
 import com.sopt.cherrish.domain.challenge.core.domain.model.ChallengeRoutine;
+import com.sopt.cherrish.domain.challenge.demo.domain.model.DemoChallengeRoutine;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
@@ -19,6 +20,19 @@ public record RoutineCompletionResponseDto(
 	String message
 ) {
 	public static RoutineCompletionResponseDto from(ChallengeRoutine routine) {
+		String message = routine.getIsComplete()
+			? "루틴을 완료했습니다!"
+			: "루틴 완료를 취소했습니다.";
+
+		return new RoutineCompletionResponseDto(
+			routine.getId(),
+			routine.getName(),
+			routine.getIsComplete(),
+			message
+		);
+	}
+
+	public static RoutineCompletionResponseDto from(DemoChallengeRoutine routine) {
 		String message = routine.getIsComplete()
 			? "루틴을 완료했습니다!"
 			: "루틴 완료를 취소했습니다.";

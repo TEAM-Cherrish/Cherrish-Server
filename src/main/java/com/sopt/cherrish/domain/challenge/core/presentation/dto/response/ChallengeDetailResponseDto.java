@@ -6,6 +6,9 @@ import com.sopt.cherrish.domain.challenge.core.domain.model.Challenge;
 import com.sopt.cherrish.domain.challenge.core.domain.model.ChallengeRoutine;
 import com.sopt.cherrish.domain.challenge.core.domain.model.ChallengeStatistics;
 import com.sopt.cherrish.domain.challenge.core.domain.model.CherryLevel;
+import com.sopt.cherrish.domain.challenge.demo.domain.model.DemoChallenge;
+import com.sopt.cherrish.domain.challenge.demo.domain.model.DemoChallengeRoutine;
+import com.sopt.cherrish.domain.challenge.demo.domain.model.DemoChallengeStatistics;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
@@ -46,6 +49,31 @@ public record ChallengeDetailResponseDto(
 		int currentDay,
 		ChallengeStatistics statistics,
 		List<ChallengeRoutine> todayRoutines,
+		String cheeringMessage
+	) {
+		List<ChallengeRoutineResponseDto> routineDtos = todayRoutines.stream()
+			.map(ChallengeRoutineResponseDto::from)
+			.toList();
+
+		return new ChallengeDetailResponseDto(
+			challenge.getId(),
+			challenge.getTitle(),
+			currentDay,
+			statistics.getProgressPercentage(),
+			statistics.getCherryLevel(),
+			CherryLevel.fromLevel(statistics.getCherryLevel()).getName(),
+			statistics.getProgressToNextLevel(),
+			statistics.getRemainingRoutinesToNextLevel(),
+			routineDtos,
+			cheeringMessage
+		);
+	}
+
+	public static ChallengeDetailResponseDto from(
+		DemoChallenge challenge,
+		int currentDay,
+		DemoChallengeStatistics statistics,
+		List<DemoChallengeRoutine> todayRoutines,
 		String cheeringMessage
 	) {
 		List<ChallengeRoutineResponseDto> routineDtos = todayRoutines.stream()

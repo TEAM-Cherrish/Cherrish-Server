@@ -4,6 +4,7 @@ import java.time.LocalDate;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.sopt.cherrish.domain.challenge.core.domain.model.ChallengeRoutine;
+import com.sopt.cherrish.domain.challenge.demo.domain.model.DemoChallengeRoutine;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
@@ -23,6 +24,15 @@ public record ChallengeRoutineResponseDto(
 	Boolean isComplete
 ) {
 	public static ChallengeRoutineResponseDto from(ChallengeRoutine routine) {
+		return new ChallengeRoutineResponseDto(
+			routine.getId(),
+			routine.getName(),
+			routine.getScheduledDate(),
+			routine.getIsComplete()
+		);
+	}
+
+	public static ChallengeRoutineResponseDto from(DemoChallengeRoutine routine) {
 		return new ChallengeRoutineResponseDto(
 			routine.getId(),
 			routine.getName(),

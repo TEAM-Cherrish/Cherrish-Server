@@ -6,6 +6,8 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.sopt.cherrish.domain.challenge.core.domain.model.Challenge;
 import com.sopt.cherrish.domain.challenge.core.domain.model.ChallengeRoutine;
+import com.sopt.cherrish.domain.challenge.demo.domain.model.DemoChallenge;
+import com.sopt.cherrish.domain.challenge.demo.domain.model.DemoChallengeRoutine;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
@@ -36,6 +38,23 @@ public record ChallengeCreateResponseDto(
 ) {
 	public static ChallengeCreateResponseDto from(
 		Challenge challenge, List<ChallengeRoutine> routines, int totalRoutineCount) {
+		List<ChallengeRoutineResponseDto> routineDtos = routines.stream()
+			.map(ChallengeRoutineResponseDto::from)
+			.toList();
+
+		return new ChallengeCreateResponseDto(
+			challenge.getId(),
+			challenge.getTitle(),
+			challenge.getTotalDays(),
+			challenge.getStartDate(),
+			challenge.getEndDate(),
+			totalRoutineCount,
+			routineDtos
+		);
+	}
+
+	public static ChallengeCreateResponseDto from(
+		DemoChallenge challenge, List<DemoChallengeRoutine> routines, int totalRoutineCount) {
 		List<ChallengeRoutineResponseDto> routineDtos = routines.stream()
 			.map(ChallengeRoutineResponseDto::from)
 			.toList();
