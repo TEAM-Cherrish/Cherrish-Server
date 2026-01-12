@@ -76,6 +76,16 @@ public class ChallengeService {
 	}
 
 	/**
+	 * 활성 챌린지 조회 (통계와 함께 Fetch Join) - Optional 반환
+	 * 챌린지가 없어도 예외를 던지지 않음 (Facade에서 사용)
+	 * @param userId 사용자 ID
+	 * @return Optional로 감싼 활성 챌린지 (통계 포함)
+	 */
+	public java.util.Optional<Challenge> findActiveChallengeWithStatistics(Long userId) {
+		return challengeRepository.findActiveChallengeWithStatistics(userId);
+	}
+
+	/**
 	 * ID로 챌린지 조회
 	 * @param challengeId 챌린지 ID
 	 * @return 챌린지
