@@ -1,4 +1,4 @@
-package com.sopt.cherrish.domain.maindashboard.domain.model;
+package com.sopt.cherrish.domain.userprocedure.domain.model;
 
 import java.time.LocalDate;
 
