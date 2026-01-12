@@ -111,18 +111,17 @@ public class UserProcedureService {
 			.findUpcomingProceduresGroupedByDate(userId, tomorrow);
 
 		// 날짜별로 그룹핑 후 가장 가까운 N개 날짜만 선택
-		return allUpcoming.stream()
+		Map<LocalDate, List<UserProcedure>> grouped = allUpcoming.stream()
 			.collect(Collectors.groupingBy(
 				up -> up.getScheduledAt().toLocalDate()
-			))
-			.entrySet().stream()
+			));
+
+		Map<LocalDate, List<UserProcedure>> limited = new java.util.LinkedHashMap<>();
+		grouped.entrySet().stream()
 			.sorted(Map.Entry.comparingByKey()) // 날짜 오름차순
 			.limit(limitDates) // 최대 N개 날짜
-			.collect(Collectors.toMap(
-				Map.Entry::getKey,
-				Map.Entry::getValue,
-				(e1, e2) -> e1,
-				java.util.LinkedHashMap::new // 순서 유지
-			));
+			.forEach(entry -> limited.put(entry.getKey(), entry.getValue()));
+
+		return limited;
 	}
 }
