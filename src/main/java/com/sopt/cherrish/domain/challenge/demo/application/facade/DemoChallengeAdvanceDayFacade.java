@@ -21,7 +21,7 @@ public class DemoChallengeAdvanceDayFacade {
 	/**
 	 * 다음 날로 넘어가기 및 통계 재계산
 	 * 1. 활성 데모 챌린지 조회
-	 * 2. 가상 날짜 +1일
+	 * 2. 가상 날짜 +1일 (종료일을 넘으면 챌린지 종료)
 	 * 3. 통계 재계산
 	 * 4. 새 날짜의 챌린지 상세 정보 조회 및 반환
 	 */
@@ -30,7 +30,7 @@ public class DemoChallengeAdvanceDayFacade {
 		// 1. 활성 챌린지 조회
 		DemoChallenge challenge = challengeService.getActiveChallengeWithStatistics(userId);
 
-		// 2. 다음 날로 진행
+		// 2. 다음 날로 진행 (종료일을 넘으면 isActive = false)
 		challenge.advanceDay();
 
 		// 3. 통계 재계산

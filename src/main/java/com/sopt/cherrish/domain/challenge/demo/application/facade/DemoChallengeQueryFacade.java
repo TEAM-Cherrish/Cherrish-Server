@@ -6,7 +6,6 @@ import java.util.List;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.sopt.cherrish.domain.challenge.core.application.service.CheeringMessageGenerator;
 import com.sopt.cherrish.domain.challenge.core.presentation.dto.response.ChallengeDetailResponseDto;
 import com.sopt.cherrish.domain.challenge.demo.application.service.DemoChallengeRoutineService;
 import com.sopt.cherrish.domain.challenge.demo.application.service.DemoChallengeService;
@@ -22,7 +21,6 @@ public class DemoChallengeQueryFacade {
 
 	private final DemoChallengeService challengeService;
 	private final DemoChallengeRoutineService routineService;
-	private final CheeringMessageGenerator cheeringMessageGenerator;
 
 	/**
 	 * 활성 데모 챌린지 상세 조회
@@ -42,16 +40,13 @@ public class DemoChallengeQueryFacade {
 		// 4. 현재 일차 계산
 		int currentDay = challenge.getCurrentDay();
 
-		// 5. 응원 메시지 생성
-		String cheeringMessage = cheeringMessageGenerator.generate(currentDay, challenge.getTotalDays());
-
-		// 6. 응답 DTO 생성
+		// 5. 응답 DTO 생성
 		return ChallengeDetailResponseDto.from(
 			challenge,
 			currentDay,
 			statistics,
 			todayRoutines,
-			cheeringMessage
+			""  // 응원 메시지 없음
 		);
 	}
 }
