@@ -72,18 +72,15 @@ public class DemoChallengeController {
 
 	@Operation(
 		summary = "다음 날로 넘어가기 (데모용)",
-		description = "가상 날짜를 +1일 진행하고 통계를 재계산합니다. 새 날짜의 루틴 목록을 반환합니다."
+		description = "가상 날짜를 +1일 진행하고 통계를 재계산합니다. 사용자의 활성 데모 챌린지를 자동으로 조회하여 처리합니다."
 	)
 	@ApiExceptions({ChallengeErrorCode.class, UserErrorCode.class, ErrorCode.class})
-	@PostMapping("/{demoChallengeId}/advance-day")
+	@PostMapping("/advance-day")
 	public CommonApiResponse<ChallengeDetailResponseDto> advanceDay(
 		@Parameter(description = "사용자 ID (X-User-Id 헤더)", required = true, example = "1")
-		@RequestHeader("X-User-Id") Long userId,
-
-		@Parameter(description = "데모 챌린지 ID", required = true, example = "1")
-		@PathVariable Long demoChallengeId
+		@RequestHeader("X-User-Id") Long userId
 	) {
-		ChallengeDetailResponseDto response = advanceDayFacade.advanceDay(userId, demoChallengeId);
+		ChallengeDetailResponseDto response = advanceDayFacade.advanceDay(userId);
 		return CommonApiResponse.success(SuccessCode.SUCCESS, response);
 	}
 
