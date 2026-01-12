@@ -11,8 +11,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.sopt.cherrish.domain.challenge.core.exception.ChallengeErrorCode;
 import com.sopt.cherrish.domain.challenge.core.presentation.dto.request.ChallengeCreateRequestDto;
+import com.sopt.cherrish.domain.challenge.core.presentation.dto.request.RoutineUpdateRequestDto;
 import com.sopt.cherrish.domain.challenge.core.presentation.dto.response.ChallengeCreateResponseDto;
 import com.sopt.cherrish.domain.challenge.core.presentation.dto.response.ChallengeDetailResponseDto;
+import com.sopt.cherrish.domain.challenge.core.presentation.dto.response.RoutineBatchUpdateResponseDto;
 import com.sopt.cherrish.domain.challenge.core.presentation.dto.response.RoutineCompletionResponseDto;
 import com.sopt.cherrish.domain.challenge.demo.application.facade.DemoChallengeAdvanceDayFacade;
 import com.sopt.cherrish.domain.challenge.demo.application.facade.DemoChallengeCreationFacade;
@@ -98,6 +100,23 @@ public class DemoChallengeController {
 		@PathVariable Long routineId
 	) {
 		RoutineCompletionResponseDto response = routineService.toggleCompletion(userId, routineId);
+		return CommonApiResponse.success(SuccessCode.SUCCESS, response);
+	}
+
+	@Operation(
+		summary = "데모 루틴 일괄 업데이트",
+		description = "여러 루틴의 완료 상태를 한 번에 업데이트합니다. "
+			+ "통계는 즉시 업데이트되지 않고 '다음 날로 넘어가기' 시 반영됩니다. "
+			+ "All or Nothing 방식으로 동작하여 하나라도 실패하면 전체 롤백됩니다."
+	)
+	@ApiExceptions({ChallengeErrorCode.class, UserErrorCode.class, ErrorCode.class})
+	@PatchMapping("/routines")
+	public CommonApiResponse<RoutineBatchUpdateResponseDto> updateMultipleRoutines(
+		@Parameter(description = "사용자 ID (X-User-Id 헤더)", required = true, example = "1")
+		@RequestHeader("X-User-Id") Long userId,
+		@Valid @RequestBody RoutineUpdateRequestDto request
+	) {
+		RoutineBatchUpdateResponseDto response = routineService.updateMultipleRoutines(userId, request);
 		return CommonApiResponse.success(SuccessCode.SUCCESS, response);
 	}
 }
