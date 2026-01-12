@@ -35,4 +35,12 @@ public interface DemoChallengeRoutineRepository extends JpaRepository<DemoChalle
 	 */
 	@Query("SELECT r FROM DemoChallengeRoutine r JOIN FETCH r.demoChallenge WHERE r.id = :id")
 	Optional<DemoChallengeRoutine> findByIdWithChallenge(@Param("id") Long id);
+
+	/**
+	 * 여러 루틴을 한 번에 조회 (DemoChallenge와 함께 fetch)
+	 * @param ids 루틴 ID 리스트
+	 * @return 루틴 리스트 (DemoChallenge 포함)
+	 */
+	@Query("SELECT r FROM DemoChallengeRoutine r JOIN FETCH r.demoChallenge WHERE r.id IN :ids")
+	List<DemoChallengeRoutine> findByIdInWithChallenge(@Param("ids") List<Long> ids);
 }
