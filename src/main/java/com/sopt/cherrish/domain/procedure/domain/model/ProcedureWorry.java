@@ -14,6 +14,7 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
@@ -22,7 +23,13 @@ import lombok.Builder;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "procedure_worries")
+@Table(
+	name = "procedure_worries",
+	indexes = {
+		@Index(name = "idx_procedure_worries_worry_id_procedure_id", columnList = "worry_id, procedure_id"),
+		@Index(name = "idx_procedure_worries_procedure_id", columnList = "procedure_id")
+	}
+)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EntityListeners(AuditingEntityListener.class)
 public class ProcedureWorry {
