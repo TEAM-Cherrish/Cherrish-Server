@@ -188,7 +188,7 @@ class CalendarControllerTest {
 			.andExpect(jsonPath("$.data.cautionDays").isArray())
 			.andExpect(jsonPath("$.data.cautionDays.length()").value(3))
 			.andExpect(jsonPath("$.data.recoveryDays").isArray())
-		.andExpect(jsonPath("$.data.recoveryDays.length()").value(3));
+		    .andExpect(jsonPath("$.data.recoveryDays.length()").value(3));
 	}
 
 	@ParameterizedTest
