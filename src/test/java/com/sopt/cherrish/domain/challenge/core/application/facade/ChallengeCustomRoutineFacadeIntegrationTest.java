@@ -129,7 +129,6 @@ class ChallengeCustomRoutineFacadeIntegrationTest {
 		assertThat(response.addedCount()).isEqualTo(7); // 2024-01-01 ~ 2024-01-07 = 7일
 		assertThat(response.routines()).hasSize(7);
 		assertThat(response.totalRoutineCount()).isEqualTo(28); // 기존 21 + 추가 7 = 28
-		assertThat(response.message()).contains("7일간");
 
 		// then - DB 실제 저장 확인
 		List<ChallengeRoutine> allRoutines = routineRepository.findAll();

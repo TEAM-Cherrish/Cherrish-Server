@@ -6,10 +6,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.sopt.cherrish.domain.challenge.core.response.success.ChallengeSuccessCode;
 import com.sopt.cherrish.domain.challenge.homecare.application.service.HomecareRoutineService;
 import com.sopt.cherrish.domain.challenge.homecare.presentation.dto.response.HomecareRoutineResponseDto;
 import com.sopt.cherrish.global.response.CommonApiResponse;
-import com.sopt.cherrish.global.response.success.SuccessCode;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -30,6 +30,6 @@ public class HomecareRoutineController {
 	@GetMapping("/homecare-routines")
 	public CommonApiResponse<List<HomecareRoutineResponseDto>> getHomecareRoutines() {
 		List<HomecareRoutineResponseDto> routines = homecareRoutineService.getAllHomecareRoutines();
-		return CommonApiResponse.success(SuccessCode.SUCCESS, routines);
+		return CommonApiResponse.success(ChallengeSuccessCode.HOMECARE_ROUTINES_RETRIEVED, routines);
 	}
 }
