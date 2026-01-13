@@ -6,6 +6,9 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.times;
 import static org.mockito.BDDMockito.verify;
 
+import java.time.Clock;
+import java.time.Instant;
+import java.time.ZoneId;
 import java.util.Optional;
 
 import org.junit.jupiter.api.DisplayName;
@@ -22,6 +25,7 @@ import com.sopt.cherrish.domain.user.exception.UserException;
 import com.sopt.cherrish.domain.user.fixture.UserFixture;
 import com.sopt.cherrish.domain.user.presentation.dto.request.UserUpdateRequestDto;
 import com.sopt.cherrish.domain.user.presentation.dto.response.UserResponseDto;
+import com.sopt.cherrish.domain.user.presentation.dto.response.UserSummaryResponseDto;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("UserService 단위 테스트")
@@ -33,22 +37,29 @@ class UserServiceTest {
 	@Mock
 	private UserRepository userRepository;
 
+	@Mock
+	private Clock clock;
+
 	@Test
 	@DisplayName("사용자 조회 성공")
 	void getUserSuccess() {
 		// given
 		Long userId = 1L;
 		User user = UserFixture.createUser("홍길동", 25);
+		ZoneId zoneId = ZoneId.of("Asia/Seoul");
+		Instant fixedInstant = user.getCreatedAt().atZone(zoneId).toInstant();
 
 		given(userRepository.findById(userId)).willReturn(Optional.of(user));
+		given(clock.getZone()).willReturn(zoneId);
+		given(clock.instant()).willReturn(fixedInstant);
 
 		// when
-		UserResponseDto result = userService.getUser(userId);
+		UserSummaryResponseDto result = userService.getUser(userId);
 
 		// then
 		assertThat(result).isNotNull();
 		assertThat(result.getName()).isEqualTo("홍길동");
-		assertThat(result.getAge()).isEqualTo(25);
+		assertThat(result.getDaysSinceSignup()).isEqualTo(1);
 	}
 
 	@Test
