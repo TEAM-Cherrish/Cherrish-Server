@@ -173,7 +173,7 @@ class CalendarServiceTest {
 			mockUser, mockProcedure, LocalDateTime.of(2025, 1, 15, 14, 0), downtimeDays);
 
 		given(userRepository.existsById(userId)).willReturn(true);
-		given(userProcedureRepository.findByIdAndUserIdWithProcedure(userProcedureId, userId))
+		given(userProcedureRepository.findByIdAndUserId(userProcedureId, userId))
 			.willReturn(Optional.of(userProcedure));
 
 		// when
@@ -209,7 +209,7 @@ class CalendarServiceTest {
 		Long userProcedureId = 404L;
 
 		given(userRepository.existsById(userId)).willReturn(true);
-		given(userProcedureRepository.findByIdAndUserIdWithProcedure(userProcedureId, userId))
+		given(userProcedureRepository.findByIdAndUserId(userProcedureId, userId))
 			.willReturn(Optional.empty());
 
 		// when & then

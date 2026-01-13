@@ -80,7 +80,7 @@ public class CalendarService {
 
 		// 시술 일정 단건 조회
 		UserProcedure userProcedure = userProcedureRepository
-			.findByIdAndUserIdWithProcedure(userProcedureId, userId)
+			.findByIdAndUserId(userProcedureId, userId)
 			.orElseThrow(() -> new UserProcedureException(UserProcedureErrorCode.USER_PROCEDURE_NOT_FOUND));
 
 		return ProcedureEventDowntimeResponseDto.from(userProcedure);

@@ -14,6 +14,8 @@ import java.util.Map;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -186,6 +188,15 @@ class CalendarControllerTest {
 			.andExpect(jsonPath("$.data.cautionDays").isArray())
 			.andExpect(jsonPath("$.data.cautionDays.length()").value(3))
 			.andExpect(jsonPath("$.data.recoveryDays").isArray())
-			.andExpect(jsonPath("$.data.recoveryDays.length()").value(3));
+		.andExpect(jsonPath("$.data.recoveryDays.length()").value(3));
+	}
+
+	@ParameterizedTest
+	@ValueSource(longs = {0L, -1L})
+	@DisplayName("시술 다운타임 상세 조회 실패 - 잘못된 사용자 시술 일정 ID")
+	void getEventDowntimeInvalidId(long userProcedureId) throws Exception {
+		mockMvc.perform(get("/api/calendar/events/{id}/downtime", userProcedureId)
+				.header("X-User-Id", 1L))
+			.andExpect(status().isBadRequest());
 	}
 }
