@@ -13,4 +13,5 @@ public interface ProcedureRepositoryCustom {
 	 * - DISTINCT로 중복 제거 (한 시술이 여러 고민과 매핑되는 경우)
 	 */
 	List<Procedure> searchProcedures(String keyword, Long worryId);
+
 }
