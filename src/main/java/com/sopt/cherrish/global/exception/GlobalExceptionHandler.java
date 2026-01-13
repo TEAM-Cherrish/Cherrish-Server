@@ -14,6 +14,7 @@ import org.springframework.web.bind.MissingRequestHeaderException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.HandlerMethodValidationException;
 
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
@@ -21,6 +22,7 @@ import com.sopt.cherrish.global.response.CommonApiResponse;
 import com.sopt.cherrish.global.response.error.ErrorCode;
 import com.sopt.cherrish.global.response.error.ErrorType;
 
+import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -51,6 +53,14 @@ public class GlobalExceptionHandler {
 			));
 		log.warn("Validation failed: {}", errors);
 		return CommonApiResponse.fail(ErrorCode.INVALID_INPUT, errors);
+	}
+
+	// 메서드 파라미터 검증 실패 처리 (@PathVariable, @RequestParam 등)
+	@ExceptionHandler({ConstraintViolationException.class, HandlerMethodValidationException.class})
+	@ResponseStatus(HttpStatus.BAD_REQUEST)
+	public CommonApiResponse<Void> handleMethodValidationException(Exception e) {
+		log.warn("Method validation failed: {}", e.getMessage());
+		return CommonApiResponse.fail(ErrorCode.INVALID_INPUT);
 	}
 
 	// 필수 요청 헤더 누락 처리
