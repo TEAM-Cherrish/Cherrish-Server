@@ -9,12 +9,15 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.sopt.cherrish.domain.calendar.presentation.dto.response.CalendarDailyResponseDto;
 import com.sopt.cherrish.domain.calendar.presentation.dto.response.CalendarMonthlyResponseDto;
+import com.sopt.cherrish.domain.calendar.presentation.dto.response.ProcedureEventDowntimeResponseDto;
 import com.sopt.cherrish.domain.calendar.presentation.dto.response.ProcedureEventResponseDto;
 import com.sopt.cherrish.domain.user.domain.repository.UserRepository;
 import com.sopt.cherrish.domain.user.exception.UserErrorCode;
 import com.sopt.cherrish.domain.user.exception.UserException;
 import com.sopt.cherrish.domain.userprocedure.domain.model.UserProcedure;
 import com.sopt.cherrish.domain.userprocedure.domain.repository.UserProcedureRepository;
+import com.sopt.cherrish.domain.userprocedure.exception.UserProcedureErrorCode;
+import com.sopt.cherrish.domain.userprocedure.exception.UserProcedureException;
 
 import lombok.RequiredArgsConstructor;
 
@@ -57,12 +60,30 @@ public class CalendarService {
 		// 특정 날짜의 시술 목록 조회
 		List<UserProcedure> userProcedures = userProcedureRepository.findDailyProcedures(userId, date);
 
-		// UserProcedure -> ProcedureEventDto 변환
+		// UserProcedure -> ProcedureEventResponseDto 변환
 		List<ProcedureEventResponseDto> events = userProcedures.stream()
 			.map(ProcedureEventResponseDto::from)
 			.toList();
 
 		return CalendarDailyResponseDto.from(events);
+	}
+
+	/**
+	 * 시술 다운타임 상세 조회
+	 * @param userId 사용자 ID
+	 * @param userProcedureId 사용자 시술 일정 ID
+	 * @return 시술 다운타임 상세 정보
+	 */
+	public ProcedureEventDowntimeResponseDto getEventDowntime(Long userId, Long userProcedureId) {
+		// 사용자 존재 여부 확인
+		validateUserExists(userId);
+
+		// 시술 일정 단건 조회
+		UserProcedure userProcedure = userProcedureRepository
+			.findByIdAndUserIdWithProcedure(userProcedureId, userId)
+			.orElseThrow(() -> new UserProcedureException(UserProcedureErrorCode.USER_PROCEDURE_NOT_FOUND));
+
+		return ProcedureEventDowntimeResponseDto.from(userProcedure);
 	}
 
 	private void validateUserExists(Long userId) {
