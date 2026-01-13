@@ -6,6 +6,10 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.times;
 import static org.mockito.BDDMockito.verify;
 
+import java.time.Clock;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Optional;
 
 import org.junit.jupiter.api.DisplayName;
@@ -22,6 +26,7 @@ import com.sopt.cherrish.domain.user.exception.UserException;
 import com.sopt.cherrish.domain.user.fixture.UserFixture;
 import com.sopt.cherrish.domain.user.presentation.dto.request.UserUpdateRequestDto;
 import com.sopt.cherrish.domain.user.presentation.dto.response.UserResponseDto;
+import com.sopt.cherrish.domain.user.presentation.dto.response.UserSummaryResponseDto;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("UserService 단위 테스트")
@@ -33,22 +38,77 @@ class UserServiceTest {
 	@Mock
 	private UserRepository userRepository;
 
+	@Mock
+	private Clock clock;
+
 	@Test
 	@DisplayName("사용자 조회 성공")
 	void getUserSuccess() {
 		// given
 		Long userId = 1L;
 		User user = UserFixture.createUser("홍길동", 25);
+		ZoneId zoneId = ZoneId.of("Asia/Seoul");
+		Instant fixedInstant = user.getCreatedAt().atZone(zoneId).toInstant();
 
 		given(userRepository.findById(userId)).willReturn(Optional.of(user));
+		given(clock.getZone()).willReturn(zoneId);
+		given(clock.instant()).willReturn(fixedInstant);
 
 		// when
-		UserResponseDto result = userService.getUser(userId);
+		UserSummaryResponseDto result = userService.getUser(userId);
 
 		// then
 		assertThat(result).isNotNull();
 		assertThat(result.getName()).isEqualTo("홍길동");
-		assertThat(result.getAge()).isEqualTo(25);
+		assertThat(result.getDaysSinceSignup()).isEqualTo(1);
+	}
+
+	@Test
+	@DisplayName("사용자 조회 성공 - 가입 N일차 계산")
+	void getUserSuccessWithElapsedDays() {
+		// given
+		Long userId = 1L;
+		LocalDateTime createdAt = LocalDateTime.of(2026, 1, 1, 10, 0, 0);
+		User user = UserFixture.createUser("홍길동", 25, createdAt);
+		ZoneId zoneId = ZoneId.of("Asia/Seoul");
+		Instant fixedInstant = createdAt.plusDays(2).atZone(zoneId).toInstant();
+
+		given(userRepository.findById(userId)).willReturn(Optional.of(user));
+		given(clock.getZone()).willReturn(zoneId);
+		given(clock.instant()).willReturn(fixedInstant);
+
+		// when
+		UserSummaryResponseDto result = userService.getUser(userId);
+
+		// then
+		assertThat(result).isNotNull();
+		assertThat(result.getName()).isEqualTo("홍길동");
+		assertThat(result.getDaysSinceSignup()).isEqualTo(3);
+	}
+
+	@Test
+	@DisplayName("사용자 조회 성공 - 자정 경계 일차 계산")
+	void getUserSuccessWithMidnightBoundary() {
+		// given
+		Long userId = 1L;
+		LocalDateTime createdAt = LocalDateTime.of(2026, 1, 1, 23, 59, 59);
+		User user = UserFixture.createUser("홍길동", 25, createdAt);
+		ZoneId zoneId = ZoneId.of("Asia/Seoul");
+		Instant fixedInstant = LocalDateTime.of(2026, 1, 2, 0, 0, 1)
+			.atZone(zoneId)
+			.toInstant();
+
+		given(userRepository.findById(userId)).willReturn(Optional.of(user));
+		given(clock.getZone()).willReturn(zoneId);
+		given(clock.instant()).willReturn(fixedInstant);
+
+		// when
+		UserSummaryResponseDto result = userService.getUser(userId);
+
+		// then
+		assertThat(result).isNotNull();
+		assertThat(result.getName()).isEqualTo("홍길동");
+		assertThat(result.getDaysSinceSignup()).isEqualTo(2);
 	}
 
 	@Test

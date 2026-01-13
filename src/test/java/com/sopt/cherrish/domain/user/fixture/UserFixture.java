@@ -30,6 +30,16 @@ public class UserFixture {
 		return user;
 	}
 
+	public static User createUser(String name, int age, LocalDateTime createdAt) {
+		User user = User.builder()
+			.name(name)
+			.age(age)
+			.build();
+		setField(user, User.class, "id", DEFAULT_ID);
+		setField(user, BaseTimeEntity.class, "createdAt", createdAt);
+		return user;
+	}
+
 	private static void setField(Object target, Class<?> clazz, String fieldName, Object value) {
 		try {
 			Field field = clazz.getDeclaredField(fieldName);

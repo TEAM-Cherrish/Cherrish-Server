@@ -12,6 +12,7 @@ import com.sopt.cherrish.domain.user.application.service.UserService;
 import com.sopt.cherrish.domain.user.exception.UserErrorCode;
 import com.sopt.cherrish.domain.user.presentation.dto.request.UserUpdateRequestDto;
 import com.sopt.cherrish.domain.user.presentation.dto.response.UserResponseDto;
+import com.sopt.cherrish.domain.user.presentation.dto.response.UserSummaryResponseDto;
 import com.sopt.cherrish.global.annotation.ApiExceptions;
 import com.sopt.cherrish.global.response.CommonApiResponse;
 import com.sopt.cherrish.global.response.error.ErrorCode;
@@ -33,15 +34,15 @@ public class UserController {
 
 	@Operation(
 		summary = "사용자 조회",
-		description = "사용자 ID로 사용자 정보를 조회합니다."
+		description = "사용자 이름과 회원가입 경과일을 조회합니다."
 	)
 	@ApiExceptions({UserErrorCode.class, ErrorCode.class})
 	@GetMapping
-	public CommonApiResponse<UserResponseDto> getUser(
+	public CommonApiResponse<UserSummaryResponseDto> getUser(
 		@Parameter(description = "사용자 ID (X-User-Id 헤더)", required = true, example = "1")
 		@RequestHeader("X-User-Id") Long userId
 	) {
-		UserResponseDto response = userService.getUser(userId);
+		UserSummaryResponseDto response = userService.getUser(userId);
 		return CommonApiResponse.success(SuccessCode.SUCCESS, response);
 	}
 

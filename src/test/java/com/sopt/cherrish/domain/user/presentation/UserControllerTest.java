@@ -24,6 +24,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sopt.cherrish.domain.user.application.service.UserService;
 import com.sopt.cherrish.domain.user.presentation.dto.request.UserUpdateRequestDto;
 import com.sopt.cherrish.domain.user.presentation.dto.response.UserResponseDto;
+import com.sopt.cherrish.domain.user.presentation.dto.response.UserSummaryResponseDto;
 
 @WebMvcTest(UserController.class)
 @DisplayName("UserController 통합 테스트")
@@ -43,12 +44,9 @@ class UserControllerTest {
 	void getUserSuccess() throws Exception {
 		// given
 		Long userId = 1L;
-		UserResponseDto response = UserResponseDto.builder()
-			.id(userId)
+		UserSummaryResponseDto response = UserSummaryResponseDto.builder()
 			.name("홍길동")
-			.age(25)
-			.createdAt(LocalDateTime.now())
-			.updatedAt(LocalDateTime.now())
+			.daysSinceSignup(3)
 			.build();
 
 		given(userService.getUser(userId)).willReturn(response);
@@ -58,7 +56,7 @@ class UserControllerTest {
 				.header("X-User-Id", userId))
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.data.name").value("홍길동"))
-			.andExpect(jsonPath("$.data.age").value(25));
+			.andExpect(jsonPath("$.data.daysSinceSignup").value(3));
 	}
 
 	@Test
