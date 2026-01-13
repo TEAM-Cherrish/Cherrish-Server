@@ -16,11 +16,11 @@ import com.sopt.cherrish.domain.challenge.core.presentation.dto.request.RoutineU
 import com.sopt.cherrish.domain.challenge.core.presentation.dto.response.CustomRoutineAddResponseDto;
 import com.sopt.cherrish.domain.challenge.core.presentation.dto.response.RoutineBatchUpdateResponseDto;
 import com.sopt.cherrish.domain.challenge.core.presentation.dto.response.RoutineCompletionResponseDto;
+import com.sopt.cherrish.domain.challenge.core.response.success.ChallengeSuccessCode;
 import com.sopt.cherrish.domain.user.exception.UserErrorCode;
 import com.sopt.cherrish.global.annotation.ApiExceptions;
 import com.sopt.cherrish.global.response.CommonApiResponse;
 import com.sopt.cherrish.global.response.error.ErrorCode;
-import com.sopt.cherrish.global.response.success.SuccessCode;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -52,7 +52,10 @@ public class ChallengeRoutineController {
 	) {
 		RoutineCompletionResponseDto response =
 			challengeRoutineService.toggleCompletion(userId, routineId);
-		return CommonApiResponse.success(SuccessCode.SUCCESS, response);
+		ChallengeSuccessCode successCode = response.isComplete()
+			? ChallengeSuccessCode.ROUTINE_COMPLETED
+			: ChallengeSuccessCode.ROUTINE_UNCOMPLETED;
+		return CommonApiResponse.success(successCode, response);
 	}
 
 	// TODO: Spring Security 추가 시 RequestHeader userId 제거하고 @AuthenticationPrincipal 사용
@@ -69,7 +72,7 @@ public class ChallengeRoutineController {
 		@Valid @RequestBody RoutineUpdateRequestDto request
 	) {
 		RoutineBatchUpdateResponseDto response = challengeRoutineService.updateMultipleRoutines(userId, request);
-		return CommonApiResponse.success(SuccessCode.SUCCESS, response);
+		return CommonApiResponse.success(ChallengeSuccessCode.ROUTINE_BATCH_UPDATED, response);
 	}
 
 	// TODO: Spring Security 추가 시 RequestHeader userId 제거하고 @AuthenticationPrincipal 사용
@@ -87,6 +90,6 @@ public class ChallengeRoutineController {
 		CustomRoutineAddResponseDto response = challengeCustomRoutineFacade.addCustomRoutine(
 			userId, request
 		);
-		return CommonApiResponse.success(SuccessCode.SUCCESS, response);
+		return CommonApiResponse.success(ChallengeSuccessCode.CUSTOM_ROUTINE_ADDED, response);
 	}
 }

@@ -10,11 +10,11 @@ import com.sopt.cherrish.domain.challenge.core.application.facade.ChallengeCreat
 import com.sopt.cherrish.domain.challenge.core.exception.ChallengeErrorCode;
 import com.sopt.cherrish.domain.challenge.core.presentation.dto.request.ChallengeCreateRequestDto;
 import com.sopt.cherrish.domain.challenge.core.presentation.dto.response.ChallengeCreateResponseDto;
+import com.sopt.cherrish.domain.challenge.core.response.success.ChallengeSuccessCode;
 import com.sopt.cherrish.domain.user.exception.UserErrorCode;
 import com.sopt.cherrish.global.annotation.ApiExceptions;
 import com.sopt.cherrish.global.response.CommonApiResponse;
 import com.sopt.cherrish.global.response.error.ErrorCode;
-import com.sopt.cherrish.global.response.success.SuccessCode;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -43,6 +43,6 @@ public class ChallengeLifecycleController {
 		@Valid @RequestBody ChallengeCreateRequestDto request
 	) {
 		ChallengeCreateResponseDto response = challengeCreationFacade.createChallenge(userId, request);
-		return CommonApiResponse.success(SuccessCode.SUCCESS, response);
+		return CommonApiResponse.success(ChallengeSuccessCode.CHALLENGE_CREATED, response);
 	}
 }

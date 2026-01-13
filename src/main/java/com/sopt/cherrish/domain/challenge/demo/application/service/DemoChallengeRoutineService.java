@@ -100,7 +100,7 @@ public class DemoChallengeRoutineService {
 	private List<DemoChallengeRoutine> fetchAndValidateRoutines(List<Long> routineIds) {
 
 		if (routineIds.isEmpty()) {
-				throw new ChallengeException(ChallengeErrorCode.ROUTINE_NOT_FOUND);
+			throw new ChallengeException(ChallengeErrorCode.ROUTINE_NOT_FOUND);
 		}
 
 		// 중복 ID 검증

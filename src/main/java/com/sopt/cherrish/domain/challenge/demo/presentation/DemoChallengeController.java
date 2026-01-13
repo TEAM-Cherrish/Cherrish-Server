@@ -16,6 +16,7 @@ import com.sopt.cherrish.domain.challenge.core.presentation.dto.response.Challen
 import com.sopt.cherrish.domain.challenge.core.presentation.dto.response.ChallengeDetailResponseDto;
 import com.sopt.cherrish.domain.challenge.core.presentation.dto.response.RoutineBatchUpdateResponseDto;
 import com.sopt.cherrish.domain.challenge.core.presentation.dto.response.RoutineCompletionResponseDto;
+import com.sopt.cherrish.domain.challenge.core.response.success.ChallengeSuccessCode;
 import com.sopt.cherrish.domain.challenge.demo.application.facade.DemoChallengeAdvanceDayFacade;
 import com.sopt.cherrish.domain.challenge.demo.application.facade.DemoChallengeCreationFacade;
 import com.sopt.cherrish.domain.challenge.demo.application.facade.DemoChallengeQueryFacade;
@@ -24,7 +25,6 @@ import com.sopt.cherrish.domain.user.exception.UserErrorCode;
 import com.sopt.cherrish.global.annotation.ApiExceptions;
 import com.sopt.cherrish.global.response.CommonApiResponse;
 import com.sopt.cherrish.global.response.error.ErrorCode;
-import com.sopt.cherrish.global.response.success.SuccessCode;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -55,7 +55,7 @@ public class DemoChallengeController {
 		@Valid @RequestBody ChallengeCreateRequestDto request
 	) {
 		ChallengeCreateResponseDto response = creationFacade.createChallenge(userId, request);
-		return CommonApiResponse.success(SuccessCode.SUCCESS, response);
+		return CommonApiResponse.success(ChallengeSuccessCode.CHALLENGE_CREATED, response);
 	}
 
 	@Operation(
@@ -69,7 +69,7 @@ public class DemoChallengeController {
 		@RequestHeader("X-User-Id") Long userId
 	) {
 		ChallengeDetailResponseDto response = queryFacade.getActiveChallengeDetail(userId);
-		return CommonApiResponse.success(SuccessCode.SUCCESS, response);
+		return CommonApiResponse.success(ChallengeSuccessCode.CHALLENGE_RETRIEVED, response);
 	}
 
 	@Operation(
@@ -83,7 +83,7 @@ public class DemoChallengeController {
 		@RequestHeader("X-User-Id") Long userId
 	) {
 		ChallengeDetailResponseDto response = advanceDayFacade.advanceDay(userId);
-		return CommonApiResponse.success(SuccessCode.SUCCESS, response);
+		return CommonApiResponse.success(ChallengeSuccessCode.CHALLENGE_RETRIEVED, response);
 	}
 
 	@Operation(
@@ -100,7 +100,10 @@ public class DemoChallengeController {
 		@PathVariable Long routineId
 	) {
 		RoutineCompletionResponseDto response = routineService.toggleCompletion(userId, routineId);
-		return CommonApiResponse.success(SuccessCode.SUCCESS, response);
+		ChallengeSuccessCode successCode = response.isComplete()
+			? ChallengeSuccessCode.ROUTINE_COMPLETED
+			: ChallengeSuccessCode.ROUTINE_UNCOMPLETED;
+		return CommonApiResponse.success(successCode, response);
 	}
 
 	@Operation(
@@ -117,6 +120,6 @@ public class DemoChallengeController {
 		@Valid @RequestBody RoutineUpdateRequestDto request
 	) {
 		RoutineBatchUpdateResponseDto response = routineService.updateMultipleRoutines(userId, request);
-		return CommonApiResponse.success(SuccessCode.SUCCESS, response);
+		return CommonApiResponse.success(ChallengeSuccessCode.ROUTINE_BATCH_UPDATED, response);
 	}
 }

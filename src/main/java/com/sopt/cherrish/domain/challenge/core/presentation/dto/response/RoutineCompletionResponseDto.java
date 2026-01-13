@@ -14,34 +14,21 @@ public record RoutineCompletionResponseDto(
 	String name,
 
 	@Schema(description = "완료 여부", example = "true")
-	boolean isComplete,
-
-	@Schema(description = "상태 메시지", example = "루틴을 완료했습니다!")
-	String message
+	boolean isComplete
 ) {
 	public static RoutineCompletionResponseDto from(ChallengeRoutine routine) {
-		String message = routine.getIsComplete()
-			? "루틴을 완료했습니다!"
-			: "루틴 완료를 취소했습니다.";
-
 		return new RoutineCompletionResponseDto(
 			routine.getId(),
 			routine.getName(),
-			routine.getIsComplete(),
-			message
+			routine.getIsComplete()
 		);
 	}
 
 	public static RoutineCompletionResponseDto from(DemoChallengeRoutine routine) {
-		String message = routine.getIsComplete()
-			? "루틴을 완료했습니다!"
-			: "루틴 완료를 취소했습니다.";
-
 		return new RoutineCompletionResponseDto(
 			routine.getId(),
 			routine.getName(),
-			routine.getIsComplete(),
-			message
+			routine.getIsComplete()
 		);
 	}
 }
