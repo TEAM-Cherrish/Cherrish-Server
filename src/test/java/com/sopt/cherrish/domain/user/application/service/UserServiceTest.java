@@ -87,6 +87,31 @@ class UserServiceTest {
 	}
 
 	@Test
+	@DisplayName("사용자 조회 성공 - 자정 경계 일차 계산")
+	void getUserSuccessWithMidnightBoundary() {
+		// given
+		Long userId = 1L;
+		LocalDateTime createdAt = LocalDateTime.of(2026, 1, 1, 23, 59, 59);
+		User user = UserFixture.createUser("홍길동", 25, createdAt);
+		ZoneId zoneId = ZoneId.of("Asia/Seoul");
+		Instant fixedInstant = LocalDateTime.of(2026, 1, 2, 0, 0, 1)
+			.atZone(zoneId)
+			.toInstant();
+
+		given(userRepository.findById(userId)).willReturn(Optional.of(user));
+		given(clock.getZone()).willReturn(zoneId);
+		given(clock.instant()).willReturn(fixedInstant);
+
+		// when
+		UserSummaryResponseDto result = userService.getUser(userId);
+
+		// then
+		assertThat(result).isNotNull();
+		assertThat(result.getName()).isEqualTo("홍길동");
+		assertThat(result.getDaysSinceSignup()).isEqualTo(2);
+	}
+
+	@Test
 	@DisplayName("사용자 조회 실패 - 존재하지 않는 사용자")
 	void getUserNotFound() {
 		// given
