@@ -1,6 +1,7 @@
 package com.sopt.cherrish.domain.calendar.presentation;
 
 import static com.sopt.cherrish.domain.calendar.fixture.CalendarTestFixture.createDailyResponseWithSingleEvent;
+import static com.sopt.cherrish.domain.calendar.fixture.CalendarTestFixture.createDowntimeResponse;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -21,6 +22,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import com.sopt.cherrish.domain.calendar.application.service.CalendarService;
 import com.sopt.cherrish.domain.calendar.presentation.dto.response.CalendarDailyResponseDto;
 import com.sopt.cherrish.domain.calendar.presentation.dto.response.CalendarMonthlyResponseDto;
+import com.sopt.cherrish.domain.calendar.presentation.dto.response.ProcedureEventDowntimeResponseDto;
 
 @WebMvcTest(CalendarController.class)
 @DisplayName("CalendarController 통합 테스트")
@@ -99,22 +101,7 @@ class CalendarControllerTest {
 			5L,
 			"레이저 토닝",
 			LocalDateTime.of(2025, 1, 15, 14, 0),
-			9,
-			List.of(
-				LocalDate.of(2025, 1, 15),
-				LocalDate.of(2025, 1, 16),
-				LocalDate.of(2025, 1, 17)
-			),
-			List.of(
-				LocalDate.of(2025, 1, 18),
-				LocalDate.of(2025, 1, 19),
-				LocalDate.of(2025, 1, 20)
-			),
-			List.of(
-				LocalDate.of(2025, 1, 21),
-				LocalDate.of(2025, 1, 22),
-				LocalDate.of(2025, 1, 23)
-			)
+			9
 		);
 
 		given(calendarService.getDailyCalendar(userId, date)).willReturn(response);
@@ -126,16 +113,11 @@ class CalendarControllerTest {
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.data.eventCount").value(1))
 			.andExpect(jsonPath("$.data.events[0].type").value("PROCEDURE"))
-			.andExpect(jsonPath("$.data.events[0].id").value(123))
+			.andExpect(jsonPath("$.data.events[0].userProcedureId").value(123))
 			.andExpect(jsonPath("$.data.events[0].procedureId").value(5))
 			.andExpect(jsonPath("$.data.events[0].name").value("레이저 토닝"))
-			.andExpect(jsonPath("$.data.events[0].downtimeDays").value(9))
-			.andExpect(jsonPath("$.data.events[0].sensitiveDays").isArray())
-			.andExpect(jsonPath("$.data.events[0].sensitiveDays.length()").value(3))
-			.andExpect(jsonPath("$.data.events[0].cautionDays").isArray())
-			.andExpect(jsonPath("$.data.events[0].cautionDays.length()").value(3))
-			.andExpect(jsonPath("$.data.events[0].recoveryDays").isArray())
-			.andExpect(jsonPath("$.data.events[0].recoveryDays.length()").value(3));
+			.andExpect(jsonPath("$.data.events[0].scheduledAt").value("2025-01-15T14:00:00"))
+			.andExpect(jsonPath("$.data.events[0].downtimeDays").value(9));
 	}
 
 	@Test
@@ -161,5 +143,49 @@ class CalendarControllerTest {
 				.header("X-User-Id", 1L)
 				.param("date", "2025/01/15"))
 			.andExpect(status().isBadRequest());
+	}
+
+	@Test
+	@DisplayName("시술 다운타임 상세 조회 성공")
+	void getEventDowntimeSuccess() throws Exception {
+		// given
+		Long userId = 1L;
+		Long userProcedureId = 123L;
+
+		ProcedureEventDowntimeResponseDto response = createDowntimeResponse(
+			userProcedureId,
+			LocalDateTime.of(2025, 1, 15, 14, 0),
+			9,
+			List.of(
+				LocalDate.of(2025, 1, 15),
+				LocalDate.of(2025, 1, 16),
+				LocalDate.of(2025, 1, 17)
+			),
+			List.of(
+				LocalDate.of(2025, 1, 18),
+				LocalDate.of(2025, 1, 19),
+				LocalDate.of(2025, 1, 20)
+			),
+			List.of(
+				LocalDate.of(2025, 1, 21),
+				LocalDate.of(2025, 1, 22),
+				LocalDate.of(2025, 1, 23)
+			)
+		);
+
+		given(calendarService.getEventDowntime(userId, userProcedureId)).willReturn(response);
+
+		// when & then
+		mockMvc.perform(get("/api/calendar/events/{id}/downtime", userProcedureId)
+				.header("X-User-Id", userId))
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.data.userProcedureId").value(123))
+			.andExpect(jsonPath("$.data.downtimeDays").value(9))
+			.andExpect(jsonPath("$.data.sensitiveDays").isArray())
+			.andExpect(jsonPath("$.data.sensitiveDays.length()").value(3))
+			.andExpect(jsonPath("$.data.cautionDays").isArray())
+			.andExpect(jsonPath("$.data.cautionDays.length()").value(3))
+			.andExpect(jsonPath("$.data.recoveryDays").isArray())
+			.andExpect(jsonPath("$.data.recoveryDays.length()").value(3));
 	}
 }

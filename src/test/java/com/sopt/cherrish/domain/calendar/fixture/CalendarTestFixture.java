@@ -6,6 +6,7 @@ import java.util.List;
 
 import com.sopt.cherrish.domain.calendar.domain.model.CalendarEventType;
 import com.sopt.cherrish.domain.calendar.presentation.dto.response.CalendarDailyResponseDto;
+import com.sopt.cherrish.domain.calendar.presentation.dto.response.ProcedureEventDowntimeResponseDto;
 import com.sopt.cherrish.domain.calendar.presentation.dto.response.ProcedureEventResponseDto;
 import com.sopt.cherrish.domain.procedure.domain.model.Procedure;
 import com.sopt.cherrish.domain.user.domain.model.User;
@@ -44,27 +45,39 @@ public class CalendarTestFixture {
 	}
 
 	public static CalendarDailyResponseDto createDailyResponseWithSingleEvent(
-		Long eventId,
+		Long userProcedureId,
 		Long procedureId,
 		String procedureName,
+		LocalDateTime scheduledAt,
+		int downtimeDays
+	) {
+		ProcedureEventResponseDto event = ProcedureEventResponseDto.builder()
+			.type(CalendarEventType.PROCEDURE)
+			.userProcedureId(userProcedureId)
+			.procedureId(procedureId)
+			.name(procedureName)
+			.scheduledAt(scheduledAt)
+			.downtimeDays(downtimeDays)
+			.build();
+
+		return CalendarDailyResponseDto.from(List.of(event));
+	}
+
+	public static ProcedureEventDowntimeResponseDto createDowntimeResponse(
+		Long userProcedureId,
 		LocalDateTime scheduledAt,
 		int downtimeDays,
 		List<LocalDate> sensitiveDays,
 		List<LocalDate> cautionDays,
 		List<LocalDate> recoveryDays
 	) {
-		ProcedureEventResponseDto event = ProcedureEventResponseDto.builder()
-			.type(CalendarEventType.PROCEDURE)
-			.id(eventId)
-			.procedureId(procedureId)
-			.name(procedureName)
+		return ProcedureEventDowntimeResponseDto.builder()
+			.userProcedureId(userProcedureId)
 			.scheduledAt(scheduledAt)
 			.downtimeDays(downtimeDays)
 			.sensitiveDays(sensitiveDays)
 			.cautionDays(cautionDays)
 			.recoveryDays(recoveryDays)
 			.build();
-
-		return CalendarDailyResponseDto.from(List.of(event));
 	}
 }

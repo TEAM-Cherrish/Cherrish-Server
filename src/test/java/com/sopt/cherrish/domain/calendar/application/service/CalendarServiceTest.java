@@ -11,6 +11,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -23,6 +24,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.sopt.cherrish.domain.calendar.presentation.dto.response.CalendarDailyResponseDto;
 import com.sopt.cherrish.domain.calendar.presentation.dto.response.CalendarMonthlyResponseDto;
+import com.sopt.cherrish.domain.calendar.presentation.dto.response.ProcedureEventDowntimeResponseDto;
 import com.sopt.cherrish.domain.procedure.domain.model.Procedure;
 import com.sopt.cherrish.domain.user.domain.model.User;
 import com.sopt.cherrish.domain.user.domain.repository.UserRepository;
@@ -30,6 +32,8 @@ import com.sopt.cherrish.domain.user.exception.UserErrorCode;
 import com.sopt.cherrish.domain.user.exception.UserException;
 import com.sopt.cherrish.domain.userprocedure.domain.model.UserProcedure;
 import com.sopt.cherrish.domain.userprocedure.domain.repository.UserProcedureRepository;
+import com.sopt.cherrish.domain.userprocedure.exception.UserProcedureErrorCode;
+import com.sopt.cherrish.domain.userprocedure.exception.UserProcedureException;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("CalendarService 단위 테스트")
@@ -117,19 +121,13 @@ class CalendarServiceTest {
 		assertThat(result.getEventCount()).isEqualTo(2);
 		assertThat(result.getEvents()).hasSize(2);
 
-		// 첫 번째 시술 검증 (다운타임 9일 -> 민감기 3일, 주의기 3일, 회복기 3일)
+		// 첫 번째 시술 검증
 		assertThat(result.getEvents().get(0).getName()).isEqualTo("레이저 토닝");
 		assertThat(result.getEvents().get(0).getDowntimeDays()).isEqualTo(9);
-		assertThat(result.getEvents().get(0).getSensitiveDays()).hasSize(3);
-		assertThat(result.getEvents().get(0).getCautionDays()).hasSize(3);
-		assertThat(result.getEvents().get(0).getRecoveryDays()).hasSize(3);
 
-		// 두 번째 시술 검증 (다운타임 6일 -> 민감기 2일, 주의기 2일, 회복기 2일)
+		// 두 번째 시술 검증
 		assertThat(result.getEvents().get(1).getName()).isEqualTo("필러");
 		assertThat(result.getEvents().get(1).getDowntimeDays()).isEqualTo(6);
-		assertThat(result.getEvents().get(1).getSensitiveDays()).hasSize(2);
-		assertThat(result.getEvents().get(1).getCautionDays()).hasSize(2);
-		assertThat(result.getEvents().get(1).getRecoveryDays()).hasSize(2);
 	}
 
 	@Test
@@ -153,13 +151,13 @@ class CalendarServiceTest {
 	}
 
 	@ParameterizedTest
-	@DisplayName("일자별 시술 상세 조회 성공 - 다운타임 기간 계산 검증")
+	@DisplayName("시술 다운타임 상세 조회 성공 - 다운타임 기간 계산 검증")
 	@CsvSource({
 		"0, 0, 0, 0",  // 다운타임 0일 -> 빈 리스트
 		"7, 3, 2, 2",  // 7일 -> 7/3=2...1 -> 민감기 3, 주의기 2, 회복기 2
 		"8, 3, 3, 2"   // 8일 -> 8/3=2...2 -> 민감기 3, 주의기 3, 회복기 2
 	})
-	void getDailyCalendarDowntimeVariations(
+	void getEventDowntimeVariations(
 		int downtimeDays,
 		int expectedSensitive,
 		int expectedCaution,
@@ -167,7 +165,7 @@ class CalendarServiceTest {
 	) {
 		// given
 		Long userId = 1L;
-		LocalDate date = LocalDate.of(2025, 1, 15);
+		Long userProcedureId = 101L;
 
 		User mockUser = createMockUser("테스트 사용자", 25);
 		Procedure mockProcedure = createMockProcedure("레이저 토닝");
@@ -175,17 +173,17 @@ class CalendarServiceTest {
 			mockUser, mockProcedure, LocalDateTime.of(2025, 1, 15, 14, 0), downtimeDays);
 
 		given(userRepository.existsById(userId)).willReturn(true);
-		given(userProcedureRepository.findDailyProcedures(userId, date))
-			.willReturn(List.of(userProcedure));
+		given(userProcedureRepository.findByIdAndUserIdWithProcedure(userProcedureId, userId))
+			.willReturn(Optional.of(userProcedure));
 
 		// when
-		CalendarDailyResponseDto result = calendarService.getDailyCalendar(userId, date);
+		ProcedureEventDowntimeResponseDto result = calendarService.getEventDowntime(userId, userProcedureId);
 
 		// then
-		assertThat(result.getEvents().get(0).getDowntimeDays()).isEqualTo(downtimeDays);
-		assertThat(result.getEvents().get(0).getSensitiveDays()).hasSize(expectedSensitive);
-		assertThat(result.getEvents().get(0).getCautionDays()).hasSize(expectedCaution);
-		assertThat(result.getEvents().get(0).getRecoveryDays()).hasSize(expectedRecovery);
+		assertThat(result.getDowntimeDays()).isEqualTo(downtimeDays);
+		assertThat(result.getSensitiveDays()).hasSize(expectedSensitive);
+		assertThat(result.getCautionDays()).hasSize(expectedCaution);
+		assertThat(result.getRecoveryDays()).hasSize(expectedRecovery);
 	}
 
 	@Test
@@ -201,5 +199,22 @@ class CalendarServiceTest {
 		assertThatThrownBy(() -> calendarService.getDailyCalendar(userId, date))
 			.isInstanceOf(UserException.class)
 			.hasFieldOrPropertyWithValue("errorCode", UserErrorCode.USER_NOT_FOUND);
+	}
+
+	@Test
+	@DisplayName("시술 다운타임 상세 조회 실패 - 존재하지 않는 시술 일정")
+	void getEventDowntimeNotFound() {
+		// given
+		Long userId = 1L;
+		Long userProcedureId = 404L;
+
+		given(userRepository.existsById(userId)).willReturn(true);
+		given(userProcedureRepository.findByIdAndUserIdWithProcedure(userProcedureId, userId))
+			.willReturn(Optional.empty());
+
+		// when & then
+		assertThatThrownBy(() -> calendarService.getEventDowntime(userId, userProcedureId))
+			.isInstanceOf(UserProcedureException.class)
+			.hasFieldOrPropertyWithValue("errorCode", UserProcedureErrorCode.USER_PROCEDURE_NOT_FOUND);
 	}
 }
