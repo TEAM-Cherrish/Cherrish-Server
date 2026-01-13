@@ -1,5 +1,9 @@
 package com.sopt.cherrish.domain.user.application.service;
 
+import java.time.Clock;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -9,6 +13,7 @@ import com.sopt.cherrish.domain.user.exception.UserErrorCode;
 import com.sopt.cherrish.domain.user.exception.UserException;
 import com.sopt.cherrish.domain.user.presentation.dto.request.UserUpdateRequestDto;
 import com.sopt.cherrish.domain.user.presentation.dto.response.UserResponseDto;
+import com.sopt.cherrish.domain.user.presentation.dto.response.UserSummaryResponseDto;
 
 import lombok.RequiredArgsConstructor;
 
@@ -18,6 +23,7 @@ import lombok.RequiredArgsConstructor;
 public class UserService {
 
 	private final UserRepository userRepository;
+	private final Clock clock;
 
 	/**
 	 * 사용자 존재 여부 검증
@@ -35,13 +41,18 @@ public class UserService {
 	 * 사용자 조회
 	 *
 	 * @param id 사용자 ID
-	 * @return 사용자 정보
+	 * @return 사용자 요약 정보
 	 * @throws UserException 사용자를 찾을 수 없는 경우
 	 */
-	public UserResponseDto getUser(Long id) {
+	public UserSummaryResponseDto getUser(Long id) {
 		User user = userRepository.findById(id)
 			.orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
-		return UserResponseDto.from(user);
+		LocalDate today = LocalDate.now(clock);
+		int daysSinceSignup = (int) ChronoUnit.DAYS.between(
+			user.getCreatedAt().toLocalDate(),
+			today
+		) + 1;
+		return UserSummaryResponseDto.from(user, daysSinceSignup);
 	}
 
 	/**
