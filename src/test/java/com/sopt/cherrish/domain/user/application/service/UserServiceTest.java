@@ -8,6 +8,7 @@ import static org.mockito.BDDMockito.verify;
 
 import java.time.Clock;
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Optional;
 
@@ -60,6 +61,29 @@ class UserServiceTest {
 		assertThat(result).isNotNull();
 		assertThat(result.getName()).isEqualTo("홍길동");
 		assertThat(result.getDaysSinceSignup()).isEqualTo(1);
+	}
+
+	@Test
+	@DisplayName("사용자 조회 성공 - 가입 N일차 계산")
+	void getUserSuccessWithElapsedDays() {
+		// given
+		Long userId = 1L;
+		LocalDateTime createdAt = LocalDateTime.of(2026, 1, 1, 10, 0, 0);
+		User user = UserFixture.createUser("홍길동", 25, createdAt);
+		ZoneId zoneId = ZoneId.of("Asia/Seoul");
+		Instant fixedInstant = createdAt.plusDays(2).atZone(zoneId).toInstant();
+
+		given(userRepository.findById(userId)).willReturn(Optional.of(user));
+		given(clock.getZone()).willReturn(zoneId);
+		given(clock.instant()).willReturn(fixedInstant);
+
+		// when
+		UserSummaryResponseDto result = userService.getUser(userId);
+
+		// then
+		assertThat(result).isNotNull();
+		assertThat(result.getName()).isEqualTo("홍길동");
+		assertThat(result.getDaysSinceSignup()).isEqualTo(3);
 	}
 
 	@Test
