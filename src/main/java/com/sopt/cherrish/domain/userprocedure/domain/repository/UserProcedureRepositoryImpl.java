@@ -58,7 +58,7 @@ public class UserProcedureRepositoryImpl implements UserProcedureRepositoryCusto
 				userProcedure.scheduledAt.goe(startOfDay),
 				userProcedure.scheduledAt.lt(endOfDay)
 			)
-			.orderBy(userProcedure.scheduledAt.asc())
+			.orderBy(userProcedure.createdAt.desc())
 			.fetch();
 	}
 
