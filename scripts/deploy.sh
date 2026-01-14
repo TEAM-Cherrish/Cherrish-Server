@@ -1,21 +1,15 @@
 #!/bin/bash
 set -euo pipefail
 
-# Variables (passed from SSM or environment)
+# Variables
 AWS_REGION="${AWS_REGION:-ap-northeast-2}"
 ECR_REGISTRY="${ECR_REGISTRY}"
 IMAGE_TAG="${IMAGE_TAG:-latest}"
-APP_DIR="/home/ec2-user/cherrish"
 CONTAINER_NAME="cherrish-server"
+IMAGE="${ECR_REGISTRY}:${IMAGE_TAG}"
 
 echo "=== Cherrish Server Deployment ==="
-echo "Region: ${AWS_REGION}"
-echo "Registry: ${ECR_REGISTRY}"
-echo "Tag: ${IMAGE_TAG}"
-
-# Ensure app directory exists
-mkdir -p "${APP_DIR}"
-cd "${APP_DIR}"
+echo "Image: ${IMAGE}"
 
 # ECR Login
 echo "Logging in to ECR..."
@@ -23,54 +17,52 @@ REGISTRY_HOST="${ECR_REGISTRY%%/*}"
 aws ecr get-login-password --region "${AWS_REGION}" | \
   docker login --username AWS --password-stdin "${REGISTRY_HOST}"
 
-# Fetch environment variables from Parameter Store
-echo "Fetching environment variables from Parameter Store..."
-export DB_HOST=$(aws ssm get-parameter --name "/cherrish/DB_HOST" --region "${AWS_REGION}" --query "Parameter.Value" --output text)
-export DB_PORT=$(aws ssm get-parameter --name "/cherrish/DB_PORT" --region "${AWS_REGION}" --query "Parameter.Value" --output text)
-export DB_NAME=$(aws ssm get-parameter --name "/cherrish/DB_NAME" --region "${AWS_REGION}" --query "Parameter.Value" --output text)
-export DB_USERNAME=$(aws ssm get-parameter --name "/cherrish/DB_USERNAME" --region "${AWS_REGION}" --query "Parameter.Value" --output text)
-export DB_PASSWORD=$(aws ssm get-parameter --name "/cherrish/DB_PASSWORD" --region "${AWS_REGION}" --with-decryption --query "Parameter.Value" --output text)
-export OPENAI_API_KEY=$(aws ssm get-parameter --name "/cherrish/OPENAI_API_KEY" --region "${AWS_REGION}" --with-decryption --query "Parameter.Value" --output text)
-export OPENAI_MODEL=$(aws ssm get-parameter --name "/cherrish/OPENAI_MODEL" --region "${AWS_REGION}" --query "Parameter.Value" --output text)
-
-# Create .env file for docker-compose
-cat > "${APP_DIR}/.env" << EOF
-ECR_REGISTRY=${ECR_REGISTRY}
-IMAGE_TAG=${IMAGE_TAG}
-DB_HOST=${DB_HOST}
-DB_PORT=${DB_PORT}
-DB_NAME=${DB_NAME}
-DB_USERNAME=${DB_USERNAME}
-DB_PASSWORD=${DB_PASSWORD}
-OPENAI_API_KEY=${OPENAI_API_KEY}
-OPENAI_MODEL=${OPENAI_MODEL}
-EOF
-
 # Pull latest image
-echo "Pulling latest image..."
-docker compose -f docker-compose.prod.yml pull app
+echo "Pulling image..."
+docker pull "${IMAGE}"
 
-# Stop and remove existing container if exists
-if docker ps -aq -f "name=^${CONTAINER_NAME}$" | grep -q .; then
-  echo "Stopping existing container..."
-  docker rm -f "${CONTAINER_NAME}" || true
-fi
+# Fetch environment variables from Parameter Store
+echo "Fetching environment variables..."
+DB_HOST=$(aws ssm get-parameter --name "/cherrish/DB_HOST" --region "${AWS_REGION}" --query "Parameter.Value" --output text)
+DB_PORT=$(aws ssm get-parameter --name "/cherrish/DB_PORT" --region "${AWS_REGION}" --query "Parameter.Value" --output text)
+DB_NAME=$(aws ssm get-parameter --name "/cherrish/DB_NAME" --region "${AWS_REGION}" --query "Parameter.Value" --output text)
+DB_USERNAME=$(aws ssm get-parameter --name "/cherrish/DB_USERNAME" --region "${AWS_REGION}" --query "Parameter.Value" --output text)
+DB_PASSWORD=$(aws ssm get-parameter --name "/cherrish/DB_PASSWORD" --region "${AWS_REGION}" --with-decryption --query "Parameter.Value" --output text)
+OPENAI_API_KEY=$(aws ssm get-parameter --name "/cherrish/OPENAI_API_KEY" --region "${AWS_REGION}" --with-decryption --query "Parameter.Value" --output text)
+OPENAI_MODEL=$(aws ssm get-parameter --name "/cherrish/OPENAI_MODEL" --region "${AWS_REGION}" --query "Parameter.Value" --output text)
+
+# Stop and remove existing container
+echo "Stopping existing container..."
+docker rm -f "${CONTAINER_NAME}" 2>/dev/null || true
 
 # Start new container
 echo "Starting new container..."
-docker compose -f docker-compose.prod.yml up -d app
-1
+docker run -d \
+  --name "${CONTAINER_NAME}" \
+  --restart unless-stopped \
+  -p 8080:8080 \
+  -e SPRING_PROFILES_ACTIVE=prod \
+  -e DB_HOST="${DB_HOST}" \
+  -e DB_PORT="${DB_PORT}" \
+  -e DB_NAME="${DB_NAME}" \
+  -e DB_USERNAME="${DB_USERNAME}" \
+  -e DB_PASSWORD="${DB_PASSWORD}" \
+  -e OPENAI_API_KEY="${OPENAI_API_KEY}" \
+  -e OPENAI_MODEL="${OPENAI_MODEL}" \
+  "${IMAGE}"
+
 # Cleanup old images
 echo "Cleaning up old images..."
 docker image prune -f
 
 # Health check
-echo "Waiting for health check..."
+echo "Waiting for application to start..."
 sleep 30
-if curl -sf http://localhost:8080/actuator/health > /dev/null; then
+
+if curl -sf http://localhost:8080/actuator/health > /dev/null 2>&1; then
   echo "Deployment successful!"
 else
-  echo "Health check failed!"
-  docker logs "${CONTAINER_NAME}" --tail 50
+  echo "Health check failed. Container logs:"
+  docker logs "${CONTAINER_NAME}" --tail 100
   exit 1
 fi

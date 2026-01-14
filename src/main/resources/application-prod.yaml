@@ -6,6 +6,8 @@ spring:
       hibernate:
         format_sql: false
     open-in-view: false
+  swagger:
+    base-url: ${SERVER_URL:http://localhost:8080}
 
 management:
   endpoints:
