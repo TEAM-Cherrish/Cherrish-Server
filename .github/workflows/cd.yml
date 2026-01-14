@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - develop
-      - test/deploy
 
 permissions:
   id-token: write
@@ -59,10 +58,13 @@ jobs:
             --instance-ids "${{ secrets.EC2_INSTANCE_ID }}" \
             --document-name "AWS-RunShellScript" \
             --parameters "commands=[
+              'cd /home/ec2-user/cherrish',
+              'curl -fsSL https://raw.githubusercontent.com/${{ github.repository }}/${{ github.sha }}/scripts/deploy.sh -o deploy.sh',
+              'chmod +x deploy.sh',
               'export AWS_REGION=${{ env.AWS_REGION }}',
               'export ECR_REGISTRY=${ECR_REGISTRY}',
               'export IMAGE_TAG=${IMAGE_TAG}',
-              'cd /home/ec2-user/cherrish && bash deploy.sh'
+              'bash deploy.sh'
             ]" \
             --timeout-seconds 300 \
             --query "Command.CommandId" \
@@ -118,7 +120,7 @@ jobs:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL }}
         run: |
           curl -H "Content-Type: application/json" \
-            -d "{\"embeds\": [{\"title\": \"🚀 Deploy Success\", \"description\": \"Cherrish Server deployed to production\", \"color\": 3066993, \"fields\": [{\"name\": \"Branch\", \"value\": \"develop\", \"inline\": true}, {\"name\": \"Commit\", \"value\": \"\`${GITHUB_SHA:0:7}\`\", \"inline\": true}], \"timestamp\": \"$(date -u +%Y-%m-%dT%H:%M:%S.000Z)\"}]}" \
+            -d "{\"embeds\": [{\"title\": \"🚀 Deploy Success\", \"description\": \"Cherrish Server deployed to production\", \"color\": 3066993, \"fields\": [{\"name\": \"Branch\", \"value\": \"${{ github.ref_name }}\", \"inline\": true}, {\"name\": \"Commit\", \"value\": \"\`${GITHUB_SHA:0:7}\`\", \"inline\": true}], \"timestamp\": \"$(date -u +%Y-%m-%dT%H:%M:%S.000Z)\"}]}" \
             $DISCORD_WEBHOOK || true
 
       - name: Send Discord notification on failure
@@ -127,5 +129,5 @@ jobs:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL }}
         run: |
           curl -H "Content-Type: application/json" \
-            -d "{\"embeds\": [{\"title\": \"❌ Deploy Failed\", \"description\": \"Cherrish Server deployment failed\", \"color\": 15158332, \"fields\": [{\"name\": \"Branch\", \"value\": \"develop\", \"inline\": true}, {\"name\": \"Commit\", \"value\": \"\`${GITHUB_SHA:0:7}\`\", \"inline\": true}], \"timestamp\": \"$(date -u +%Y-%m-%dT%H:%M:%S.000Z)\"}]}" \
+            -d "{\"embeds\": [{\"title\": \"❌ Deploy Failed\", \"description\": \"Cherrish Server deployment failed\", \"color\": 15158332, \"fields\": [{\"name\": \"Branch\", \"value\": \"${{ github.ref_name }}\", \"inline\": true}, {\"name\": \"Commit\", \"value\": \"\`${GITHUB_SHA:0:7}\`\", \"inline\": true}], \"timestamp\": \"$(date -u +%Y-%m-%dT%H:%M:%S.000Z)\"}]}" \
             $DISCORD_WEBHOOK || true

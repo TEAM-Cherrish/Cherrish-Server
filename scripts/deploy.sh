@@ -55,14 +55,25 @@ docker run -d \
 echo "Cleaning up old images..."
 docker image prune -f
 
-# Health check
+# Health check with retry
 echo "Waiting for application to start..."
-sleep 30
+MAX_RETRIES=10
+RETRY_INTERVAL=10
 
-if curl -sf http://localhost:8080/actuator/health > /dev/null 2>&1; then
-  echo "Deployment successful!"
-else
-  echo "Health check failed. Container logs:"
-  docker logs "${CONTAINER_NAME}" --tail 100
-  exit 1
-fi
+for i in $(seq 1 $MAX_RETRIES); do
+  echo "Health check attempt ${i}/${MAX_RETRIES}..."
+
+  if curl -sf http://localhost:8080/actuator/health > /dev/null 2>&1; then
+    echo "Deployment successful!"
+    exit 0
+  fi
+
+  if [ $i -lt $MAX_RETRIES ]; then
+    echo "Not ready yet, waiting ${RETRY_INTERVAL}s..."
+    sleep $RETRY_INTERVAL
+  fi
+done
+
+echo "Health check failed after ${MAX_RETRIES} attempts. Container logs:"
+docker logs "${CONTAINER_NAME}" --tail 100
+exit 1
