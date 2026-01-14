@@ -18,6 +18,9 @@ public class MainDashboardResponseDto {
 	@JsonFormat(pattern = "yyyy-MM-dd")
 	private LocalDate date;
 
+	@Schema(description = "진행 중인 챌린지 이름 (없으면 null)", example = "7일 보습 챌린지")
+	private String challengeName;
+
 	@Schema(description = "체리 레벨 (1-4, 챌린지 없으면 0)", example = "2")
 	private Integer cherryLevel;
 
@@ -34,11 +37,13 @@ public class MainDashboardResponseDto {
 		LocalDate today,
 		Integer cherryLevel,
 		Double challengeRate,
+		String challengeName,
 		List<RecentProcedureResponseDto> recentProcedures,
 		List<UpcomingProcedureResponseDto> upcomingProcedures
 	) {
 		return MainDashboardResponseDto.builder()
 			.date(today)
+			.challengeName(challengeName)
 			.cherryLevel(cherryLevel)
 			.challengeRate(challengeRate)
 			.recentProcedures(recentProcedures)

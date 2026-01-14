@@ -54,6 +54,7 @@ public class MainDashboardFacade {
 		// 3. 챌린지 데이터 (활성 챌린지 없으면 0)
 		Integer cherryLevel = 0;
 		Double challengeRate = 0.0;
+		String challengeName = null;
 
 		var challengeOpt = challengeService.findActiveChallengeWithStatistics(userId);
 		if (challengeOpt.isPresent()) {
@@ -61,6 +62,7 @@ public class MainDashboardFacade {
 			ChallengeStatistics stats = challenge.getStatistics();
 			cherryLevel = stats.calculateCherryLevel();
 			challengeRate = stats.getProgressPercentage();
+			challengeName = challenge.getTitle();
 		} else {
 			log.info("사용자 {}의 활성 챌린지 없음 (cherryLevel=0)", userId);
 		}
@@ -96,7 +98,7 @@ public class MainDashboardFacade {
 
 		// 6. 응답 생성
 		return MainDashboardResponseDto.from(
-			today, cherryLevel, challengeRate,
+			today, cherryLevel, challengeRate, challengeName,
 			recentProcedures, upcomingProcedures
 		);
 	}
