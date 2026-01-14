@@ -39,6 +39,7 @@ class MainDashboardControllerTest {
 		// given
 		Long userId = 1L;
 		LocalDate today = LocalDate.of(2026, 1, 15);
+		String dayOfWeek = today.getDayOfWeek().name();
 		RecentProcedureResponseDto recent = RecentProcedureResponseDto.builder()
 			.name("레이저 토닝")
 			.daysSince(2)
@@ -66,6 +67,7 @@ class MainDashboardControllerTest {
 				.header("X-User-Id", userId))
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.data.date").value("2026-01-15"))
+			.andExpect(jsonPath("$.data.dayOfWeek").value(dayOfWeek))
 			.andExpect(jsonPath("$.data.cherryLevel").value(3))
 			.andExpect(jsonPath("$.data.challengeRate").value(55.5))
 			.andExpect(jsonPath("$.data.challengeName").value("7일 보습 챌린지"))
