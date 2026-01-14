@@ -4,6 +4,7 @@ plugins {
 	id 'io.spring.dependency-management' version '1.1.7'
 	id 'jacoco'
 	id 'checkstyle'
+	id 'com.google.cloud.tools.jib' version '3.5.2'
 }
 
 group = 'com.sopt'
@@ -25,6 +26,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
 
 	// Database
 	runtimeOnly 'org.postgresql:postgresql'
@@ -55,14 +57,6 @@ dependencies {
 
 tasks.named('test') {
 	useJUnitPlatform()
-}
-
-tasks.named('bootBuildImage') {
-	imageName = "${project.name}:${project.version}"
-
-	environment = [
-		'BP_JVM_VERSION': '21'
-	]
 }
 
 // JaCoCo Configuration
@@ -121,4 +115,23 @@ tasks.withType(JavaCompile).configureEach {
 
 clean {
 	delete file(querydslDir)
+}
+
+// Jib Configuration (Docker image build without Dockerfile)
+jib {
+	from {
+		image = 'eclipse-temurin:21-jre'
+	}
+	to {
+		image = "${System.getenv('ECR_REGISTRY') ?: 'cherrish-server'}"
+		tags = ['latest', project.version.toString()]
+	}
+	container {
+		jvmFlags = ['-Djava.security.egd=file:/dev/./urandom']
+		ports = ['8080']
+		environment = [
+			'TZ': 'Asia/Seoul'
+		]
+		creationTime = 'USE_CURRENT_TIMESTAMP'
+	}
 }
