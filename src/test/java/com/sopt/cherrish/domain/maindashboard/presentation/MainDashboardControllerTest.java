@@ -54,6 +54,7 @@ class MainDashboardControllerTest {
 			today,
 			3,
 			55.5,
+			"7일 보습 챌린지",
 			List.of(recent),
 			List.of(upcoming)
 		);
@@ -67,6 +68,7 @@ class MainDashboardControllerTest {
 			.andExpect(jsonPath("$.data.date").value("2026-01-15"))
 			.andExpect(jsonPath("$.data.cherryLevel").value(3))
 			.andExpect(jsonPath("$.data.challengeRate").value(55.5))
+			.andExpect(jsonPath("$.data.challengeName").value("7일 보습 챌린지"))
 			.andExpect(jsonPath("$.data.recentProcedures[0].name").value("레이저 토닝"))
 			.andExpect(jsonPath("$.data.upcomingProcedures[0].name").value("보톡스"));
 	}
@@ -95,6 +97,7 @@ class MainDashboardControllerTest {
 			today,
 			0,  // cherryLevel = 0
 			0.0,
+			null,
 			List.of(),
 			List.of()
 		);
@@ -128,6 +131,7 @@ class MainDashboardControllerTest {
 			today,
 			2,
 			45.0,
+			"7일 보습 챌린지",
 			List.of(),  // 빈 리스트
 			List.of(upcoming)
 		);
@@ -158,6 +162,7 @@ class MainDashboardControllerTest {
 			today,
 			3,
 			60.0,
+			"7일 보습 챌린지",
 			List.of(recent),
 			List.of()  // 빈 리스트
 		);

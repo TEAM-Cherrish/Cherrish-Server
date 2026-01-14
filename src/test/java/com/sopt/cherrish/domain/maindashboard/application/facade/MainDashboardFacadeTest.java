@@ -79,6 +79,7 @@ class MainDashboardFacadeTest {
 		// then
 		assertThat(result.getCherryLevel()).isEqualTo(0);
 		assertThat(result.getChallengeRate()).isEqualTo(0.0);
+		assertThat(result.getChallengeName()).isNull();
 		assertThat(result.getRecentProcedures()).isEmpty();
 		assertThat(result.getUpcomingProcedures()).isEmpty();
 	}
@@ -109,6 +110,7 @@ class MainDashboardFacadeTest {
 		// then
 		assertThat(result.getCherryLevel()).isEqualTo(0);
 		assertThat(result.getChallengeRate()).isEqualTo(0.0);
+		assertThat(result.getChallengeName()).isNull();
 		assertThat(result.getRecentProcedures()).isNotNull();
 	}
 
@@ -122,6 +124,7 @@ class MainDashboardFacadeTest {
 		given(challengeService.findActiveChallengeWithStatistics(userId))
 			.willReturn(Optional.of(challenge));
 		given(challenge.getStatistics()).willReturn(stats);
+		given(challenge.getTitle()).willReturn("7일 보습 챌린지");
 		given(stats.calculateCherryLevel()).willReturn(2);
 		given(stats.getProgressPercentage()).willReturn(40.0);
 
@@ -148,6 +151,7 @@ class MainDashboardFacadeTest {
 		MainDashboardResponseDto result = mainDashboardFacade.getMainDashboard(userId);
 
 		// then
+		assertThat(result.getChallengeName()).isEqualTo("7일 보습 챌린지");
 		assertThat(result.getRecentProcedures()).isEmpty();
 		assertThat(result.getUpcomingProcedures()).hasSize(1);
 	}
@@ -162,6 +166,7 @@ class MainDashboardFacadeTest {
 		given(challengeService.findActiveChallengeWithStatistics(userId))
 			.willReturn(Optional.of(challenge));
 		given(challenge.getStatistics()).willReturn(stats);
+		given(challenge.getTitle()).willReturn("7일 보습 챌린지");
 		given(stats.calculateCherryLevel()).willReturn(1);
 		given(stats.getProgressPercentage()).willReturn(10.0);
 
@@ -181,6 +186,7 @@ class MainDashboardFacadeTest {
 		MainDashboardResponseDto result = mainDashboardFacade.getMainDashboard(userId);
 
 		// then
+		assertThat(result.getChallengeName()).isEqualTo("7일 보습 챌린지");
 		assertThat(result.getUpcomingProcedures()).isEmpty();
 		assertThat(result.getRecentProcedures()).isNotNull();
 	}
@@ -195,6 +201,7 @@ class MainDashboardFacadeTest {
 		given(challengeService.findActiveChallengeWithStatistics(userId))
 			.willReturn(Optional.of(challenge));
 		given(challenge.getStatistics()).willReturn(stats);
+		given(challenge.getTitle()).willReturn("7일 보습 챌린지");
 		given(stats.calculateCherryLevel()).willReturn(3);
 		given(stats.getProgressPercentage()).willReturn(65.0);
 
@@ -232,6 +239,7 @@ class MainDashboardFacadeTest {
 		// then
 		assertThat(result.getCherryLevel()).isEqualTo(3);
 		assertThat(result.getChallengeRate()).isEqualTo(65.0);
+		assertThat(result.getChallengeName()).isEqualTo("7일 보습 챌린지");
 
 		List<RecentProcedureResponseDto> recent = result.getRecentProcedures();
 		assertThat(recent).hasSize(3);
@@ -259,6 +267,7 @@ class MainDashboardFacadeTest {
 		given(challengeService.findActiveChallengeWithStatistics(userId))
 			.willReturn(Optional.of(challenge));
 		given(challenge.getStatistics()).willReturn(stats);
+		given(challenge.getTitle()).willReturn("7일 보습 챌린지");
 		given(stats.calculateCherryLevel()).willReturn(4);
 		given(stats.getProgressPercentage()).willReturn(80.0);
 
@@ -316,6 +325,7 @@ class MainDashboardFacadeTest {
 		// then
 		assertThat(result.getCherryLevel()).isEqualTo(4);
 		assertThat(result.getChallengeRate()).isEqualTo(80.0);
+		assertThat(result.getChallengeName()).isEqualTo("7일 보습 챌린지");
 
 		List<RecentProcedureResponseDto> recent = result.getRecentProcedures();
 		assertThat(recent).hasSize(2);
