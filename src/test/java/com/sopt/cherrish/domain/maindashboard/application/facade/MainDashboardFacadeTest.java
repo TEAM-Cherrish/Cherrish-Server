@@ -80,6 +80,7 @@ class MainDashboardFacadeTest {
 		assertThat(result.getCherryLevel()).isEqualTo(0);
 		assertThat(result.getChallengeRate()).isEqualTo(0.0);
 		assertThat(result.getChallengeName()).isNull();
+		assertThat(result.getDayOfWeek()).isEqualTo(today.getDayOfWeek().name());
 		assertThat(result.getRecentProcedures()).isEmpty();
 		assertThat(result.getUpcomingProcedures()).isEmpty();
 	}
