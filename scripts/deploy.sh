@@ -59,7 +59,7 @@ fi
 # Start new container
 echo "Starting new container..."
 docker compose -f docker-compose.prod.yml up -d app
-
+1
 # Cleanup old images
 echo "Cleaning up old images..."
 docker image prune -f
