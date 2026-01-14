@@ -3,7 +3,7 @@ set -euo pipefail
 
 # Variables
 AWS_REGION="${AWS_REGION:-ap-northeast-2}"
-ECR_REGISTRY="${ECR_REGISTRY}"
+ECR_REGISTRY="${ECR_REGISTRY:?ERROR: ECR_REGISTRY must be set}"
 IMAGE_TAG="${IMAGE_TAG:-latest}"
 CONTAINER_NAME="cherrish-server"
 IMAGE="${ECR_REGISTRY}:${IMAGE_TAG}"
