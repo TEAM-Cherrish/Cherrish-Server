@@ -127,7 +127,7 @@ jib {
 		tags = ['latest', project.version.toString()]
 	}
 	container {
-		jvmFlags = ['-Dspring.profiles.active=prod', '-Djava.security.egd=file:/dev/./urandom']
+		jvmFlags = ['-Djava.security.egd=file:/dev/./urandom']
 		ports = ['8080']
 		environment = [
 			'TZ': 'Asia/Seoul'
