@@ -4,6 +4,7 @@ plugins {
 	id 'io.spring.dependency-management' version '1.1.7'
 	id 'jacoco'
 	id 'checkstyle'
+	id 'com.google.cloud.tools.jib' version '3.4.4'
 }
 
 group = 'com.sopt'
@@ -121,4 +122,23 @@ tasks.withType(JavaCompile).configureEach {
 
 clean {
 	delete file(querydslDir)
+}
+
+// Jib Configuration (Docker image build without Dockerfile)
+jib {
+	from {
+		image = 'eclipse-temurin:21-jre'
+	}
+	to {
+		image = "${System.getenv('ECR_REGISTRY') ?: 'cherrish-server'}"
+		tags = ['latest', project.version.toString()]
+	}
+	container {
+		jvmFlags = ['-Dspring.profiles.active=prod', '-Djava.security.egd=file:/dev/./urandom']
+		ports = ['8080']
+		environment = [
+			'TZ': 'Asia/Seoul'
+		]
+		creationTime = 'USE_CURRENT_TIMESTAMP'
+	}
 }
