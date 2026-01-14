@@ -18,6 +18,9 @@ public class MainDashboardResponseDto {
 	@JsonFormat(pattern = "yyyy-MM-dd")
 	private LocalDate date;
 
+	@Schema(description = "오늘 요일", example = "MONDAY")
+	private String dayOfWeek;
+
 	@Schema(description = "진행 중인 챌린지 이름 (없으면 null)", example = "7일 보습 챌린지")
 	private String challengeName;
 
@@ -43,6 +46,7 @@ public class MainDashboardResponseDto {
 	) {
 		return MainDashboardResponseDto.builder()
 			.date(today)
+			.dayOfWeek(today.getDayOfWeek().name())
 			.challengeName(challengeName)
 			.cherryLevel(cherryLevel)
 			.challengeRate(challengeRate)
