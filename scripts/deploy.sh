@@ -62,7 +62,7 @@ echo "Waiting for application to start..."
 MAX_RETRIES=10
 RETRY_INTERVAL=10
 
-for i in $(seq 1 $MAX_RETRIES); do
+for i in $(seq 1 "$MAX_RETRIES"); do
   echo "Health check attempt ${i}/${MAX_RETRIES}..."
 
   if curl -sf http://localhost:8080/actuator/health > /dev/null 2>&1; then
@@ -70,9 +70,9 @@ for i in $(seq 1 $MAX_RETRIES); do
     exit 0
   fi
 
-  if [ $i -lt $MAX_RETRIES ]; then
+  if [ "$i" -lt "$MAX_RETRIES" ]; then
     echo "Not ready yet, waiting ${RETRY_INTERVAL}s..."
-    sleep $RETRY_INTERVAL
+    sleep "$RETRY_INTERVAL"
   fi
 done
 
