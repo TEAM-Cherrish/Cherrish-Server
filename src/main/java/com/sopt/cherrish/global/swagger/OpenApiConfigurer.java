@@ -8,9 +8,9 @@ import io.swagger.v3.oas.models.servers.Server;
 
 public class OpenApiConfigurer {
 
-	private static final String API_TITLE = "SOPT Member API";
+	private static final String API_TITLE = "Cherrish API";
 	private static final String API_VERSION = "v1.0.0";
-	private static final String API_DESCRIPTION = "SOPT 회원 관리 API 문서";
+	private static final String API_DESCRIPTION = "Cherrish API 문서";
 
 	private final String baseUrl;
 
