@@ -77,12 +77,11 @@ public class DemoChallengeStatistics extends BaseTimeEntity {
 		this.cherryLevel = calculateCherryLevel();
 	}
 
-	public double getProgressPercentage() {
+	public int getProgressPercentage() {
 		if (totalRoutineCount == 0) {
-			return 0.0;
+			return 0;
 		}
-		double percentage = (double) completedCount / totalRoutineCount * 100;
-		return Math.round(percentage * 10.0) / 10.0;
+		return (int) Math.round((double) completedCount / totalRoutineCount * 100);
 	}
 
 	/**

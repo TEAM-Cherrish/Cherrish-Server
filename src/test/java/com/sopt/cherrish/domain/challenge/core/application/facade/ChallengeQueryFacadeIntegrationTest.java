@@ -110,7 +110,7 @@ class ChallengeQueryFacadeIntegrationTest {
 		assertThat(response.challengeId()).isEqualTo(challenge.getId());
 		assertThat(response.title()).isEqualTo(ChallengeTestFixture.DEFAULT_CHALLENGE_TITLE);
 		assertThat(response.currentDay()).isEqualTo(1);
-		assertThat(response.progressPercentage()).isEqualTo(0.0);
+		assertThat(response.progressPercentage()).isEqualTo(0);
 		assertThat(response.cherryLevel()).isEqualTo(1);
 		assertThat(response.progressToNextLevel()).isEqualTo(0.0);
 		assertThat(response.todayRoutines()).hasSize(3);
@@ -243,17 +243,16 @@ class ChallengeQueryFacadeIntegrationTest {
 
 	@ParameterizedTest
 	@CsvSource({
-		"5, 1, 23.0, 24.0",   // 21개 중 5개 완료 (23.8%) - 레벨 1
-		"8, 2, 38.0, 39.0",   // 21개 중 8개 완료 (38.1%) - 레벨 2
-		"13, 3, 61.0, 62.0",  // 21개 중 13개 완료 (61.9%) - 레벨 3
-		"16, 4, 76.0, 77.0"   // 21개 중 16개 완료 (76.2%) - 레벨 4
+		"5, 1, 24",   // 21개 중 5개 완료 (23.8% -> 24%) - 레벨 1
+		"8, 2, 38",   // 21개 중 8개 완료 (38.1% -> 38%) - 레벨 2
+		"13, 3, 62",  // 21개 중 13개 완료 (61.9% -> 62%) - 레벨 3
+		"16, 4, 76"   // 21개 중 16개 완료 (76.2% -> 76%) - 레벨 4
 	})
 	@DisplayName("성공 - 체리 레벨별 진행도 계산 정확성")
 	void getActiveChallengeDetailCherryLevels(
 		int completeCount,
 		int expectedLevel,
-		double minProgress,
-		double maxProgress
+		int expectedProgress
 	) {
 		// given
 		LocalDate startDate = ChallengeTestFixture.FIXED_START_DATE;
@@ -267,7 +266,7 @@ class ChallengeQueryFacadeIntegrationTest {
 
 		// then
 		assertThat(response.cherryLevel()).isEqualTo(expectedLevel);
-		assertThat(response.progressPercentage()).isBetween(minProgress, maxProgress);
+		assertThat(response.progressPercentage()).isEqualTo(expectedProgress);
 
 		// 레벨 4가 아닌 경우 다음 레벨까지 진행도 검증
 		if (expectedLevel < 4) {

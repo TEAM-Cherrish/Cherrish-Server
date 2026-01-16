@@ -302,8 +302,7 @@ class ChallengeRoutineBatchUpdateIntegrationTest {
 			assertSoftly(softly -> {
 				softly.assertThat(stats.getCompletedCount()).isEqualTo(6);
 				softly.assertThat(stats.getCherryLevel()).isEqualTo(2);
-				softly.assertThat(stats.getProgressPercentage())
-					.isCloseTo(28.5, org.assertj.core.data.Offset.offset(0.1));
+				softly.assertThat(stats.getProgressPercentage()).isEqualTo(29);  // 28.5% → 29
 			});
 		}
 
@@ -342,8 +341,7 @@ class ChallengeRoutineBatchUpdateIntegrationTest {
 			assertSoftly(softly -> {
 				softly.assertThat(stats.getCompletedCount()).isEqualTo(10);
 				softly.assertThat(stats.getCherryLevel()).isEqualTo(2);
-				softly.assertThat(stats.getProgressPercentage())
-					.isCloseTo(47.6, org.assertj.core.data.Offset.offset(0.1));
+				softly.assertThat(stats.getProgressPercentage()).isEqualTo(48);  // 47.6% → 48
 			});
 		}
 	}
