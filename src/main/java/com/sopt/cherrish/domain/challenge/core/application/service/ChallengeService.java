@@ -36,17 +36,15 @@ public class ChallengeService {
 	 * 챌린지 생성 및 저장
 	 * @param userId 사용자 ID
 	 * @param routine 홈케어 루틴
-	 * @param title 챌린지 제목
 	 * @param startDate 시작일
 	 * @return 생성된 챌린지
 	 */
 	@Transactional
-	public Challenge createChallenge(Long userId, HomecareRoutine routine,
-		String title, LocalDate startDate) {
+	public Challenge createChallenge(Long userId, HomecareRoutine routine, LocalDate startDate) {
 		Challenge challenge = Challenge.builder()
 			.userId(userId)
 			.homecareRoutine(routine)
-			.title(title)
+			.title(routine.getDescription())
 			.startDate(startDate)
 			.build();
 
