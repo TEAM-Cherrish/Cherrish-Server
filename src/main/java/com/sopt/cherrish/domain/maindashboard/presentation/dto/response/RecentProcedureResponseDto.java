@@ -7,23 +7,18 @@ import com.sopt.cherrish.domain.userprocedure.domain.model.ProcedurePhase;
 import com.sopt.cherrish.domain.userprocedure.domain.model.UserProcedure;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Builder;
-import lombok.Getter;
 
-@Getter
-@Builder
 @Schema(description = "최근 시술 정보")
-public class RecentProcedureResponseDto {
-
+public record RecentProcedureResponseDto(
 	@Schema(description = "시술명", example = "레이저 토닝")
-	private String name;
+	String name,
 
 	@Schema(description = "회복 N일차 (시술 당일 = 1일차)", example = "3")
-	private Integer daysSince;
+	Integer daysSince,
 
 	@Schema(description = "현재 단계", example = "SENSITIVE")
-	private ProcedurePhase currentPhase;
-
+	ProcedurePhase currentPhase
+) {
 	public static RecentProcedureResponseDto from(
 		UserProcedure userProcedure,
 		LocalDate today,
@@ -34,10 +29,10 @@ public class RecentProcedureResponseDto {
 			today
 		);
 
-		return RecentProcedureResponseDto.builder()
-			.name(userProcedure.getProcedure().getName())
-			.daysSince(daysSince + 1)  // 회복 N일차 (시술 당일 = 1일차)
-			.currentPhase(phase)
-			.build();
+		return new RecentProcedureResponseDto(
+			userProcedure.getProcedure().getName(),
+			daysSince + 1,  // 회복 N일차 (시술 당일 = 1일차)
+			phase
+		);
 	}
 }

@@ -35,24 +35,22 @@ public class UserProcedureTestFixture {
 	}
 
 	public static UserProcedureCreateResponseDto createValidResponse() {
-		return UserProcedureCreateResponseDto.builder()
-			.procedures(List.of(
-				UserProcedureResponseDto.builder()
-					.userProcedureId(10L)
-					.procedureId(1L)
-					.procedureName("레이저 토닝")
-					.scheduledAt(DEFAULT_SCHEDULED_AT)
-					.downtimeDays(6)
-					.build(),
-				UserProcedureResponseDto.builder()
-					.userProcedureId(11L)
-					.procedureId(2L)
-					.procedureName("필러")
-					.scheduledAt(DEFAULT_SCHEDULED_AT)
-					.downtimeDays(3)
-					.build()
-			))
-			.build();
+		return new UserProcedureCreateResponseDto(List.of(
+			new UserProcedureResponseDto(
+				10L,
+				1L,
+				"레이저 토닝",
+				DEFAULT_SCHEDULED_AT,
+				6
+			),
+			new UserProcedureResponseDto(
+				11L,
+				2L,
+				"필러",
+				DEFAULT_SCHEDULED_AT,
+				3
+			)
+		));
 	}
 
 	public static String createInvalidRequestWithEmptyProcedures() {

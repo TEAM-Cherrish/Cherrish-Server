@@ -46,7 +46,7 @@ public class UserProcedureService {
 	public UserProcedureCreateResponseDto createUserProcedures(Long userId, UserProcedureCreateRequestDto request) {
 		User user = getUserOrThrow(userId);
 
-		List<Procedure> procedures = getProceduresOrThrow(request.getProcedures());
+		List<Procedure> procedures = getProceduresOrThrow(request.procedures());
 		List<UserProcedure> userProcedures = request.toEntities(user, procedures);
 		List<UserProcedure> savedProcedures = userProcedureRepository.saveAll(userProcedures);
 		return UserProcedureCreateResponseDto.from(savedProcedures);
@@ -59,7 +59,7 @@ public class UserProcedureService {
 
 	private List<Procedure> getProceduresOrThrow(List<UserProcedureCreateRequestItemDto> items) {
 		Set<Long> procedureIds = items.stream()
-			.map(UserProcedureCreateRequestItemDto::getProcedureId)
+			.map(UserProcedureCreateRequestItemDto::procedureId)
 			.collect(Collectors.toSet());
 
 		List<Procedure> procedures = procedureRepository.findAllById(procedureIds);

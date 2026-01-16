@@ -6,38 +6,33 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.sopt.cherrish.domain.user.domain.model.User;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Builder;
-import lombok.Getter;
 
-@Getter
-@Builder
 @Schema(description = "사용자 정보 응답")
-public class UserResponseDto {
-
+public record UserResponseDto(
 	@Schema(description = "사용자 ID", example = "1")
-	private Long id;
+	Long id,
 
 	@Schema(description = "사용자 이름", example = "홍길동")
-	private String name;
+	String name,
 
 	@Schema(description = "나이 (한국 나이)", example = "25")
-	private Integer age;
+	Integer age,
 
 	@Schema(description = "생성일시", example = "2024-01-15T10:30:00", type = "string")
 	@JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
-	private LocalDateTime createdAt;
+	LocalDateTime createdAt,
 
 	@Schema(description = "수정일시", example = "2024-01-15T10:30:00", type = "string")
 	@JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
-	private LocalDateTime updatedAt;
-
+	LocalDateTime updatedAt
+) {
 	public static UserResponseDto from(User user) {
-		return UserResponseDto.builder()
-			.id(user.getId())
-			.name(user.getName())
-			.age(user.getAge())
-			.createdAt(user.getCreatedAt())
-			.updatedAt(user.getUpdatedAt())
-			.build();
+		return new UserResponseDto(
+			user.getId(),
+			user.getName(),
+			user.getAge(),
+			user.getCreatedAt(),
+			user.getUpdatedAt()
+		);
 	}
 }

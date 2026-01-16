@@ -51,14 +51,14 @@ public class CalendarTestFixture {
 		LocalDateTime scheduledAt,
 		int downtimeDays
 	) {
-		ProcedureEventResponseDto event = ProcedureEventResponseDto.builder()
-			.type(CalendarEventType.PROCEDURE)
-			.userProcedureId(userProcedureId)
-			.procedureId(procedureId)
-			.name(procedureName)
-			.scheduledAt(scheduledAt)
-			.downtimeDays(downtimeDays)
-			.build();
+		ProcedureEventResponseDto event = new ProcedureEventResponseDto(
+			CalendarEventType.PROCEDURE,
+			userProcedureId,
+			procedureId,
+			procedureName,
+			scheduledAt,
+			downtimeDays
+		);
 
 		return CalendarDailyResponseDto.from(List.of(event));
 	}
@@ -71,13 +71,13 @@ public class CalendarTestFixture {
 		List<LocalDate> cautionDays,
 		List<LocalDate> recoveryDays
 	) {
-		return ProcedureEventDowntimeResponseDto.builder()
-			.userProcedureId(userProcedureId)
-			.scheduledAt(scheduledAt)
-			.downtimeDays(downtimeDays)
-			.sensitiveDays(sensitiveDays)
-			.cautionDays(cautionDays)
-			.recoveryDays(recoveryDays)
-			.build();
+		return new ProcedureEventDowntimeResponseDto(
+			userProcedureId,
+			scheduledAt,
+			downtimeDays,
+			sensitiveDays,
+			cautionDays,
+			recoveryDays
+		);
 	}
 }

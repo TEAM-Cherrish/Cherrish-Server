@@ -40,11 +40,7 @@ class OnboardingControllerTest {
 		// given
 		OnboardingRequestDto request = new OnboardingRequestDto("홍길동", 25);
 
-		OnboardingResponseDto response = OnboardingResponseDto.builder()
-			.id(1L)
-			.name("홍길동")
-			.date(LocalDateTime.now())
-			.build();
+		OnboardingResponseDto response = new OnboardingResponseDto(1L, "홍길동", LocalDateTime.now());
 
 		given(onboardingService.createProfile(any(OnboardingRequestDto.class)))
 			.willReturn(response);
