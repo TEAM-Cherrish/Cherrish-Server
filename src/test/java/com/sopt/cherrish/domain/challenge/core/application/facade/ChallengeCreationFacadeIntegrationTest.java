@@ -76,7 +76,6 @@ class ChallengeCreationFacadeIntegrationTest {
 
 		ChallengeCreateRequestDto request = new ChallengeCreateRequestDto(
 			1, // SKIN_MOISTURIZING
-			"7일 보습 챌린지",
 			List.of("아침 세안", "토너 바르기", "크림 바르기")
 		);
 
@@ -85,7 +84,7 @@ class ChallengeCreationFacadeIntegrationTest {
 
 		// then - Response 검증
 		assertThat(response.challengeId()).isNotNull();
-		assertThat(response.title()).isEqualTo("7일 보습 챌린지");
+		assertThat(response.title()).isEqualTo("피부 보습 관리");
 		assertThat(response.totalDays()).isEqualTo(7);
 		assertThat(response.totalRoutineCount()).isEqualTo(21); // 3 × 7
 		assertThat(response.routines()).hasSize(21);
@@ -114,7 +113,6 @@ class ChallengeCreationFacadeIntegrationTest {
 
 		ChallengeCreateRequestDto request = new ChallengeCreateRequestDto(
 			2, // SKIN_BRIGHTENING
-			"미백 챌린지",
 			List.of("아침 보습")
 		);
 
@@ -133,7 +131,6 @@ class ChallengeCreationFacadeIntegrationTest {
 		Long nonExistentUserId = 999L;
 		ChallengeCreateRequestDto request = new ChallengeCreateRequestDto(
 			1,
-			"7일 챌린지",
 			List.of("세안")
 		);
 
@@ -164,7 +161,6 @@ class ChallengeCreationFacadeIntegrationTest {
 
 		ChallengeCreateRequestDto request = new ChallengeCreateRequestDto(
 			1,
-			"새로운 챌린지",
 			List.of("세안")
 		);
 
@@ -185,7 +181,6 @@ class ChallengeCreationFacadeIntegrationTest {
 
 		ChallengeCreateRequestDto request = new ChallengeCreateRequestDto(
 			999, // 존재하지 않는 ID
-			"챌린지",
 			List.of("세안")
 		);
 
@@ -211,7 +206,6 @@ class ChallengeCreationFacadeIntegrationTest {
 
 		ChallengeCreateRequestDto request = new ChallengeCreateRequestDto(
 			1,
-			"새 챌린지",
 			List.of("세안")
 		);
 

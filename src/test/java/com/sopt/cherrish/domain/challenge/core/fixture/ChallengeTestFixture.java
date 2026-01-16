@@ -24,7 +24,7 @@ public class ChallengeTestFixture {
 	public static final Long DEFAULT_USER_ID = 1L;
 	public static final Long DEFAULT_CHALLENGE_ID = 1L;
 	public static final Long DEFAULT_ROUTINE_ID = 1L;
-	public static final String DEFAULT_CHALLENGE_TITLE = "7일 챌린지";
+	public static final String DEFAULT_CHALLENGE_TITLE = "피부 보습 관리";
 	public static final String DEFAULT_ROUTINE_NAME = "아침 세안";
 	public static final int DEFAULT_TOTAL_DAYS = 7;
 
@@ -51,31 +51,13 @@ public class ChallengeTestFixture {
 	public static ChallengeCreateRequestDto createValidChallengeRequest() {
 		return new ChallengeCreateRequestDto(
 			1,
-			"7일 챌린지",
 			List.of("아침 세안", "토너 바르기", "크림 바르기")
-		);
-	}
-
-	public static ChallengeCreateRequestDto createRequestWithEmptyTitle() {
-		return new ChallengeCreateRequestDto(
-			1,
-			"",
-			List.of("아침 세안")
-		);
-	}
-
-	public static ChallengeCreateRequestDto createRequestWithNullTitle() {
-		return new ChallengeCreateRequestDto(
-			1,
-			null,
-			List.of("아침 세안")
 		);
 	}
 
 	public static ChallengeCreateRequestDto createRequestWithEmptyRoutines() {
 		return new ChallengeCreateRequestDto(
 			1,
-			"7일 챌린지",
 			List.of()
 		);
 	}
@@ -83,7 +65,6 @@ public class ChallengeTestFixture {
 	public static ChallengeCreateRequestDto createRequestWithTooManyRoutines() {
 		return new ChallengeCreateRequestDto(
 			1,
-			"7일 챌린지",
 			List.of("루틴1", "루틴2", "루틴3", "루틴4", "루틴5", "루틴6", "루틴7", "루틴8", "루틴9", "루틴10", "루틴11")
 		);
 	}
