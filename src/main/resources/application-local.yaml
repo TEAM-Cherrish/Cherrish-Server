@@ -5,21 +5,12 @@ spring:
     properties:
       hibernate:
         format_sql: true
-    open-in-view: false
   swagger:
-    base-url: ${SERVER_URL:http://localhost:8080}
-
-management:
-  endpoints:
-    web:
-      exposure:
-        include: health
-  endpoint:
-    health:
-      show-details: always
+    base-url: http://localhost:8080
 
 logging:
   level:
     root: INFO
     com.sopt.cherrish: DEBUG
     org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
