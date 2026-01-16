@@ -14,11 +14,6 @@ public record ChallengeCreateRequestDto(
 	@NotNull(message = "홈케어 루틴 ID는 필수입니다")
 	Integer homecareRoutineId,
 
-	@Schema(description = "챌린지 제목", example = "7일 챌린지", requiredMode = RequiredMode.REQUIRED)
-	@NotBlank(message = "챌린지 제목은 필수입니다")
-	@Size(max = 100, message = "챌린지 제목은 100자를 초과할 수 없습니다")
-	String title,
-
 	@Schema(description = "루틴명 리스트 (1-10개, 각 100자 이하)",
 		example = "[\"아침 세안\", \"토너 바르기\", \"크림 바르기\"]",
 		requiredMode = RequiredMode.REQUIRED)
