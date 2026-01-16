@@ -99,4 +99,19 @@ class UserControllerTest {
 				.header("X-User-Id", userId))
 			.andExpect(status().isOk());
 	}
+
+	@Test
+	@DisplayName("사용자 정보 수정 실패 - 이름이 10자 초과")
+	void updateUserNameTooLong() throws Exception {
+		// given
+		Long userId = 1L;
+		UserUpdateRequestDto request = new UserUpdateRequestDto("가나다라마바사아자차카", 30);
+
+		// when & then
+		mockMvc.perform(patch("/api/users")
+				.header("X-User-Id", userId)
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(request)))
+			.andExpect(status().isBadRequest());
+	}
 }
