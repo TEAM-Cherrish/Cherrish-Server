@@ -125,7 +125,7 @@ public class ChallengeTestFixture {
 			DEFAULT_CHALLENGE_ID,
 			"7일 보습 챌린지",
 			3,
-			42.5,
+			43,
 			2,
 			"꽃핀 체리",
 			50.0,

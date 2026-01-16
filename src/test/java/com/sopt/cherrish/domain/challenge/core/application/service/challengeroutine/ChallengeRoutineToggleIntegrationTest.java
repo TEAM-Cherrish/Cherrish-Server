@@ -185,32 +185,32 @@ class ChallengeRoutineToggleIntegrationTest {
 			List<ChallengeRoutine> allRoutines = routineRepository.findByChallengeId(challenge.getId());
 
 			// Level 1: 0% ~ 24.99%
-			// 5개 완료 = 23.8% → 레벨 1
+			// 5개 완료 = 23.8% → 24% (반올림) → 레벨 1
 			completeRoutines(user, allRoutines, 0, 5);
-			assertCherryLevelWithProgress(challenge, 1, 5, 23.8);
+			assertCherryLevelWithProgress(challenge, 1, 5, 24);
 
 			// Level 2: 25% ~ 49.99%
-			// 6개 완료 = 28.5% → 레벨 2
+			// 6개 완료 = 28.5% → 29% (반올림) → 레벨 2
 			completeRoutines(user, allRoutines, 5, 6);
-			assertCherryLevelWithProgress(challenge, 2, 6, 28.5);
+			assertCherryLevelWithProgress(challenge, 2, 6, 29);
 
-			// 10개 완료 = 47.6% → 레벨 2
+			// 10개 완료 = 47.6% → 48% (반올림) → 레벨 2
 			completeRoutines(user, allRoutines, 6, 10);
-			assertCherryLevelWithProgress(challenge, 2, 10, 47.6);
+			assertCherryLevelWithProgress(challenge, 2, 10, 48);
 
 			// Level 3: 50% ~ 74.99%
-			// 11개 완료 = 52.3% → 레벨 3
+			// 11개 완료 = 52.3% → 52% (반올림) → 레벨 3
 			completeRoutines(user, allRoutines, 10, 11);
-			assertCherryLevelWithProgress(challenge, 3, 11, 52.3);
+			assertCherryLevelWithProgress(challenge, 3, 11, 52);
 
 			// Level 4: 75% ~ 100%
-			// 16개 완료 = 76.1% → 레벨 4
+			// 16개 완료 = 76.1% → 76% (반올림) → 레벨 4
 			completeRoutines(user, allRoutines, 11, 16);
-			assertCherryLevelWithProgress(challenge, 4, 16, 76.1);
+			assertCherryLevelWithProgress(challenge, 4, 16, 76);
 
 			// 21개 완료 = 100% → 레벨 4
 			completeRoutines(user, allRoutines, 16, 21);
-			assertCherryLevelWithProgress(challenge, 4, 21, 100.0);
+			assertCherryLevelWithProgress(challenge, 4, 21, 100);
 		}
 	}
 
@@ -402,13 +402,12 @@ class ChallengeRoutineToggleIntegrationTest {
 	}
 
 	private void assertCherryLevelWithProgress(Challenge challenge, int expectedLevel, int expectedCount,
-		double expectedProgress) {
+		int expectedProgress) {
 		ChallengeStatistics stats = statisticsRepository.findByChallengeId(challenge.getId()).orElseThrow();
 		assertSoftly(softly -> {
 			softly.assertThat(stats.getCherryLevel()).isEqualTo(expectedLevel);
 			softly.assertThat(stats.getCompletedCount()).isEqualTo(expectedCount);
-			softly.assertThat(stats.getProgressPercentage())
-				.isCloseTo(expectedProgress, org.assertj.core.data.Offset.offset(0.1));
+			softly.assertThat(stats.getProgressPercentage()).isEqualTo(expectedProgress);
 		});
 	}
 }

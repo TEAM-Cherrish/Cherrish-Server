@@ -54,7 +54,7 @@ class MainDashboardControllerTest {
 		MainDashboardResponseDto response = MainDashboardResponseDto.from(
 			today,
 			3,
-			55.5,
+			56,
 			"7일 보습 챌린지",
 			List.of(recent),
 			List.of(upcoming)
@@ -69,7 +69,7 @@ class MainDashboardControllerTest {
 			.andExpect(jsonPath("$.data.date").value("2026-01-15"))
 			.andExpect(jsonPath("$.data.dayOfWeek").value(dayOfWeek))
 			.andExpect(jsonPath("$.data.cherryLevel").value(3))
-			.andExpect(jsonPath("$.data.challengeRate").value(55.5))
+			.andExpect(jsonPath("$.data.challengeRate").value(56))
 			.andExpect(jsonPath("$.data.challengeName").value("7일 보습 챌린지"))
 			.andExpect(jsonPath("$.data.recentProcedures[0].name").value("레이저 토닝"))
 			.andExpect(jsonPath("$.data.upcomingProcedures[0].name").value("보톡스"));
@@ -98,7 +98,7 @@ class MainDashboardControllerTest {
 		MainDashboardResponseDto response = MainDashboardResponseDto.from(
 			today,
 			0,  // cherryLevel = 0
-			0.0,
+			0,
 			null,
 			List.of(),
 			List.of()
@@ -110,7 +110,7 @@ class MainDashboardControllerTest {
 				.header("X-User-Id", userId))
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.data.cherryLevel").value(0))
-			.andExpect(jsonPath("$.data.challengeRate").value(0.0))
+			.andExpect(jsonPath("$.data.challengeRate").value(0))
 			.andExpect(jsonPath("$.data.recentProcedures").isArray())
 			.andExpect(jsonPath("$.data.recentProcedures").isEmpty())
 			.andExpect(jsonPath("$.data.upcomingProcedures").isArray())
@@ -132,7 +132,7 @@ class MainDashboardControllerTest {
 		MainDashboardResponseDto response = MainDashboardResponseDto.from(
 			today,
 			2,
-			45.0,
+			45,
 			"7일 보습 챌린지",
 			List.of(),  // 빈 리스트
 			List.of(upcoming)
@@ -163,7 +163,7 @@ class MainDashboardControllerTest {
 		MainDashboardResponseDto response = MainDashboardResponseDto.from(
 			today,
 			3,
-			60.0,
+			60,
 			"7일 보습 챌린지",
 			List.of(recent),
 			List.of()  // 빈 리스트
