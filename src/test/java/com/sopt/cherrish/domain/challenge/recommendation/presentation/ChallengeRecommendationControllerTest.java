@@ -54,7 +54,6 @@ class ChallengeRecommendationControllerTest {
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(recommendationRequest(1))))
 					.andExpect(status().isOk())
-					.andExpect(jsonPath("$.data.challengeTitle").value("피부 보습 7일 챌린지"))
 					.andExpect(jsonPath("$.data.routines").isArray())
 					.andExpect(jsonPath("$.data.routines.length()").value(3))
 					.andExpect(jsonPath("$.data.routines[0]").value("아침 세안 후 토너 바르기"));
@@ -72,7 +71,7 @@ class ChallengeRecommendationControllerTest {
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(recommendationRequest(3))))
 					.andExpect(status().isOk())
-					.andExpect(jsonPath("$.data.challengeTitle").value("주름 개선 7일 챌린지"))
+					.andExpect(jsonPath("$.data.routines").isArray())
 					.andExpect(jsonPath("$.data.routines.length()").value(2));
 			}
 
@@ -88,7 +87,6 @@ class ChallengeRecommendationControllerTest {
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(recommendationRequest(1))))
 					.andExpect(status().isOk())
-					.andExpect(jsonPath("$.data.challengeTitle").value("테스트 챌린지"))
 					.andExpect(jsonPath("$.data.routines").isArray())
 					.andExpect(jsonPath("$.data.routines.length()").value(0));
 			}

@@ -51,11 +51,8 @@ public class AiChallengeRecommendationService {
 			OpenAiChallengeRecommendationResponseDto.class
 		);
 
-		log.info("AI 챌린지 추천 생성 완료: title={}", aiResponse.challengeTitle());
+		log.info("AI 챌린지 추천 생성 완료: routines={}", aiResponse.routines());
 
-		return AiRecommendationResponseDto.of(
-			aiResponse.challengeTitle(),
-			aiResponse.routines()
-		);
+		return AiRecommendationResponseDto.of(aiResponse.routines());
 	}
 }
