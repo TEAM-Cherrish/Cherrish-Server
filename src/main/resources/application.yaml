@@ -4,23 +4,12 @@ spring:
 
   profiles:
     active: ${SPRING_PROFILES_ACTIVE:local}
+    include:
+      - db
+      - openai
 
   config:
     import: optional:file:.env[.properties]
-
-  datasource:
-    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5433}/${DB_NAME:cherrish}
-    username: ${DB_USERNAME:postgres}
-    password: ${DB_PASSWORD:postgres}
-
-  ai:
-    openai:
-      api-key: ${OPENAI_API_KEY}
-      chat:
-        options:
-          model: ${OPENAI_MODEL:gpt-3.5-turbo}
-          temperature: 0.7
-          max-tokens: 500
 
 server:
   port: ${SERVER_PORT:8080}
