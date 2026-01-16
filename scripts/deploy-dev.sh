@@ -42,7 +42,7 @@ docker run -d \
   --name "${CONTAINER_NAME}" \
   --restart unless-stopped \
   -p 8080:8080 \
-  -e SPRING_PROFILES_ACTIVE=prod \
+  -e SPRING_PROFILES_ACTIVE=dev \
   -e DB_HOST="${DB_HOST}" \
   -e DB_PORT="${DB_PORT}" \
   -e DB_NAME="${DB_NAME}" \
