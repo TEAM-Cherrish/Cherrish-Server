@@ -83,12 +83,12 @@ class UserProcedureServiceTest {
 
 		// then
 		assertThat(result).isNotNull();
-		assertThat(result.getProcedures()).hasSize(2);
-		assertThat(result.getProcedures().get(0).getUserProcedureId()).isEqualTo(10L);
-		assertThat(result.getProcedures().get(0).getProcedureId()).isEqualTo(procedure1.getId());
-		assertThat(result.getProcedures().get(0).getProcedureName()).isEqualTo("레이저 토닝");
-		assertThat(result.getProcedures().get(0).getScheduledAt()).isEqualTo(scheduledAt);
-		assertThat(result.getProcedures().get(0).getDowntimeDays()).isEqualTo(6);
+		assertThat(result.procedures()).hasSize(2);
+		assertThat(result.procedures().get(0).userProcedureId()).isEqualTo(10L);
+		assertThat(result.procedures().get(0).procedureId()).isEqualTo(procedure1.getId());
+		assertThat(result.procedures().get(0).procedureName()).isEqualTo("레이저 토닝");
+		assertThat(result.procedures().get(0).scheduledAt()).isEqualTo(scheduledAt);
+		assertThat(result.procedures().get(0).downtimeDays()).isEqualTo(6);
 		verify(userProcedureRepository).saveAll(any());
 	}
 
@@ -162,8 +162,8 @@ class UserProcedureServiceTest {
 
 		// then
 		assertThat(result).isNotNull();
-		assertThat(result.getProcedures()).hasSize(1);
-		assertThat(result.getProcedures().get(0).getDowntimeDays()).isEqualTo(0);
+		assertThat(result.procedures()).hasSize(1);
+		assertThat(result.procedures().get(0).downtimeDays()).isEqualTo(0);
 		verify(userProcedureRepository).saveAll(any());
 	}
 
@@ -201,13 +201,13 @@ class UserProcedureServiceTest {
 
 		// then
 		assertThat(result).isNotNull();
-		assertThat(result.getProcedures()).hasSize(3);
+		assertThat(result.procedures()).hasSize(3);
 		// 모든 시술이 동일한 scheduledAt을 가져야 함
-		assertThat(result.getProcedures())
+		assertThat(result.procedures())
 			.extracting("scheduledAt")
 			.containsOnly(scheduledAt);
 		// 각 시술의 다운타임은 개별적으로 설정됨
-		assertThat(result.getProcedures())
+		assertThat(result.procedures())
 			.extracting("downtimeDays")
 			.containsExactlyInAnyOrder(5, 7, 10);
 		verify(userProcedureRepository).saveAll(any());

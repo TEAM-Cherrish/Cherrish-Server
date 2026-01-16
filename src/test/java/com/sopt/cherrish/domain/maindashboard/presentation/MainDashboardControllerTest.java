@@ -40,11 +40,11 @@ class MainDashboardControllerTest {
 		Long userId = 1L;
 		LocalDate today = LocalDate.of(2026, 1, 15);
 		String dayOfWeek = today.getDayOfWeek().name();
-		RecentProcedureResponseDto recent = RecentProcedureResponseDto.builder()
-			.name("레이저 토닝")
-			.daysSince(2)
-			.currentPhase(ProcedurePhase.CAUTION)
-			.build();
+		RecentProcedureResponseDto recent = new RecentProcedureResponseDto(
+			"레이저 토닝",
+			2,
+			ProcedurePhase.CAUTION
+		);
 		UpcomingProcedureResponseDto upcoming = UpcomingProcedureResponseDto.of(
 			LocalDate.of(2026, 1, 16),
 			"보톡스",
@@ -155,11 +155,11 @@ class MainDashboardControllerTest {
 		// given
 		Long userId = 4L;
 		LocalDate today = LocalDate.of(2026, 1, 15);
-		RecentProcedureResponseDto recent = RecentProcedureResponseDto.builder()
-			.name("필러")
-			.daysSince(3)
-			.currentPhase(ProcedurePhase.RECOVERY)
-			.build();
+		RecentProcedureResponseDto recent = new RecentProcedureResponseDto(
+			"필러",
+			3,
+			ProcedurePhase.RECOVERY
+		);
 		MainDashboardResponseDto response = MainDashboardResponseDto.from(
 			today,
 			3,

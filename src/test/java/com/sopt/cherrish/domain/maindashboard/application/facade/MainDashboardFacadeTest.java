@@ -77,12 +77,12 @@ class MainDashboardFacadeTest {
 		MainDashboardResponseDto result = mainDashboardFacade.getMainDashboard(userId);
 
 		// then
-		assertThat(result.getCherryLevel()).isEqualTo(0);
-		assertThat(result.getChallengeRate()).isEqualTo(0.0);
-		assertThat(result.getChallengeName()).isNull();
-		assertThat(result.getDayOfWeek()).isEqualTo(today.getDayOfWeek().name());
-		assertThat(result.getRecentProcedures()).isEmpty();
-		assertThat(result.getUpcomingProcedures()).isEmpty();
+		assertThat(result.cherryLevel()).isEqualTo(0);
+		assertThat(result.challengeRate()).isEqualTo(0.0);
+		assertThat(result.challengeName()).isNull();
+		assertThat(result.dayOfWeek()).isEqualTo(today.getDayOfWeek().name());
+		assertThat(result.recentProcedures()).isEmpty();
+		assertThat(result.upcomingProcedures()).isEmpty();
 	}
 
 	@Test
@@ -109,10 +109,10 @@ class MainDashboardFacadeTest {
 		MainDashboardResponseDto result = mainDashboardFacade.getMainDashboard(userId);
 
 		// then
-		assertThat(result.getCherryLevel()).isEqualTo(0);
-		assertThat(result.getChallengeRate()).isEqualTo(0.0);
-		assertThat(result.getChallengeName()).isNull();
-		assertThat(result.getRecentProcedures()).isNotNull();
+		assertThat(result.cherryLevel()).isEqualTo(0);
+		assertThat(result.challengeRate()).isEqualTo(0.0);
+		assertThat(result.challengeName()).isNull();
+		assertThat(result.recentProcedures()).isNotNull();
 	}
 
 	@Test
@@ -152,9 +152,9 @@ class MainDashboardFacadeTest {
 		MainDashboardResponseDto result = mainDashboardFacade.getMainDashboard(userId);
 
 		// then
-		assertThat(result.getChallengeName()).isEqualTo("7일 보습 챌린지");
-		assertThat(result.getRecentProcedures()).isEmpty();
-		assertThat(result.getUpcomingProcedures()).hasSize(1);
+		assertThat(result.challengeName()).isEqualTo("7일 보습 챌린지");
+		assertThat(result.recentProcedures()).isEmpty();
+		assertThat(result.upcomingProcedures()).hasSize(1);
 	}
 
 	@Test
@@ -187,9 +187,9 @@ class MainDashboardFacadeTest {
 		MainDashboardResponseDto result = mainDashboardFacade.getMainDashboard(userId);
 
 		// then
-		assertThat(result.getChallengeName()).isEqualTo("7일 보습 챌린지");
-		assertThat(result.getUpcomingProcedures()).isEmpty();
-		assertThat(result.getRecentProcedures()).isNotNull();
+		assertThat(result.challengeName()).isEqualTo("7일 보습 챌린지");
+		assertThat(result.upcomingProcedures()).isEmpty();
+		assertThat(result.recentProcedures()).isNotNull();
 	}
 
 	@Test
@@ -238,24 +238,24 @@ class MainDashboardFacadeTest {
 		MainDashboardResponseDto result = mainDashboardFacade.getMainDashboard(userId);
 
 		// then
-		assertThat(result.getCherryLevel()).isEqualTo(3);
-		assertThat(result.getChallengeRate()).isEqualTo(65.0);
-		assertThat(result.getChallengeName()).isEqualTo("7일 보습 챌린지");
+		assertThat(result.cherryLevel()).isEqualTo(3);
+		assertThat(result.challengeRate()).isEqualTo(65.0);
+		assertThat(result.challengeName()).isEqualTo("7일 보습 챌린지");
 
-		List<RecentProcedureResponseDto> recent = result.getRecentProcedures();
+		List<RecentProcedureResponseDto> recent = result.recentProcedures();
 		assertThat(recent).hasSize(3);
 
 		// SENSITIVE - 레이저 (1/14 시술, 2일차)
-		assertThat(recent.get(0).getName()).isEqualTo("레이저");
-		assertThat(recent.get(0).getDaysSince()).isEqualTo(2);  // 1/14 → 1/15 = 1일 경과 + 1 = 2일차
+		assertThat(recent.get(0).name()).isEqualTo("레이저");
+		assertThat(recent.get(0).daysSince()).isEqualTo(2);  // 1/14 → 1/15 = 1일 경과 + 1 = 2일차
 
 		// CAUTION - 보톡스 (1/12 시술, 4일차)
-		assertThat(recent.get(1).getName()).isEqualTo("보톡스");
-		assertThat(recent.get(1).getDaysSince()).isEqualTo(4);  // 1/12 → 1/15 = 3일 경과 + 1 = 4일차
+		assertThat(recent.get(1).name()).isEqualTo("보톡스");
+		assertThat(recent.get(1).daysSince()).isEqualTo(4);  // 1/12 → 1/15 = 3일 경과 + 1 = 4일차
 
 		// RECOVERY - 필러 (1/10 시술, 6일차)
-		assertThat(recent.get(2).getName()).isEqualTo("필러");
-		assertThat(recent.get(2).getDaysSince()).isEqualTo(6);  // 1/10 → 1/15 = 5일 경과 + 1 = 6일차
+		assertThat(recent.get(2).name()).isEqualTo("필러");
+		assertThat(recent.get(2).daysSince()).isEqualTo(6);  // 1/10 → 1/15 = 5일 경과 + 1 = 6일차
 	}
 
 	@Test
@@ -324,26 +324,26 @@ class MainDashboardFacadeTest {
 		MainDashboardResponseDto result = mainDashboardFacade.getMainDashboard(userId);
 
 		// then
-		assertThat(result.getCherryLevel()).isEqualTo(4);
-		assertThat(result.getChallengeRate()).isEqualTo(80.0);
-		assertThat(result.getChallengeName()).isEqualTo("7일 보습 챌린지");
+		assertThat(result.cherryLevel()).isEqualTo(4);
+		assertThat(result.challengeRate()).isEqualTo(80.0);
+		assertThat(result.challengeName()).isEqualTo("7일 보습 챌린지");
 
-		List<RecentProcedureResponseDto> recent = result.getRecentProcedures();
+		List<RecentProcedureResponseDto> recent = result.recentProcedures();
 		assertThat(recent).hasSize(2);
-		assertThat(recent.get(0).getName()).isEqualTo("레이저");
-		assertThat(recent.get(0).getDaysSince()).isPositive();
-		assertThat(recent.get(1).getName()).isEqualTo("필러");
-		assertThat(recent.get(1).getDaysSince()).isPositive();
+		assertThat(recent.get(0).name()).isEqualTo("레이저");
+		assertThat(recent.get(0).daysSince()).isPositive();
+		assertThat(recent.get(1).name()).isEqualTo("필러");
+		assertThat(recent.get(1).daysSince()).isPositive();
 
-		List<UpcomingProcedureResponseDto> upcomingDtos = result.getUpcomingProcedures();
+		List<UpcomingProcedureResponseDto> upcomingDtos = result.upcomingProcedures();
 		assertThat(upcomingDtos).hasSize(2);
-		assertThat(upcomingDtos.get(0).getDate()).isEqualTo(LocalDate.of(2026, 1, 16));
-		assertThat(upcomingDtos.get(0).getName()).isEqualTo("울쎄라");
-		assertThat(upcomingDtos.get(0).getCount()).isEqualTo(2);
-		assertThat(upcomingDtos.get(0).getDDay()).isEqualTo(1);
-		assertThat(upcomingDtos.get(1).getDate()).isEqualTo(LocalDate.of(2026, 1, 17));
-		assertThat(upcomingDtos.get(1).getName()).isEqualTo("레이저 토닝");
-		assertThat(upcomingDtos.get(1).getCount()).isEqualTo(1);
-		assertThat(upcomingDtos.get(1).getDDay()).isEqualTo(2);
+		assertThat(upcomingDtos.get(0).date()).isEqualTo(LocalDate.of(2026, 1, 16));
+		assertThat(upcomingDtos.get(0).name()).isEqualTo("울쎄라");
+		assertThat(upcomingDtos.get(0).count()).isEqualTo(2);
+		assertThat(upcomingDtos.get(0).dDay()).isEqualTo(1);
+		assertThat(upcomingDtos.get(1).date()).isEqualTo(LocalDate.of(2026, 1, 17));
+		assertThat(upcomingDtos.get(1).name()).isEqualTo("레이저 토닝");
+		assertThat(upcomingDtos.get(1).count()).isEqualTo(1);
+		assertThat(upcomingDtos.get(1).dDay()).isEqualTo(2);
 	}
 }
