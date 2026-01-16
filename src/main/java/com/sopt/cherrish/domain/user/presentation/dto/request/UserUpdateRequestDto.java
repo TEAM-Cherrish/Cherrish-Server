@@ -8,7 +8,7 @@ import jakarta.validation.constraints.Size;
 @Schema(description = "사용자 정보 수정 요청")
 public record UserUpdateRequestDto(
 	@Schema(description = "수정할 이름 (선택)", example = "김철수")
-	@Size(max = 50, message = "이름은 50자를 초과할 수 없습니다")
+	@Size(max = 10, message = "이름은 10자를 초과할 수 없습니다")
 	String name,
 
 	@Schema(description = "수정할 나이 (선택)", example = "30")
