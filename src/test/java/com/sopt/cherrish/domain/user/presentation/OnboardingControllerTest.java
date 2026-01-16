@@ -69,10 +69,10 @@ class OnboardingControllerTest {
 	}
 
 	@Test
-	@DisplayName("온보딩 프로필 생성 실패 - 이름이 10자 초과")
+	@DisplayName("온보딩 프로필 생성 실패 - 이름이 7자 초과")
 	void createProfileNameTooLong() throws Exception {
 		// given
-		OnboardingRequestDto request = new OnboardingRequestDto("가나다라마바사아자차카", 25);
+		OnboardingRequestDto request = new OnboardingRequestDto("가나다라마바사아", 25);
 
 		// when & then
 		mockMvc.perform(post("/api/onboarding/profiles")
