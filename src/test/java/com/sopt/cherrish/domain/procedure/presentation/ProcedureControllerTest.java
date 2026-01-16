@@ -35,21 +35,21 @@ class ProcedureControllerTest {
 	@DisplayName("시술 목록 조회 성공 - 파라미터 없이 전체 조회")
 	void searchProceduresWithoutParameters() throws Exception {
 		// given
-		ProcedureResponseDto procedure1 = ProcedureResponseDto.builder()
-			.id(1L)
-			.name("레이저 토닝")
-			.worries(Collections.singletonList(worryResponse(1L, "여드름/트러블")))
-			.minDowntimeDays(0)
-			.maxDowntimeDays(1)
-			.build();
+		ProcedureResponseDto procedure1 = new ProcedureResponseDto(
+			1L,
+			"레이저 토닝",
+			Collections.singletonList(worryResponse(1L, "여드름/트러블")),
+			0,
+			1
+		);
 
-		ProcedureResponseDto procedure2 = ProcedureResponseDto.builder()
-			.id(2L)
-			.name("필러")
-			.worries(Collections.singletonList(worryResponse(2L, "탄력/주름")))
-			.minDowntimeDays(1)
-			.maxDowntimeDays(3)
-			.build();
+		ProcedureResponseDto procedure2 = new ProcedureResponseDto(
+			2L,
+			"필러",
+			Collections.singletonList(worryResponse(2L, "탄력/주름")),
+			1,
+			3
+		);
 
 		ProcedureListResponseDto response = ProcedureListResponseDto.of(Arrays.asList(procedure1, procedure2));
 
@@ -70,13 +70,13 @@ class ProcedureControllerTest {
 		// given
 		String keyword = "레이저";
 
-		ProcedureResponseDto procedure = ProcedureResponseDto.builder()
-			.id(1L)
-			.name("레이저 토닝")
-			.worries(Collections.singletonList(worryResponse(1L, "여드름/트러블")))
-			.minDowntimeDays(0)
-			.maxDowntimeDays(1)
-			.build();
+		ProcedureResponseDto procedure = new ProcedureResponseDto(
+			1L,
+			"레이저 토닝",
+			Collections.singletonList(worryResponse(1L, "여드름/트러블")),
+			0,
+			1
+		);
 
 		ProcedureListResponseDto response = ProcedureListResponseDto.of(Collections.singletonList(procedure));
 
@@ -98,13 +98,13 @@ class ProcedureControllerTest {
 		// given
 		Long worryId = 1L;
 
-		ProcedureResponseDto procedure = ProcedureResponseDto.builder()
-			.id(1L)
-			.name("레이저 토닝")
-			.worries(Collections.singletonList(worryResponse(1L, "여드름/트러블")))
-			.minDowntimeDays(0)
-			.maxDowntimeDays(1)
-			.build();
+		ProcedureResponseDto procedure = new ProcedureResponseDto(
+			1L,
+			"레이저 토닝",
+			Collections.singletonList(worryResponse(1L, "여드름/트러블")),
+			0,
+			1
+		);
 
 		ProcedureListResponseDto response = ProcedureListResponseDto.of(Collections.singletonList(procedure));
 
@@ -141,13 +141,13 @@ class ProcedureControllerTest {
 	@DisplayName("시술 목록 조회 성공 - 응답 필드 검증")
 	void searchProceduresCheckResponseFields() throws Exception {
 		// given
-		ProcedureResponseDto procedure = ProcedureResponseDto.builder()
-			.id(2L)
-			.name("프락셀 레이저")
-			.worries(Collections.singletonList(worryResponse(1L, "여드름/트러블")))
-			.minDowntimeDays(3)
-			.maxDowntimeDays(7)
-			.build();
+		ProcedureResponseDto procedure = new ProcedureResponseDto(
+			2L,
+			"프락셀 레이저",
+			Collections.singletonList(worryResponse(1L, "여드름/트러블")),
+			3,
+			7
+		);
 
 		ProcedureListResponseDto response = ProcedureListResponseDto.of(Collections.singletonList(procedure));
 
@@ -164,9 +164,6 @@ class ProcedureControllerTest {
 	}
 
 	private ProcedureWorryResponseDto worryResponse(Long id, String content) {
-		return ProcedureWorryResponseDto.builder()
-			.id(id)
-			.content(content)
-			.build();
+		return new ProcedureWorryResponseDto(id, content);
 	}
 }

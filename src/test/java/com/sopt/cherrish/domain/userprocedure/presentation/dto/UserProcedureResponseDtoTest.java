@@ -40,11 +40,11 @@ class UserProcedureResponseDtoTest {
 		UserProcedureResponseDto result = UserProcedureResponseDto.from(userProcedure);
 
 		// then
-		assertThat(result.getUserProcedureId()).isEqualTo(10L);
-		assertThat(result.getProcedureId()).isEqualTo(procedure.getId());
-		assertThat(result.getProcedureName()).isEqualTo("레이저 토닝");
-		assertThat(result.getScheduledAt()).isEqualTo(scheduledAt);
-		assertThat(result.getDowntimeDays()).isEqualTo(5);
+		assertThat(result.userProcedureId()).isEqualTo(10L);
+		assertThat(result.procedureId()).isEqualTo(procedure.getId());
+		assertThat(result.procedureName()).isEqualTo("레이저 토닝");
+		assertThat(result.scheduledAt()).isEqualTo(scheduledAt);
+		assertThat(result.downtimeDays()).isEqualTo(5);
 	}
 
 	@Test
@@ -65,20 +65,20 @@ class UserProcedureResponseDtoTest {
 		UserProcedureCreateResponseDto result = UserProcedureCreateResponseDto.from(userProcedures);
 
 		// then
-		assertThat(result.getProcedures()).hasSize(2);
+		assertThat(result.procedures()).hasSize(2);
 
 		// 첫 번째 항목 검증
-		assertThat(result.getProcedures().get(0).getUserProcedureId()).isEqualTo(10L);
-		assertThat(result.getProcedures().get(0).getProcedureId()).isEqualTo(procedure1.getId());
-		assertThat(result.getProcedures().get(0).getProcedureName()).isEqualTo("레이저 토닝");
-		assertThat(result.getProcedures().get(0).getScheduledAt()).isEqualTo(scheduledAt);
-		assertThat(result.getProcedures().get(0).getDowntimeDays()).isEqualTo(5);
+		assertThat(result.procedures().get(0).userProcedureId()).isEqualTo(10L);
+		assertThat(result.procedures().get(0).procedureId()).isEqualTo(procedure1.getId());
+		assertThat(result.procedures().get(0).procedureName()).isEqualTo("레이저 토닝");
+		assertThat(result.procedures().get(0).scheduledAt()).isEqualTo(scheduledAt);
+		assertThat(result.procedures().get(0).downtimeDays()).isEqualTo(5);
 
 		// 두 번째 항목 검증
-		assertThat(result.getProcedures().get(1).getUserProcedureId()).isEqualTo(11L);
-		assertThat(result.getProcedures().get(1).getProcedureId()).isEqualTo(procedure2.getId());
-		assertThat(result.getProcedures().get(1).getProcedureName()).isEqualTo("필러");
-		assertThat(result.getProcedures().get(1).getScheduledAt()).isEqualTo(scheduledAt);
-		assertThat(result.getProcedures().get(1).getDowntimeDays()).isEqualTo(7);
+		assertThat(result.procedures().get(1).userProcedureId()).isEqualTo(11L);
+		assertThat(result.procedures().get(1).procedureId()).isEqualTo(procedure2.getId());
+		assertThat(result.procedures().get(1).procedureName()).isEqualTo("필러");
+		assertThat(result.procedures().get(1).scheduledAt()).isEqualTo(scheduledAt);
+		assertThat(result.procedures().get(1).downtimeDays()).isEqualTo(7);
 	}
 }

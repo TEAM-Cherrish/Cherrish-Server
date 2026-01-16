@@ -71,10 +71,10 @@ class CalendarServiceTest {
 
 		// then
 		assertThat(result).isNotNull();
-		assertThat(result.getDailyProcedureCounts()).hasSize(3);
-		assertThat(result.getDailyProcedureCounts().get(1)).isEqualTo(2L);
-		assertThat(result.getDailyProcedureCounts().get(5)).isEqualTo(1L);
-		assertThat(result.getDailyProcedureCounts().get(10)).isEqualTo(3L);
+		assertThat(result.dailyProcedureCounts()).hasSize(3);
+		assertThat(result.dailyProcedureCounts().get(1)).isEqualTo(2L);
+		assertThat(result.dailyProcedureCounts().get(5)).isEqualTo(1L);
+		assertThat(result.dailyProcedureCounts().get(10)).isEqualTo(3L);
 	}
 
 	@Test
@@ -118,16 +118,16 @@ class CalendarServiceTest {
 
 		// then
 		assertThat(result).isNotNull();
-		assertThat(result.getEventCount()).isEqualTo(2);
-		assertThat(result.getEvents()).hasSize(2);
+		assertThat(result.eventCount()).isEqualTo(2);
+		assertThat(result.events()).hasSize(2);
 
 		// 첫 번째 시술 검증
-		assertThat(result.getEvents().get(0).getName()).isEqualTo("레이저 토닝");
-		assertThat(result.getEvents().get(0).getDowntimeDays()).isEqualTo(9);
+		assertThat(result.events().get(0).name()).isEqualTo("레이저 토닝");
+		assertThat(result.events().get(0).downtimeDays()).isEqualTo(9);
 
 		// 두 번째 시술 검증
-		assertThat(result.getEvents().get(1).getName()).isEqualTo("필러");
-		assertThat(result.getEvents().get(1).getDowntimeDays()).isEqualTo(6);
+		assertThat(result.events().get(1).name()).isEqualTo("필러");
+		assertThat(result.events().get(1).downtimeDays()).isEqualTo(6);
 	}
 
 	@Test
@@ -146,8 +146,8 @@ class CalendarServiceTest {
 
 		// then
 		assertThat(result).isNotNull();
-		assertThat(result.getEventCount()).isZero();
-		assertThat(result.getEvents()).isEmpty();
+		assertThat(result.eventCount()).isZero();
+		assertThat(result.events()).isEmpty();
 	}
 
 	@ParameterizedTest
@@ -180,10 +180,10 @@ class CalendarServiceTest {
 		ProcedureEventDowntimeResponseDto result = calendarService.getEventDowntime(userId, userProcedureId);
 
 		// then
-		assertThat(result.getDowntimeDays()).isEqualTo(downtimeDays);
-		assertThat(result.getSensitiveDays()).hasSize(expectedSensitive);
-		assertThat(result.getCautionDays()).hasSize(expectedCaution);
-		assertThat(result.getRecoveryDays()).hasSize(expectedRecovery);
+		assertThat(result.downtimeDays()).isEqualTo(downtimeDays);
+		assertThat(result.sensitiveDays()).hasSize(expectedSensitive);
+		assertThat(result.cautionDays()).hasSize(expectedCaution);
+		assertThat(result.recoveryDays()).hasSize(expectedRecovery);
 	}
 
 	@Test

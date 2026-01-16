@@ -59,8 +59,8 @@ class UserServiceTest {
 
 		// then
 		assertThat(result).isNotNull();
-		assertThat(result.getName()).isEqualTo("홍길동");
-		assertThat(result.getDaysSinceSignup()).isEqualTo(1);
+		assertThat(result.name()).isEqualTo("홍길동");
+		assertThat(result.daysSinceSignup()).isEqualTo(1);
 	}
 
 	@Test
@@ -82,8 +82,8 @@ class UserServiceTest {
 
 		// then
 		assertThat(result).isNotNull();
-		assertThat(result.getName()).isEqualTo("홍길동");
-		assertThat(result.getDaysSinceSignup()).isEqualTo(3);
+		assertThat(result.name()).isEqualTo("홍길동");
+		assertThat(result.daysSinceSignup()).isEqualTo(3);
 	}
 
 	@Test
@@ -107,8 +107,8 @@ class UserServiceTest {
 
 		// then
 		assertThat(result).isNotNull();
-		assertThat(result.getName()).isEqualTo("홍길동");
-		assertThat(result.getDaysSinceSignup()).isEqualTo(2);
+		assertThat(result.name()).isEqualTo("홍길동");
+		assertThat(result.daysSinceSignup()).isEqualTo(2);
 	}
 
 	@Test
@@ -138,8 +138,8 @@ class UserServiceTest {
 		UserResponseDto result = userService.updateUser(userId, request);
 
 		// then
-		assertThat(result.getName()).isEqualTo("김철수");
-		assertThat(result.getAge()).isEqualTo(30);
+		assertThat(result.name()).isEqualTo("김철수");
+		assertThat(result.age()).isEqualTo(30);
 	}
 
 	@Test

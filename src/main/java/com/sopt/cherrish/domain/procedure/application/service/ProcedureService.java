@@ -44,7 +44,7 @@ public class ProcedureService {
 		// DB의 한글 collation 설정과 무관하게 정확한 한글 정렬을 보장하기 위해 Java에서 정렬
 		return ProcedureListResponseDto.of(
 			responses.stream()
-				.sorted((p1, p2) -> KOREAN_COLLATOR.compare(p1.getName(), p2.getName()))
+				.sorted((p1, p2) -> KOREAN_COLLATOR.compare(p1.name(), p2.name()))
 				.toList()
 		);
 	}
