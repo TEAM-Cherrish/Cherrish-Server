@@ -41,8 +41,8 @@ class OnboardingServiceTest {
 
 		// then
 		assertThat(result).isNotNull();
-		assertThat(result.getName()).isEqualTo("홍길동");
-		assertThat(result.getId()).isNotNull();
-		assertThat(result.getDate()).isNotNull();
+		assertThat(result.name()).isEqualTo("홍길동");
+		assertThat(result.id()).isNotNull();
+		assertThat(result.date()).isNotNull();
 	}
 }

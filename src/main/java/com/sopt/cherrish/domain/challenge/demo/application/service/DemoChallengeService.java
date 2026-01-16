@@ -33,12 +33,11 @@ public class DemoChallengeService {
 	 * 데모 챌린지 생성 및 저장
 	 */
 	@Transactional
-	public DemoChallenge createChallenge(Long userId, HomecareRoutine routine,
-		String title, LocalDate startDate) {
+	public DemoChallenge createChallenge(Long userId, HomecareRoutine routine, LocalDate startDate) {
 		DemoChallenge challenge = DemoChallenge.builder()
 			.userId(userId)
 			.homecareRoutine(routine)
-			.title(title)
+			.title(routine.getDescription())
 			.startDate(startDate)
 			.build();
 

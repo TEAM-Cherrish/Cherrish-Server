@@ -3,7 +3,8 @@ name: CD Dev
 on:
   push:
     branches:
-      - develop
+      - release
+      - main
 
 permissions:
   id-token: write

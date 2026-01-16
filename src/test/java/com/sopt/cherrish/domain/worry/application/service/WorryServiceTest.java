@@ -49,7 +49,7 @@ class WorryServiceTest {
 		// then
 		assertThat(result).isNotNull();
 		assertThat(result).hasSize(6);
-		assertThat(result.get(0).getContent()).isEqualTo("여드름/트러블");
+		assertThat(result.get(0).content()).isEqualTo("여드름/트러블");
 	}
 
 	@Test

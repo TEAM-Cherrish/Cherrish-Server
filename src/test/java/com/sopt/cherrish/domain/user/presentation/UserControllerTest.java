@@ -44,10 +44,7 @@ class UserControllerTest {
 	void getUserSuccess() throws Exception {
 		// given
 		Long userId = 1L;
-		UserSummaryResponseDto response = UserSummaryResponseDto.builder()
-			.name("홍길동")
-			.daysSinceSignup(3)
-			.build();
+		UserSummaryResponseDto response = new UserSummaryResponseDto("홍길동", 3);
 
 		given(userService.getUser(userId)).willReturn(response);
 
@@ -66,13 +63,7 @@ class UserControllerTest {
 		Long userId = 1L;
 		UserUpdateRequestDto request = new UserUpdateRequestDto("김철수", 30);
 
-		UserResponseDto response = UserResponseDto.builder()
-			.id(userId)
-			.name("김철수")
-			.age(30)
-			.createdAt(LocalDateTime.now())
-			.updatedAt(LocalDateTime.now())
-			.build();
+		UserResponseDto response = new UserResponseDto(userId, "김철수", 30, LocalDateTime.now(), LocalDateTime.now());
 
 		given(userService.updateUser(eq(userId), any(UserUpdateRequestDto.class)))
 			.willReturn(response);

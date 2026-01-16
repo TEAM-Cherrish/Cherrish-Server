@@ -58,8 +58,7 @@ public class ChallengeCreationFacade {
 		// 4. 챌린지 생성
 		LocalDate startDate = LocalDate.now(clock);
 
-		Challenge challenge = challengeService.createChallenge(
-			userId, routine, request.title(), startDate);
+		Challenge challenge = challengeService.createChallenge(userId, routine, startDate);
 
 		// 5. 챌린지 루틴 Batch Insert (routineNames × 7일)
 		List<ChallengeRoutine> routines = routineService.createAndSaveRoutines(

@@ -5,8 +5,6 @@ import static com.sopt.cherrish.domain.challenge.core.fixture.ChallengeTestFixtu
 import static com.sopt.cherrish.domain.challenge.core.fixture.ChallengeTestFixture.DEFAULT_USER_ID;
 import static com.sopt.cherrish.domain.challenge.core.fixture.ChallengeTestFixture.createMockChallengeCreateResponse;
 import static com.sopt.cherrish.domain.challenge.core.fixture.ChallengeTestFixture.createRequestWithEmptyRoutines;
-import static com.sopt.cherrish.domain.challenge.core.fixture.ChallengeTestFixture.createRequestWithEmptyTitle;
-import static com.sopt.cherrish.domain.challenge.core.fixture.ChallengeTestFixture.createRequestWithNullTitle;
 import static com.sopt.cherrish.domain.challenge.core.fixture.ChallengeTestFixture.createRequestWithTooManyRoutines;
 import static com.sopt.cherrish.domain.challenge.core.fixture.ChallengeTestFixture.createValidChallengeRequest;
 import static org.mockito.ArgumentMatchers.any;
@@ -107,38 +105,11 @@ class ChallengeLifecycleControllerTest {
 				.andExpect(status().isConflict());
 		}
 
-		@Test
-		@DisplayName("실패 - 유효성 검증 실패 (빈 제목)")
-		void failValidation() throws Exception {
-			// given
-			ChallengeCreateRequestDto request = createRequestWithEmptyTitle();
-
-			// when & then
-			mockMvc.perform(post("/api/challenges")
-					.header("X-User-Id", DEFAULT_USER_ID)
-					.contentType(MediaType.APPLICATION_JSON)
-					.content(objectMapper.writeValueAsString(request)))
-				.andExpect(status().isBadRequest());
-		}
 	}
 
 	@Nested
 	@DisplayName("유효성 검증 테스트")
 	class ValidationTests {
-
-		@Test
-		@DisplayName("실패 - null 제목")
-		void failNullTitle() throws Exception {
-			// given
-			ChallengeCreateRequestDto request = createRequestWithNullTitle();
-
-			// when & then
-			mockMvc.perform(post("/api/challenges")
-					.header("X-User-Id", DEFAULT_USER_ID)
-					.contentType(MediaType.APPLICATION_JSON)
-					.content(objectMapper.writeValueAsString(request)))
-				.andExpect(status().isBadRequest());
-		}
 
 		@Test
 		@DisplayName("실패 - 빈 루틴 목록")

@@ -5,7 +5,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.util.Arrays;
 import java.util.List;
 
 import org.junit.jupiter.api.DisplayName;
@@ -32,13 +31,13 @@ class WorryControllerTest {
 	@DisplayName("피부 고민 전체 조회 성공")
 	void getAllWorriesSuccess() throws Exception {
 		// given
-		List<WorryResponseDto> response = Arrays.asList(
-			WorryResponseDto.builder().id(1L).content("여드름/트러블").build(),
-			WorryResponseDto.builder().id(2L).content("색소/잡티").build(),
-			WorryResponseDto.builder().id(3L).content("홍조").build(),
-			WorryResponseDto.builder().id(4L).content("탄력/주름").build(),
-			WorryResponseDto.builder().id(5L).content("모공").build(),
-			WorryResponseDto.builder().id(6L).content("피부결/각질").build()
+		List<WorryResponseDto> response = List.of(
+			new WorryResponseDto(1L, "여드름/트러블"),
+			new WorryResponseDto(2L, "색소/잡티"),
+			new WorryResponseDto(3L, "홍조"),
+			new WorryResponseDto(4L, "탄력/주름"),
+			new WorryResponseDto(5L, "모공"),
+			new WorryResponseDto(6L, "피부결/각질")
 		);
 
 		given(worryService.getAllWorries()).willReturn(response);

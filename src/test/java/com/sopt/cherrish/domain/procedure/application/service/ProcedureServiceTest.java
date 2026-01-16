@@ -56,10 +56,10 @@ class ProcedureServiceTest {
 		ProcedureListResponseDto result = procedureService.searchProcedures(null, null);
 
 		// then
-		assertThat(result.getProcedures()).hasSize(2);
+		assertThat(result.procedures()).hasSize(2);
         // 이름순 정렬 확인
-		assertThat(result.getProcedures().get(0).getName()).isEqualTo("레이저 토닝");
-		assertThat(result.getProcedures().get(1).getName()).isEqualTo("필러");
+		assertThat(result.procedures().get(0).name()).isEqualTo("레이저 토닝");
+		assertThat(result.procedures().get(1).name()).isEqualTo("필러");
 	}
 
 	@Test
@@ -77,9 +77,9 @@ class ProcedureServiceTest {
 		ProcedureListResponseDto result = procedureService.searchProcedures(keyword, null);
 
 		// then
-		assertThat(result.getProcedures()).hasSize(1);
-		assertThat(result.getProcedures().get(0).getName()).isEqualTo("레이저 토닝");
-		assertThat(result.getProcedures().get(0).getWorries()).hasSize(1);
+		assertThat(result.procedures()).hasSize(1);
+		assertThat(result.procedures().get(0).name()).isEqualTo("레이저 토닝");
+		assertThat(result.procedures().get(0).worries()).hasSize(1);
 	}
 
 	@Test
@@ -97,8 +97,8 @@ class ProcedureServiceTest {
 		ProcedureListResponseDto result = procedureService.searchProcedures(null, worryId);
 
 		// then
-		assertThat(result.getProcedures()).hasSize(1);
-		assertThat(result.getProcedures().get(0).getName()).isEqualTo("레이저 토닝");
+		assertThat(result.procedures()).hasSize(1);
+		assertThat(result.procedures().get(0).name()).isEqualTo("레이저 토닝");
 	}
 
     @Test
@@ -118,9 +118,9 @@ class ProcedureServiceTest {
         ProcedureListResponseDto result = procedureService.searchProcedures(keyword, worryId);
 
         // then
-        assertThat(result.getProcedures()).hasSize(1);
-        assertThat(result.getProcedures().get(0).getName()).isEqualTo("레이저 토닝");
-        assertThat(result.getProcedures().get(0).getWorries()).hasSize(1);
+        assertThat(result.procedures()).hasSize(1);
+        assertThat(result.procedures().get(0).name()).isEqualTo("레이저 토닝");
+        assertThat(result.procedures().get(0).worries()).hasSize(1);
     }
 
     @Test
@@ -135,7 +135,7 @@ class ProcedureServiceTest {
         ProcedureListResponseDto result = procedureService.searchProcedures(emptyKeyword, null);
 
         // then
-        assertThat(result.getProcedures()).isEmpty();
+        assertThat(result.procedures()).isEmpty();
     }
 
 	@Test
@@ -149,7 +149,7 @@ class ProcedureServiceTest {
 		ProcedureListResponseDto result = procedureService.searchProcedures(keyword, null);
 
 		// then
-		assertThat(result.getProcedures()).isEmpty();
+		assertThat(result.procedures()).isEmpty();
 	}
 
 	@Test
@@ -167,12 +167,12 @@ class ProcedureServiceTest {
 		ProcedureListResponseDto result = procedureService.searchProcedures(null, null);
 
 		// then
-		assertThat(result.getProcedures()).hasSize(1);
-		assertThat(result.getProcedures().get(0).getId()).isNotNull();
-		assertThat(result.getProcedures().get(0).getName()).isEqualTo("프락셀 레이저");
-		assertThat(result.getProcedures().get(0).getWorries()).hasSize(1);
-		assertThat(result.getProcedures().get(0).getMinDowntimeDays()).isEqualTo(3);
-		assertThat(result.getProcedures().get(0).getMaxDowntimeDays()).isEqualTo(7);
+		assertThat(result.procedures()).hasSize(1);
+		assertThat(result.procedures().get(0).id()).isNotNull();
+		assertThat(result.procedures().get(0).name()).isEqualTo("프락셀 레이저");
+		assertThat(result.procedures().get(0).worries()).hasSize(1);
+		assertThat(result.procedures().get(0).minDowntimeDays()).isEqualTo(3);
+		assertThat(result.procedures().get(0).maxDowntimeDays()).isEqualTo(7);
 	}
 
 	private ProcedureWorry procedureWorry(Procedure procedure, String worryContent) {

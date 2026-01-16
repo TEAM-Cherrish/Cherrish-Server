@@ -68,13 +68,12 @@ class ChallengeServiceTest {
 		// given
 		Long userId = 1L;
 		HomecareRoutine routine = HomecareRoutine.SKIN_MOISTURIZING;
-		String title = "7일 보습 챌린지";
 		LocalDate startDate = LocalDate.now();
 
 		Challenge expectedChallenge = Challenge.builder()
 			.userId(userId)
 			.homecareRoutine(routine)
-			.title(title)
+			.title(routine.getDescription())
 			.startDate(startDate)
 			.build();
 
@@ -82,13 +81,13 @@ class ChallengeServiceTest {
 			.thenReturn(expectedChallenge);
 
 		// when
-		Challenge result = challengeService.createChallenge(userId, routine, title, startDate);
+		Challenge result = challengeService.createChallenge(userId, routine, startDate);
 
 		// then
 		assertThat(result).isNotNull();
 		assertThat(result.getUserId()).isEqualTo(userId);
 		assertThat(result.getHomecareRoutine()).isEqualTo(routine);
-		assertThat(result.getTitle()).isEqualTo(title);
+		assertThat(result.getTitle()).isEqualTo(routine.getDescription());
 		assertThat(result.getStartDate()).isEqualTo(startDate);
 		verify(challengeRepository).save(any(Challenge.class));
 	}
@@ -144,7 +143,7 @@ class ChallengeServiceTest {
 		// then
 		assertThat(result).isNotNull();
 		assertThat(result.getUserId()).isEqualTo(userId);
-		assertThat(result.getTitle()).isEqualTo("7일 챌린지");
+		assertThat(result.getTitle()).isEqualTo("피부 보습 관리");
 		assertThat(result.getIsActive()).isTrue();
 		verify(challengeRepository).findById(challengeId);
 	}
