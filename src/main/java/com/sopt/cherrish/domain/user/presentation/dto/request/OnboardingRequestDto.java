@@ -13,7 +13,7 @@ import jakarta.validation.constraints.Size;
 public record OnboardingRequestDto(
 	@Schema(description = "사용자 이름", example = "홍길동", requiredMode = Schema.RequiredMode.REQUIRED)
 	@NotBlank(message = "이름은 필수입니다")
-	@Size(max = 50, message = "이름은 50자를 초과할 수 없습니다")
+	@Size(max = 10, message = "이름은 10자를 초과할 수 없습니다")
 	String name,
 
 	@Schema(description = "나이 (한국 나이)", example = "25", requiredMode = Schema.RequiredMode.REQUIRED)
