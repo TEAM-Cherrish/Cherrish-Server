@@ -71,4 +71,17 @@ class OnboardingControllerTest {
 				.content(objectMapper.writeValueAsString(request)))
 			.andExpect(status().isBadRequest());
 	}
+
+	@Test
+	@DisplayName("온보딩 프로필 생성 실패 - 이름이 10자 초과")
+	void createProfileNameTooLong() throws Exception {
+		// given
+		OnboardingRequestDto request = new OnboardingRequestDto("가나다라마바사아자차카", 25);
+
+		// when & then
+		mockMvc.perform(post("/api/onboarding/profiles")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(request)))
+			.andExpect(status().isBadRequest());
+	}
 }
