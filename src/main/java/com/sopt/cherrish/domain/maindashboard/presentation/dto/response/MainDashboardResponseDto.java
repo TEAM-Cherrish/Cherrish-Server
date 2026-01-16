@@ -22,8 +22,8 @@ public record MainDashboardResponseDto(
 	@Schema(description = "체리 레벨 (1-4, 챌린지 없으면 0)", example = "2")
 	Integer cherryLevel,
 
-	@Schema(description = "챌린지 완료율 (%)", example = "40.3")
-	Double challengeRate,
+	@Schema(description = "챌린지 완료율 (%)", example = "40")
+	Integer challengeRate,
 
 	@Schema(description = "최근 시술 목록 (다운타임 진행 중)")
 	List<RecentProcedureResponseDto> recentProcedures,
@@ -34,7 +34,7 @@ public record MainDashboardResponseDto(
 	public static MainDashboardResponseDto from(
 		LocalDate today,
 		Integer cherryLevel,
-		Double challengeRate,
+		Integer challengeRate,
 		String challengeName,
 		List<RecentProcedureResponseDto> recentProcedures,
 		List<UpcomingProcedureResponseDto> upcomingProcedures

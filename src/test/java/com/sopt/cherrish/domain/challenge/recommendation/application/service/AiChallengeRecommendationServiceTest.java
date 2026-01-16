@@ -50,8 +50,8 @@ class AiChallengeRecommendationServiceTest {
 	}
 
 	// Fixture helper method
-	private OpenAiChallengeRecommendationResponseDto createMockResponse(String title, List<String> routines) {
-		return new OpenAiChallengeRecommendationResponseDto(title, routines);
+	private OpenAiChallengeRecommendationResponseDto createMockResponse(List<String> routines) {
+		return new OpenAiChallengeRecommendationResponseDto(routines);
 	}
 
 	@Nested
@@ -64,7 +64,6 @@ class AiChallengeRecommendationServiceTest {
 			// given
 			Integer homecareRoutineId = 1;
 			OpenAiChallengeRecommendationResponseDto mockAiResponse = createMockResponse(
-				"피부 보습 7일 챌린지",
 				List.of("아침 세안 후 토너 바르기", "저녁 보습 크림 충분히 바르기", "하루 8잔 물 마시기")
 			);
 
@@ -76,7 +75,6 @@ class AiChallengeRecommendationServiceTest {
 
 			// then
 			assertThat(result).isNotNull();
-			assertThat(result.challengeTitle()).isEqualTo("피부 보습 7일 챌린지");
 			assertThat(result.routines()).hasSize(3);
 			assertThat(result.routines()).containsExactly(
 				"아침 세안 후 토너 바르기",
@@ -94,7 +92,6 @@ class AiChallengeRecommendationServiceTest {
 			// given
 			Integer homecareRoutineId = 3;
 			OpenAiChallengeRecommendationResponseDto mockAiResponse = createMockResponse(
-				"주름 개선 7일 챌린지",
 				List.of("레티놀 세럼 바르기", "충분한 수면 취하기", "자외선 차단제 바르기", "콜라겐 음식 섭취")
 			);
 
@@ -106,7 +103,6 @@ class AiChallengeRecommendationServiceTest {
 
 			// then
 			assertThat(result).isNotNull();
-			assertThat(result.challengeTitle()).isEqualTo("주름 개선 7일 챌린지");
 			assertThat(result.routines()).hasSize(4);
 
 			verify(aiClient, times(1)).call(anyString(), anyMap(),
@@ -118,10 +114,7 @@ class AiChallengeRecommendationServiceTest {
 		void emptyRoutines() {
 			// given
 			Integer homecareRoutineId = 1;
-			OpenAiChallengeRecommendationResponseDto mockAiResponse = createMockResponse(
-				"피부 보습 7일 챌린지",
-				List.of()
-			);
+			OpenAiChallengeRecommendationResponseDto mockAiResponse = createMockResponse(List.of());
 
 			givenAiClientReturns(mockAiResponse);
 
@@ -131,7 +124,6 @@ class AiChallengeRecommendationServiceTest {
 
 			// then
 			assertThat(result).isNotNull();
-			assertThat(result.challengeTitle()).isEqualTo("피부 보습 7일 챌린지");
 			assertThat(result.routines()).isEmpty();
 
 			verify(aiClient, times(1)).call(anyString(), anyMap(),

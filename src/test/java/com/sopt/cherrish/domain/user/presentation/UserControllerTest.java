@@ -92,11 +92,11 @@ class UserControllerTest {
 	}
 
 	@Test
-	@DisplayName("사용자 정보 수정 실패 - 이름이 10자 초과")
+	@DisplayName("사용자 정보 수정 실패 - 이름이 7자 초과")
 	void updateUserNameTooLong() throws Exception {
 		// given
 		Long userId = 1L;
-		UserUpdateRequestDto request = new UserUpdateRequestDto("가나다라마바사아자차카", 30);
+		UserUpdateRequestDto request = new UserUpdateRequestDto("가나다라마바사아", 30);
 
 		// when & then
 		mockMvc.perform(patch("/api/users")

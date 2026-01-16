@@ -53,7 +53,7 @@ public class MainDashboardFacade {
 
 		// 3. 챌린지 데이터 (활성 챌린지 없으면 0)
 		Integer cherryLevel = 0;
-		Double challengeRate = 0.0;
+		Integer challengeRate = 0;
 		String challengeName = null;
 
 		var challengeOpt = challengeService.findActiveChallengeWithStatistics(userId);

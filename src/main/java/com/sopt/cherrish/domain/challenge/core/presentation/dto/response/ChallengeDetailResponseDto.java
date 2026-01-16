@@ -23,8 +23,8 @@ public record ChallengeDetailResponseDto(
 	@Schema(description = "현재 일차", example = "3")
 	int currentDay,
 
-	@Schema(description = "전체 진행률 (%)", example = "37.5")
-	double progressPercentage,
+	@Schema(description = "전체 진행률 (%)", example = "38")
+	int progressPercentage,
 
 	@Schema(description = "체리 레벨 (1-4)", example = "2")
 	int cherryLevel,

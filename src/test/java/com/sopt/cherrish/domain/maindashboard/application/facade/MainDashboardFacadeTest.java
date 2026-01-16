@@ -78,7 +78,7 @@ class MainDashboardFacadeTest {
 
 		// then
 		assertThat(result.cherryLevel()).isEqualTo(0);
-		assertThat(result.challengeRate()).isEqualTo(0.0);
+		assertThat(result.challengeRate()).isEqualTo(0);
 		assertThat(result.challengeName()).isNull();
 		assertThat(result.dayOfWeek()).isEqualTo(today.getDayOfWeek().name());
 		assertThat(result.recentProcedures()).isEmpty();
@@ -110,7 +110,7 @@ class MainDashboardFacadeTest {
 
 		// then
 		assertThat(result.cherryLevel()).isEqualTo(0);
-		assertThat(result.challengeRate()).isEqualTo(0.0);
+		assertThat(result.challengeRate()).isEqualTo(0);
 		assertThat(result.challengeName()).isNull();
 		assertThat(result.recentProcedures()).isNotNull();
 	}
@@ -127,7 +127,7 @@ class MainDashboardFacadeTest {
 		given(challenge.getStatistics()).willReturn(stats);
 		given(challenge.getTitle()).willReturn("7일 보습 챌린지");
 		given(stats.calculateCherryLevel()).willReturn(2);
-		given(stats.getProgressPercentage()).willReturn(40.0);
+		given(stats.getProgressPercentage()).willReturn(40);
 
 		given(userProcedureService.findRecentProcedures(userId, today))
 			.willReturn(List.of());
@@ -169,7 +169,7 @@ class MainDashboardFacadeTest {
 		given(challenge.getStatistics()).willReturn(stats);
 		given(challenge.getTitle()).willReturn("7일 보습 챌린지");
 		given(stats.calculateCherryLevel()).willReturn(1);
-		given(stats.getProgressPercentage()).willReturn(10.0);
+		given(stats.getProgressPercentage()).willReturn(10);
 
 		var user = UserFixture.createUser();
 		UserProcedure recent = UserProcedureFixture.createUserProcedure(
@@ -204,7 +204,7 @@ class MainDashboardFacadeTest {
 		given(challenge.getStatistics()).willReturn(stats);
 		given(challenge.getTitle()).willReturn("7일 보습 챌린지");
 		given(stats.calculateCherryLevel()).willReturn(3);
-		given(stats.getProgressPercentage()).willReturn(65.0);
+		given(stats.getProgressPercentage()).willReturn(65);
 
 		var user = UserFixture.createUser();
 		// 1/10 시술 (다운타임 7일) - 1/15 기준 RECOVERY
@@ -239,7 +239,7 @@ class MainDashboardFacadeTest {
 
 		// then
 		assertThat(result.cherryLevel()).isEqualTo(3);
-		assertThat(result.challengeRate()).isEqualTo(65.0);
+		assertThat(result.challengeRate()).isEqualTo(65);
 		assertThat(result.challengeName()).isEqualTo("7일 보습 챌린지");
 
 		List<RecentProcedureResponseDto> recent = result.recentProcedures();
@@ -270,7 +270,7 @@ class MainDashboardFacadeTest {
 		given(challenge.getStatistics()).willReturn(stats);
 		given(challenge.getTitle()).willReturn("7일 보습 챌린지");
 		given(stats.calculateCherryLevel()).willReturn(4);
-		given(stats.getProgressPercentage()).willReturn(80.0);
+		given(stats.getProgressPercentage()).willReturn(80);
 
 		var user = UserFixture.createUser();
 		UserProcedure recent1 = UserProcedureFixture.createUserProcedure(
@@ -325,7 +325,7 @@ class MainDashboardFacadeTest {
 
 		// then
 		assertThat(result.cherryLevel()).isEqualTo(4);
-		assertThat(result.challengeRate()).isEqualTo(80.0);
+		assertThat(result.challengeRate()).isEqualTo(80);
 		assertThat(result.challengeName()).isEqualTo("7일 보습 챌린지");
 
 		List<RecentProcedureResponseDto> recent = result.recentProcedures();

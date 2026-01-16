@@ -69,10 +69,36 @@ class OnboardingControllerTest {
 	}
 
 	@Test
-	@DisplayName("온보딩 프로필 생성 실패 - 이름이 10자 초과")
+	@DisplayName("온보딩 프로필 생성 실패 - 이름이 7자 초과")
 	void createProfileNameTooLong() throws Exception {
 		// given
-		OnboardingRequestDto request = new OnboardingRequestDto("가나다라마바사아자차카", 25);
+		OnboardingRequestDto request = new OnboardingRequestDto("가나다라마바사아", 25);
+
+		// when & then
+		mockMvc.perform(post("/api/onboarding/profiles")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(request)))
+			.andExpect(status().isBadRequest());
+	}
+
+	@Test
+	@DisplayName("온보딩 프로필 생성 실패 - 나이가 1세 미만")
+	void createProfileAgeTooLow() throws Exception {
+		// given
+		OnboardingRequestDto request = new OnboardingRequestDto("홍길동", 0);
+
+		// when & then
+		mockMvc.perform(post("/api/onboarding/profiles")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(request)))
+			.andExpect(status().isBadRequest());
+	}
+
+	@Test
+	@DisplayName("온보딩 프로필 생성 실패 - 나이가 100세 초과")
+	void createProfileAgeTooHigh() throws Exception {
+		// given
+		OnboardingRequestDto request = new OnboardingRequestDto("홍길동", 101);
 
 		// when & then
 		mockMvc.perform(post("/api/onboarding/profiles")
