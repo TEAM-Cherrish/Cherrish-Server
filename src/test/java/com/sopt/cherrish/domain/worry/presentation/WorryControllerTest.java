@@ -5,7 +5,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.util.Arrays;
 import java.util.List;
 
 import org.junit.jupiter.api.DisplayName;
@@ -32,7 +31,7 @@ class WorryControllerTest {
 	@DisplayName("피부 고민 전체 조회 성공")
 	void getAllWorriesSuccess() throws Exception {
 		// given
-		List<WorryResponseDto> response = Arrays.asList(
+		List<WorryResponseDto> response = List.of(
 			new WorryResponseDto(1L, "여드름/트러블"),
 			new WorryResponseDto(2L, "색소/잡티"),
 			new WorryResponseDto(3L, "홍조"),
