@@ -1,0 +1,88 @@
+{
+  "settings": {
+    "number_of_shards": 1,
+    "number_of_replicas": 0,
+    "analysis": {
+      "filter": {
+        "korean_synonym": {
+          "type": "synonym",
+          "synonyms_path": "analysis/synonyms.txt",
+          "updateable": true
+        },
+        "nori_posfilter": {
+          "type": "nori_part_of_speech",
+          "stoptags": [
+            "E", "IC", "J", "MAG", "MAJ", "MM",
+            "SP", "SSC", "SSO", "SC", "SE", "XPN",
+            "XSA", "XSN", "XSV", "UNA", "NA", "VSV"
+          ]
+        },
+        "edge_ngram_filter": {
+          "type": "edge_ngram",
+          "min_gram": 1,
+          "max_gram": 20
+        }
+      },
+      "tokenizer": {
+        "nori_tokenizer": {
+          "type": "nori_tokenizer",
+          "decompound_mode": "mixed",
+          "user_dictionary": "analysis/userdict_ko.txt"
+        }
+      },
+      "analyzer": {
+        "korean_analyzer": {
+          "type": "custom",
+          "tokenizer": "nori_tokenizer",
+          "filter": [
+            "nori_posfilter",
+            "nori_readingform",
+            "lowercase"
+          ]
+        },
+        "korean_search_analyzer": {
+          "type": "custom",
+          "tokenizer": "nori_tokenizer",
+          "filter": [
+            "nori_posfilter",
+            "nori_readingform",
+            "lowercase",
+            "korean_synonym"
+          ]
+        },
+        "edge_ngram_analyzer": {
+          "type": "custom",
+          "tokenizer": "nori_tokenizer",
+          "filter": [
+            "nori_posfilter",
+            "nori_readingform",
+            "lowercase",
+            "edge_ngram_filter"
+          ]
+        }
+      }
+    }
+  },
+  "mappings": {
+    "properties": {
+      "id": {
+        "type": "long"
+      },
+      "name": {
+        "type": "text",
+        "analyzer": "korean_analyzer",
+        "search_analyzer": "korean_search_analyzer",
+        "fields": {
+          "keyword": {
+            "type": "keyword"
+          },
+          "ngram": {
+            "type": "text",
+            "analyzer": "edge_ngram_analyzer",
+            "search_analyzer": "korean_search_analyzer"
+          }
+        }
+      }
+    }
+  }
+}
