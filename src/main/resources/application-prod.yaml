@@ -23,3 +23,9 @@ logging:
     root: INFO
     com.sopt.cherrish: INFO
     org.hibernate.SQL: WARN
+
+springdoc:
+  api-docs:
+    enabled: false
+  swagger-ui:
+    enabled: false

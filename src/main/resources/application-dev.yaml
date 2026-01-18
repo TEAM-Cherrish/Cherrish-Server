@@ -23,3 +23,9 @@ logging:
     root: INFO
     com.sopt.cherrish: DEBUG
     org.hibernate.SQL: DEBUG
+
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
