@@ -4,9 +4,9 @@
     <appender name="DISCORD" class="com.github.napstr.logback.DiscordAppender">
         <webhookUri>${DISCORD_ERROR_WEBHOOK_URL}</webhookUri>
         <layout>
-            <pattern>**[에러 로그]**%n**시간**: %d{yyyy-MM-dd HH:mm:ss.SSS}%n**위치**: %logger{36}.%M:%L%n**RequestId**: %X{requestId:--}%n**UserId**: %X{userId:--}%n**메시지**: %msg%n```%ex{short}```</pattern>
+            <pattern>%n━━━━━━━━━━━━━━━━━━━━━━━━━━━━%n🚨 **CHERRISH SERVER ERROR** 🚨%n━━━━━━━━━━━━━━━━━━━━━━━━━━━━%n%n⏰ **Time**%n└ %d{yyyy-MM-dd HH:mm:ss.SSS}%n%n📍 **Location**%n└ %logger{36}.%M:%L%n%n🔑 **Request Info**%n└ RequestId: `%X{requestId:--}` │ UserId: `%X{userId:--}`%n%n💬 **Message**%n└ %msg%n%n📋 **Stack Trace**%n```java%n%ex{short}```%n━━━━━━━━━━━━━━━━━━━━━━━━━━━━%n</pattern>
         </layout>
-        <username>Cherrish Error Bot</username>
+        <username>🍒 Cherrish Error Bot</username>
         <tts>false</tts>
     </appender>
 
