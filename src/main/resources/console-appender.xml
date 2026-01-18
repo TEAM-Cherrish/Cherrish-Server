@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <included>
     <property name="CONSOLE_PATTERN"
-              value="[%d{yyyy-MM-dd HH:mm:ss}:%-4relative] %green([%thread]) [%X{requestId:-}] %highlight(%-5level) %boldWhite([%C{0}.%M:%yellow(%L)]) - %msg%n"/>
+              value="[%d{yyyy-MM-dd HH:mm:ss}:%-4relative] %green([%thread]) [%X{requestId:-}] [userId:%X{userId:-}] %highlight(%-5level) %boldWhite([%C{0}.%M:%yellow(%L)]) - %msg%n"/>
 
     <!-- dev 환경: 컬러 텍스트 로그 -->
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
