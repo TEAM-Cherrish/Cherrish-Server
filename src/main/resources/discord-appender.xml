@@ -1,13 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <included>
-    <!-- Discord 웹훅 Appender (ERROR 레벨만) -->
-    <appender name="DISCORD" class="com.github.napstr.logback.DiscordAppender">
-        <webhookUri>${DISCORD_ERROR_WEBHOOK_URL}</webhookUri>
-        <layout>
-            <pattern>%n━━━━━━━━━━━━━━━━━━━━━━━━━━━━%n🚨 **CHERRISH SERVER ERROR** 🚨%n━━━━━━━━━━━━━━━━━━━━━━━━━━━━%n%n⏰ **Time**%n└ %d{yyyy-MM-dd HH:mm:ss.SSS}%n%n🌐 **API**%n└ `%X{method:--}` **%X{uri:--}**%n%n📍 **Location**%n└ %logger{36}.%M:%L%n%n🔑 **Request Info**%n└ RequestId: `%X{requestId:--}` │ UserId: `%X{userId:--}`%n%n💬 **Message**%n└ %msg%n%n📋 **Stack Trace**%n```java%n%ex{short}```%n━━━━━━━━━━━━━━━━━━━━━━━━━━━━%n</pattern>
-        </layout>
-        <username>🍒 Cherrish Error Bot</username>
-        <tts>false</tts>
+    <!-- Discord Embed Appender (커스텀) -->
+    <appender name="DISCORD" class="com.sopt.cherrish.global.logging.appender.DiscordEmbedAppender">
+        <webhookUrl>${DISCORD_ERROR_WEBHOOK_URL}</webhookUrl>
+        <serviceName>Cherrish</serviceName>
     </appender>
 
     <!-- 비동기 래퍼 (성능 최적화) -->
