@@ -1,6 +1,7 @@
 package com.sopt.cherrish.domain.challenge.demo.application.service;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -50,5 +51,13 @@ public class DemoChallengeService {
 	public DemoChallenge getActiveChallengeWithStatistics(Long userId) {
 		return demoChallengeRepository.findActiveChallengeWithStatistics(userId)
 			.orElseThrow(() -> new ChallengeException(ChallengeErrorCode.CHALLENGE_NOT_FOUND));
+	}
+
+	/**
+	 * 활성 데모 챌린지 조회 - Optional 반환
+	 * 챌린지가 없어도 예외를 던지지 않음 (Facade에서 사용)
+	 */
+	public Optional<DemoChallenge> findActiveChallengeWithStatistics(Long userId) {
+		return demoChallengeRepository.findActiveChallengeWithStatistics(userId);
 	}
 }
