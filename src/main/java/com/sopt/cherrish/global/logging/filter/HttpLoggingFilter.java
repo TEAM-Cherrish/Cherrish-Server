@@ -41,9 +41,7 @@ public class HttpLoggingFilter extends OncePerRequestFilter {
 
         String message = String.format("HTTP %s %s - %d (%dms)", method, uri, status, duration);
 
-        if (status >= 500) {
-            log.error(message);
-        } else if (status >= 400) {
+        if (status >= 400) {
             log.warn(message);
         } else {
             log.info(message);

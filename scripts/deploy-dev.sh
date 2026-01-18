@@ -31,6 +31,7 @@ DB_PASSWORD=$(aws ssm get-parameter --name "/cherrish/DB_PASSWORD" --region "${A
 OPENAI_API_KEY=$(aws ssm get-parameter --name "/cherrish/OPENAI_API_KEY" --region "${AWS_REGION}" --with-decryption --query "Parameter.Value" --output text)
 OPENAI_MODEL=$(aws ssm get-parameter --name "/cherrish/OPENAI_MODEL" --region "${AWS_REGION}" --query "Parameter.Value" --output text)
 SERVER_URL=$(aws ssm get-parameter --name "/cherrish/SERVER_URL" --region "${AWS_REGION}" --query "Parameter.Value" --output text)
+DISCORD_ERROR_WEBHOOK_URL=$(aws ssm get-parameter --name "/cherrish/DISCORD_ERROR_WEBHOOK_URL" --region "${AWS_REGION}" --with-decryption --query "Parameter.Value" --output text)
 
 # Stop and remove existing container
 echo "Stopping existing container..."
@@ -51,6 +52,7 @@ docker run -d \
   -e OPENAI_API_KEY="${OPENAI_API_KEY}" \
   -e OPENAI_MODEL="${OPENAI_MODEL}" \
   -e SERVER_URL="${SERVER_URL}" \
+  -e DISCORD_ERROR_WEBHOOK_URL="${DISCORD_ERROR_WEBHOOK_URL}" \
   "${IMAGE}"
 
 # Cleanup old images

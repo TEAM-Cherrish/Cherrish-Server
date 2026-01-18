@@ -23,6 +23,8 @@ logging:
     root: INFO
     com.sopt.cherrish: DEBUG
     org.hibernate.SQL: DEBUG
+  discord:
+    error-webhook-url: ${DISCORD_ERROR_WEBHOOK_URL:}
 
 springdoc:
   api-docs:
