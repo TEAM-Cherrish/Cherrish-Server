@@ -60,13 +60,14 @@ public class DiscordEmbedAppender extends AppenderBase<ILoggingEvent> {
         Map<String, String> mdc = event.getMDCPropertyMap();
 
         String time = TIME_FORMATTER.format(Instant.ofEpochMilli(event.getTimeStamp()));
-        String method = mdc.getOrDefault("method", "-");
-        String uri = mdc.getOrDefault("uri", "-");
-        String requestId = mdc.getOrDefault("requestId", "-");
-        String userId = mdc.getOrDefault("userId", "-");
+        String method = escapeJson(mdc.getOrDefault("method", "-"));
+        String uri = escapeJson(mdc.getOrDefault("uri", "-"));
+        String requestId = escapeJson(mdc.getOrDefault("requestId", "-"));
+        String userId = escapeJson(mdc.getOrDefault("userId", "-"));
         String message = escapeJson(event.getFormattedMessage());
         String stackTrace = extractStackTrace(event);
-        String location = extractLocation(event);
+        String location = escapeJson(extractLocation(event));
+        String escapedServiceName = escapeJson(serviceName);
 
         return """
             {
@@ -87,7 +88,7 @@ public class DiscordEmbedAppender extends AppenderBase<ILoggingEvent> {
               }]
             }
             """.formatted(
-                serviceName,
+                escapedServiceName,
                 COLOR_ERROR,
                 method, uri,
                 time,
@@ -96,7 +97,7 @@ public class DiscordEmbedAppender extends AppenderBase<ILoggingEvent> {
                 location,
                 message,
                 stackTrace,
-                serviceName
+                escapedServiceName
             );
     }
 
