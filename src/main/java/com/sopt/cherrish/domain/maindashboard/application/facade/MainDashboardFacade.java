@@ -62,7 +62,7 @@ public class MainDashboardFacade {
 		String challengeName = null;
 
 		// [기존 코드]
-		// var challengeOpt = challengeService.findActiveChallengeWithStatistics(userId);
+		// Optional<Challenge> challengeOpt = challengeService.findActiveChallengeWithStatistics(userId);
 		// if (challengeOpt.isPresent()) {
 		// 	Challenge challenge = challengeOpt.get();
 		// 	ChallengeStatistics stats = challenge.getStatistics();
