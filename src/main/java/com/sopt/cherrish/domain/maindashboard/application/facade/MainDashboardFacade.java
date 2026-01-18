@@ -5,7 +5,9 @@ import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
+import com.sopt.cherrish.domain.challenge.core.domain.model.Challenge;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -74,7 +76,7 @@ public class MainDashboardFacade {
 		// }
 
 		// [데모용 코드]
-		var demoChallengeOpt = demoChallengeService.findActiveChallengeWithStatistics(userId);
+        Optional<DemoChallenge> demoChallengeOpt = demoChallengeService.findActiveChallengeWithStatistics(userId);
 		if (demoChallengeOpt.isPresent()) {
 			DemoChallenge demoChallenge = demoChallengeOpt.get();
 			DemoChallengeStatistics stats = demoChallenge.getStatistics();
