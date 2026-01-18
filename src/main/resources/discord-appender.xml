@@ -13,6 +13,7 @@
     <!-- 비동기 래퍼 (성능 최적화) -->
     <appender name="ASYNC_DISCORD" class="ch.qos.logback.classic.AsyncAppender">
         <appender-ref ref="DISCORD"/>
+        <includeCallerData>true</includeCallerData>
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
             <level>ERROR</level>
         </filter>
