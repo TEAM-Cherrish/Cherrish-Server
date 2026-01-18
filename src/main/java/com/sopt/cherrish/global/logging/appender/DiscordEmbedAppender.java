@@ -60,14 +60,14 @@ public class DiscordEmbedAppender extends AppenderBase<ILoggingEvent> {
         Map<String, String> mdc = event.getMDCPropertyMap();
 
         String time = TIME_FORMATTER.format(Instant.ofEpochMilli(event.getTimeStamp()));
-        String method = escapeJson(mdc.getOrDefault("method", "-"));
-        String uri = escapeJson(mdc.getOrDefault("uri", "-"));
-        String requestId = escapeJson(mdc.getOrDefault("requestId", "-"));
-        String userId = escapeJson(mdc.getOrDefault("userId", "-"));
-        String message = escapeJson(event.getFormattedMessage());
+        String method = escapeJson(truncate(mdc.getOrDefault("method", "-"), MAX_FIELD_LENGTH));
+        String uri = escapeJson(truncate(mdc.getOrDefault("uri", "-"), MAX_FIELD_LENGTH));
+        String requestId = escapeJson(truncate(mdc.getOrDefault("requestId", "-"), MAX_FIELD_LENGTH));
+        String userId = escapeJson(truncate(mdc.getOrDefault("userId", "-"), MAX_FIELD_LENGTH));
+        String message = escapeJson(truncate(event.getFormattedMessage(), MAX_FIELD_LENGTH));
         String stackTrace = extractStackTrace(event);
-        String location = escapeJson(extractLocation(event));
-        String escapedServiceName = escapeJson(serviceName);
+        String location = escapeJson(truncate(extractLocation(event), MAX_FIELD_LENGTH));
+        String escapedServiceName = escapeJson(truncate(serviceName, 80));
 
         return """
             {
@@ -139,6 +139,12 @@ public class DiscordEmbedAppender extends AppenderBase<ILoggingEvent> {
             result = result.substring(0, MAX_FIELD_LENGTH - 20) + "\n...truncated";
         }
         return escapeJson(result);
+    }
+
+    private String truncate(String text, int maxLength) {
+        if (text == null) return "";
+        if (text.length() <= maxLength) return text;
+        return text.substring(0, maxLength - 12) + "...truncated";
     }
 
     private String escapeJson(String text) {
