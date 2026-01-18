@@ -24,7 +24,7 @@ logging:
     com.sopt.cherrish: INFO
     org.hibernate.SQL: WARN
   discord:
-    webhook-url: ${DISCORD_WEBHOOK_URL:}
+    error-webhook-url: ${DISCORD_ERROR_WEBHOOK_URL:}
 
 springdoc:
   api-docs:

@@ -2,7 +2,7 @@
 <included>
     <!-- Discord 웹훅 Appender (ERROR 레벨만) -->
     <appender name="DISCORD" class="com.github.napstr.logback.DiscordAppender">
-        <webhookUri>${DISCORD_WEBHOOK_URL}</webhookUri>
+        <webhookUri>${DISCORD_ERROR_WEBHOOK_URL}</webhookUri>
         <layout>
             <pattern>**[에러 로그]**%n**시간**: %d{yyyy-MM-dd HH:mm:ss.SSS}%n**위치**: %logger{36}.%M:%L%n**RequestId**: %X{requestId:--}%n**UserId**: %X{userId:--}%n**메시지**: %msg%n```%ex{short}```</pattern>
         </layout>
