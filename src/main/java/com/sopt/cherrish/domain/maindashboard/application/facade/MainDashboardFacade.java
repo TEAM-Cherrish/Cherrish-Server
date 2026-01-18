@@ -5,13 +5,19 @@ import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
+import com.sopt.cherrish.domain.challenge.core.domain.model.Challenge;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.sopt.cherrish.domain.challenge.core.application.service.ChallengeService;
-import com.sopt.cherrish.domain.challenge.core.domain.model.Challenge;
-import com.sopt.cherrish.domain.challenge.core.domain.model.ChallengeStatistics;
+// [기존 코드 - 데모 종료 후 복원]
+// import com.sopt.cherrish.domain.challenge.core.application.service.ChallengeService;
+// import com.sopt.cherrish.domain.challenge.core.domain.model.Challenge;
+// import com.sopt.cherrish.domain.challenge.core.domain.model.ChallengeStatistics;
+import com.sopt.cherrish.domain.challenge.demo.application.service.DemoChallengeService;
+import com.sopt.cherrish.domain.challenge.demo.domain.model.DemoChallenge;
+import com.sopt.cherrish.domain.challenge.demo.domain.model.DemoChallengeStatistics;
 import com.sopt.cherrish.domain.maindashboard.presentation.dto.response.MainDashboardResponseDto;
 import com.sopt.cherrish.domain.maindashboard.presentation.dto.response.RecentProcedureResponseDto;
 import com.sopt.cherrish.domain.maindashboard.presentation.dto.response.UpcomingProcedureResponseDto;
@@ -35,7 +41,8 @@ public class MainDashboardFacade {
     private static final int MAX_UPCOMING_PROCEDURE_DATES = 3;
 
 	private final UserService userService;
-	private final ChallengeService challengeService;
+	// [기존 코드] private final ChallengeService challengeService;
+	private final DemoChallengeService demoChallengeService; // [데모용 코드]
 	private final UserProcedureService userProcedureService;
 	private final Clock clock;
 
@@ -51,20 +58,33 @@ public class MainDashboardFacade {
 		// 2. 오늘 날짜 가져오기
 		LocalDate today = LocalDate.now(clock);
 
-		// 3. 챌린지 데이터 (활성 챌린지 없으면 0)
-		Integer cherryLevel = 0;
-		Integer challengeRate = 0;
+		// 3. 챌린지 데이터 (데모 챌린지, 활성 챌린지 없으면 0)
+		int cherryLevel = 0;
+		int challengeRate = 0;
 		String challengeName = null;
 
-		var challengeOpt = challengeService.findActiveChallengeWithStatistics(userId);
-		if (challengeOpt.isPresent()) {
-			Challenge challenge = challengeOpt.get();
-			ChallengeStatistics stats = challenge.getStatistics();
+		// [기존 코드]
+		// Optional<Challenge> challengeOpt = challengeService.findActiveChallengeWithStatistics(userId);
+		// if (challengeOpt.isPresent()) {
+		// 	Challenge challenge = challengeOpt.get();
+		// 	ChallengeStatistics stats = challenge.getStatistics();
+		// 	cherryLevel = stats.calculateCherryLevel();
+		// 	challengeRate = stats.getProgressPercentage();
+		// 	challengeName = challenge.getTitle();
+		// } else {
+		// 	log.info("사용자 {}의 활성 챌린지 없음 (cherryLevel=0)", userId);
+		// }
+
+		// [데모용 코드]
+        Optional<DemoChallenge> demoChallengeOpt = demoChallengeService.findActiveChallengeWithStatistics(userId);
+		if (demoChallengeOpt.isPresent()) {
+			DemoChallenge demoChallenge = demoChallengeOpt.get();
+			DemoChallengeStatistics stats = demoChallenge.getStatistics();
 			cherryLevel = stats.calculateCherryLevel();
 			challengeRate = stats.getProgressPercentage();
-			challengeName = challenge.getTitle();
+			challengeName = demoChallenge.getTitle();
 		} else {
-			log.info("사용자 {}의 활성 챌린지 없음 (cherryLevel=0)", userId);
+			log.info("사용자 {}의 활성 데모 챌린지 없음 (cherryLevel=0)", userId);
 		}
 
 		// 4. 최근 시술 (다운타임 진행 중인 모든 시술, Phase/시간순 정렬)
