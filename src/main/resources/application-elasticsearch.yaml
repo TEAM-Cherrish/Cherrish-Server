@@ -1,0 +1,10 @@
+spring:
+  elasticsearch:
+    uris: ${ELASTICSEARCH_URI:http://localhost:9200}
+    connection-timeout: 5s
+    socket-timeout: 30s
+
+cherrish:
+  elasticsearch:
+    enabled: ${ELASTICSEARCH_ENABLED:true}
+    index-name: procedures
