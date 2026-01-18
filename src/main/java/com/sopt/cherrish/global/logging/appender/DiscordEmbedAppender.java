@@ -1,9 +1,5 @@
 package com.sopt.cherrish.global.logging.appender;
 
-import ch.qos.logback.classic.spi.ILoggingEvent;
-import ch.qos.logback.classic.spi.IThrowableProxy;
-import ch.qos.logback.classic.spi.StackTraceElementProxy;
-import ch.qos.logback.core.AppenderBase;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -14,6 +10,12 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.classic.spi.IThrowableProxy;
+import ch.qos.logback.classic.spi.StackTraceElementProxy;
+import ch.qos.logback.core.AppenderBase;
+import lombok.Setter;
+
 public class DiscordEmbedAppender extends AppenderBase<ILoggingEvent> {
 
     private static final int COLOR_ERROR = 15548997;  // 빨간색 (#ED4245)
@@ -22,7 +24,9 @@ public class DiscordEmbedAppender extends AppenderBase<ILoggingEvent> {
             DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS")
                     .withZone(ZoneId.of("Asia/Seoul"));
 
+    @Setter
     private String webhookUrl;
+    @Setter
     private String serviceName = "Cherrish";
     private HttpClient httpClient;
 
@@ -72,10 +76,10 @@ public class DiscordEmbedAppender extends AppenderBase<ILoggingEvent> {
                 "color": %d,
                 "fields": [
                   {"name": "🌐 API", "value": "`%s` **%s**", "inline": false},
-                  {"name": "⏰ Time", "value": "`%s`", "inline": true},
-                  {"name": "📍 Location", "value": "`%s`", "inline": true},
-                  {"name": "🔑 Request ID", "value": "`%s`", "inline": true},
-                  {"name": "👤 User ID", "value": "`%s`", "inline": true},
+                  {"name": "⏰ Time", "value": "%s", "inline": true},
+                  {"name": "🔑 Request ID", "value": "%s", "inline": true},
+                  {"name": "👤 User ID", "value": "%s", "inline": true},
+                  {"name": "📍 Location", "value": "%s", "inline": false},
                   {"name": "💬 Message", "value": "%s", "inline": false},
                   {"name": "📋 Stack Trace", "value": "```java\\n%s```", "inline": false}
                 ],
@@ -87,9 +91,9 @@ public class DiscordEmbedAppender extends AppenderBase<ILoggingEvent> {
                 COLOR_ERROR,
                 method, uri,
                 time,
-                location,
                 requestId,
                 userId,
+                location,
                 message,
                 stackTrace,
                 serviceName
@@ -170,11 +174,4 @@ public class DiscordEmbedAppender extends AppenderBase<ILoggingEvent> {
         }
     }
 
-    public void setWebhookUrl(String webhookUrl) {
-        this.webhookUrl = webhookUrl;
-    }
-
-    public void setServiceName(String serviceName) {
-        this.serviceName = serviceName;
-    }
 }
