@@ -14,4 +14,11 @@ public interface ProcedureRepositoryCustom {
 	 */
 	List<Procedure> searchProcedures(String keyword, Long worryId);
 
+	/**
+	 * ID 목록과 피부 고민으로 시술 조회
+	 * - ES 검색 결과 ID를 기반으로 DB에서 시술 조회
+	 * - worryId가 null이면 피부 고민 필터링 안 함
+	 */
+	List<Procedure> findByIdInAndWorryId(List<Long> ids, Long worryId);
+
 }

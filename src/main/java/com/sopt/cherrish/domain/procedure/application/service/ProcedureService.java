@@ -13,12 +13,15 @@ import com.sopt.cherrish.domain.procedure.domain.model.Procedure;
 import com.sopt.cherrish.domain.procedure.domain.model.ProcedureWorry;
 import com.sopt.cherrish.domain.procedure.domain.repository.ProcedureRepository;
 import com.sopt.cherrish.domain.procedure.domain.repository.ProcedureWorryRepository;
+import com.sopt.cherrish.domain.procedure.infrastructure.elasticsearch.service.ProcedureSearchService;
 import com.sopt.cherrish.domain.procedure.presentation.dto.response.ProcedureListResponseDto;
 import com.sopt.cherrish.domain.procedure.presentation.dto.response.ProcedureResponseDto;
 import com.sopt.cherrish.domain.procedure.presentation.dto.response.ProcedureWorryResponseDto;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -27,9 +30,10 @@ public class ProcedureService {
 	private static final Collator KOREAN_COLLATOR = Collator.getInstance(Locale.KOREAN);
 	private final ProcedureRepository procedureRepository;
 	private final ProcedureWorryRepository procedureWorryRepository;
+	private final ProcedureSearchService procedureSearchService;
 
 	public ProcedureListResponseDto searchProcedures(String keyword, Long worryId) {
-		List<Procedure> procedures = procedureRepository.searchProcedures(keyword, worryId);
+		List<Procedure> procedures = searchProceduresInternal(keyword, worryId);
 		Map<Long, List<ProcedureWorryResponseDto>> worriesByProcedureId = fetchWorriesByProcedure(
 			procedures,
 			worryId
@@ -47,6 +51,29 @@ public class ProcedureService {
 				.sorted((p1, p2) -> KOREAN_COLLATOR.compare(p1.name(), p2.name()))
 				.toList()
 		);
+	}
+
+	private List<Procedure> searchProceduresInternal(String keyword, Long worryId) {
+		// 키워드가 없으면 기존 QueryDSL 검색 사용
+		if (keyword == null || keyword.isBlank()) {
+			return procedureRepository.searchProcedures(null, worryId);
+		}
+
+		// ES 검색 시도
+		if (procedureSearchService.isAvailable()) {
+			try {
+				List<Long> procedureIds = procedureSearchService.searchByKeyword(keyword);
+				if (procedureIds.isEmpty()) {
+					return List.of();
+				}
+				return procedureRepository.findByIdInAndWorryId(procedureIds, worryId);
+			} catch (Exception e) {
+				log.warn("ES 검색 실패, QueryDSL 폴백: {}", e.getMessage());
+			}
+		}
+
+		// 폴백: 기존 QueryDSL LIKE 검색
+		return procedureRepository.searchProcedures(keyword, worryId);
 	}
 
 	private Map<Long, List<ProcedureWorryResponseDto>> fetchWorriesByProcedure(

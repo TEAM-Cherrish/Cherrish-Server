@@ -37,6 +37,30 @@ public class ProcedureRepositoryImpl implements ProcedureRepositoryCustom {
 			.fetch();
 	}
 
+	@Override
+	public List<Procedure> findByIdInAndWorryId(List<Long> ids, Long worryId) {
+		if (ids == null || ids.isEmpty()) {
+			return List.of();
+		}
+
+		if (worryId != null) {
+			return queryFactory
+				.selectDistinct(procedure)
+				.from(procedureWorry)
+				.join(procedureWorry.procedure, procedure)
+				.where(
+					procedure.id.in(ids),
+					procedureWorry.worry.id.eq(worryId)
+				)
+				.fetch();
+		}
+
+		return queryFactory
+			.selectFrom(procedure)
+			.where(procedure.id.in(ids))
+			.fetch();
+	}
+
 	/**
 	 * 키워드 포함 조건
 	 */
