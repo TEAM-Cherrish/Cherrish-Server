@@ -122,12 +122,12 @@ public class DiscordEmbedAppender extends AppenderBase<ILoggingEvent> {
         sb.append(throwableProxy.getClassName())
           .append(": ")
           .append(throwableProxy.getMessage())
-          .append("\\n");
+          .append("\n");
 
         StackTraceElementProxy[] stackTrace = throwableProxy.getStackTraceElementProxyArray();
         int linesToShow = Math.min(5, stackTrace.length);
         for (int i = 0; i < linesToShow; i++) {
-            sb.append("  at ").append(stackTrace[i].getSTEAsString()).append("\\n");
+            sb.append("  at ").append(stackTrace[i].getSTEAsString()).append("\n");
         }
 
         if (stackTrace.length > linesToShow) {
@@ -136,7 +136,7 @@ public class DiscordEmbedAppender extends AppenderBase<ILoggingEvent> {
 
         String result = sb.toString();
         if (result.length() > MAX_FIELD_LENGTH - 20) {
-            result = result.substring(0, MAX_FIELD_LENGTH - 20) + "\\n...truncated";
+            result = result.substring(0, MAX_FIELD_LENGTH - 20) + "\n...truncated";
         }
         return escapeJson(result);
     }
