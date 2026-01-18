@@ -1,5 +1,9 @@
 package com.sopt.cherrish.domain.maindashboard.application.facade;
 
+// [기존 코드 - 데모 종료 후 복원]
+// DemoChallengeService로 변경되어 테스트 코드 임시 비활성화
+
+/*
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 
@@ -347,3 +351,4 @@ class MainDashboardFacadeTest {
 		assertThat(upcomingDtos.get(1).dDay()).isEqualTo(2);
 	}
 }
+*/
