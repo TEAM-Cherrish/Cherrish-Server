@@ -13,7 +13,7 @@ import com.sopt.cherrish.domain.procedure.domain.model.Procedure;
 import com.sopt.cherrish.domain.procedure.domain.model.ProcedureWorry;
 import com.sopt.cherrish.domain.procedure.domain.repository.ProcedureRepository;
 import com.sopt.cherrish.domain.procedure.domain.repository.ProcedureWorryRepository;
-import com.sopt.cherrish.domain.procedure.infrastructure.elasticsearch.service.ProcedureSearchService;
+import com.sopt.cherrish.domain.procedure.domain.port.ProcedureSearchPort;
 import com.sopt.cherrish.domain.procedure.presentation.dto.response.ProcedureListResponseDto;
 import com.sopt.cherrish.domain.procedure.presentation.dto.response.ProcedureResponseDto;
 import com.sopt.cherrish.domain.procedure.presentation.dto.response.ProcedureWorryResponseDto;
@@ -30,7 +30,7 @@ public class ProcedureService {
 	private static final Collator KOREAN_COLLATOR = Collator.getInstance(Locale.KOREAN);
 	private final ProcedureRepository procedureRepository;
 	private final ProcedureWorryRepository procedureWorryRepository;
-	private final ProcedureSearchService procedureSearchService;
+	private final ProcedureSearchPort procedureSearchPort;
 
 	public ProcedureListResponseDto searchProcedures(String keyword, Long worryId) {
 		List<Procedure> procedures = searchProceduresInternal(keyword, worryId);
@@ -60,9 +60,9 @@ public class ProcedureService {
 		}
 
 		// ES 검색 시도
-		if (procedureSearchService.isAvailable()) {
+		if (procedureSearchPort.isAvailable()) {
 			try {
-				List<Long> procedureIds = procedureSearchService.searchByKeyword(keyword);
+				List<Long> procedureIds = procedureSearchPort.searchByKeyword(keyword);
 				if (procedureIds.isEmpty()) {
 					return List.of();
 				}

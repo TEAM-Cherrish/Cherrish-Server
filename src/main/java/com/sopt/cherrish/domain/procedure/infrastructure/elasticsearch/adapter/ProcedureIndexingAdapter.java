@@ -1,4 +1,4 @@
-package com.sopt.cherrish.domain.procedure.infrastructure.elasticsearch.service;
+package com.sopt.cherrish.domain.procedure.infrastructure.elasticsearch.adapter;
 
 import java.util.List;
 import java.util.Map;
@@ -11,7 +11,7 @@ import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.IndexOperations;
 import org.springframework.data.elasticsearch.core.document.Document;
 import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -26,9 +26,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@Service
+@Component
 @RequiredArgsConstructor
-public class ProcedureIndexingService {
+@Transactional(readOnly = true)
+public class ProcedureIndexingAdapter {
 
 	private static final String INDEX_NAME = "procedures";
 
@@ -41,7 +42,6 @@ public class ProcedureIndexingService {
 	private boolean elasticsearchEnabled;
 
 	@EventListener(ApplicationReadyEvent.class)
-	@Transactional(readOnly = true)
 	public void reindexOnStartup() {
 		if (!elasticsearchEnabled) {
 			log.info("Elasticsearch가 비활성화되어 있습니다. 인덱싱을 건너뜁니다.");
@@ -50,7 +50,7 @@ public class ProcedureIndexingService {
 
 		try {
 			reindexAll();
-		} catch (Exception e) {
+		} catch (ProcedureException e) {
 			log.error("애플리케이션 시작 시 시술 인덱싱에 실패했습니다: {}", e.getMessage(), e);
 		}
 	}

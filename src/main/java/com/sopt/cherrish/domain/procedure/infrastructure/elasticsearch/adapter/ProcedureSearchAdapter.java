@@ -1,4 +1,4 @@
-package com.sopt.cherrish.domain.procedure.infrastructure.elasticsearch.service;
+package com.sopt.cherrish.domain.procedure.infrastructure.elasticsearch.adapter;
 
 import java.util.List;
 
@@ -7,8 +7,9 @@ import org.springframework.data.elasticsearch.client.elc.NativeQuery;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.SearchHit;
 import org.springframework.data.elasticsearch.core.SearchHits;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
+import com.sopt.cherrish.domain.procedure.domain.port.ProcedureSearchPort;
 import com.sopt.cherrish.domain.procedure.infrastructure.elasticsearch.document.ProcedureDocument;
 
 import co.elastic.clients.elasticsearch._types.query_dsl.BoolQuery;
@@ -18,9 +19,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@Service
+@Component
 @RequiredArgsConstructor
-public class ProcedureSearchService {
+public class ProcedureSearchAdapter implements ProcedureSearchPort {
 
 	private static final int MAX_SEARCH_RESULTS = 1000;
 	private static final float EXACT_MATCH_BOOST = 5.0f;
@@ -28,12 +29,15 @@ public class ProcedureSearchService {
 	private static final float FUZZY_MATCH_BOOST = 0.4f;
 	private static final String MINIMUM_SHOULD_MATCH = "70%";
 	private static final int MIN_NGRAM_KEYWORD_LENGTH = 2;
+	private static final int FUZZY_OFF_MAX_LENGTH = 4;
+	private static final int FUZZY_1_MAX_LENGTH = 7;
 
-    private final ElasticsearchOperations elasticsearchOperations;
+	private final ElasticsearchOperations elasticsearchOperations;
 
 	@Value("${cherrish.elasticsearch.enabled:true}")
 	private boolean elasticsearchEnabled;
 
+	@Override
 	public boolean isAvailable() {
 		if (!elasticsearchEnabled) {
 			return false;
@@ -46,6 +50,7 @@ public class ProcedureSearchService {
 		}
 	}
 
+	@Override
 	public List<Long> searchByKeyword(String keyword) {
 		if (keyword == null || keyword.isBlank()) {
 			return List.of();
@@ -124,9 +129,9 @@ public class ProcedureSearchService {
 	 */
 	private String determineFuzziness(String keyword) {
 		int length = keyword.length();
-		if (length <= 4) {
-			return null; // Fuzzy OFF
-		} else if (length <= 7) {
+		if (length <= FUZZY_OFF_MAX_LENGTH) {
+			return null;
+		} else if (length <= FUZZY_1_MAX_LENGTH) {
 			return "1";
 		} else {
 			return "2";
