@@ -17,12 +17,10 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum HomecareRoutine {
 
-	SKIN_MOISTURIZING(1, "피부 보습 관리"),
-	SKIN_BRIGHTENING(2, "피부 미백 관리"),
-	WRINKLE_CARE(3, "주름 개선 관리"),
-	TROUBLE_CARE(4, "트러블 케어"),
-	PORE_CARE(5, "모공 관리"),
-	ELASTICITY_CARE(6, "탄력 관리");
+	SKIN_CONDITION(1, "피부 컨디션"),
+	LIFESTYLE(2, "생활 습관"),
+	BODY_CARE(3, "체형 관리"),
+	WELLNESS(4, "웰니스 • 마음챙김");
 
 	private final int id;
 	private final String description;

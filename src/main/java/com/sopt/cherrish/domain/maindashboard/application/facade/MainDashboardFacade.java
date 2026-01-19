@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import com.sopt.cherrish.domain.challenge.core.domain.model.Challenge;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

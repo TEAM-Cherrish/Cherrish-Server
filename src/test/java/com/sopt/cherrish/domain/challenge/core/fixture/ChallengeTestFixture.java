@@ -14,13 +14,12 @@ import com.sopt.cherrish.domain.challenge.core.presentation.dto.response.CustomR
 import com.sopt.cherrish.domain.challenge.core.presentation.dto.response.RoutineBatchUpdateResponseDto;
 import com.sopt.cherrish.domain.challenge.core.presentation.dto.response.RoutineCompletionResponseDto;
 import com.sopt.cherrish.domain.challenge.homecare.domain.model.HomecareRoutine;
-import com.sopt.cherrish.global.config.TestClockConfig;
 
 public class ChallengeTestFixture {
 
-	// 공통 테스트 상수
-	// TestClockConfig의 고정 날짜를 참조하여 일관성 유지
-	public static final LocalDate FIXED_START_DATE = TestClockConfig.FIXED_TEST_DATE;
+	// 공통 테스트 상수는 ChallengeTestConstants에서 참조
+	public static final LocalDate FIXED_START_DATE = ChallengeTestConstants.FIXED_START_DATE;
+	public static final HomecareRoutine DEFAULT_HOMECARE_ROUTINE = ChallengeTestConstants.DEFAULT_HOMECARE_ROUTINE;
 	public static final Long DEFAULT_USER_ID = 1L;
 	public static final Long DEFAULT_CHALLENGE_ID = 1L;
 	public static final Long DEFAULT_ROUTINE_ID = 1L;
@@ -75,7 +74,7 @@ public class ChallengeTestFixture {
 	public static Challenge createChallengeWithStartDate(Long userId, LocalDate startDate) {
 		return Challenge.builder()
 			.userId(userId)
-			.homecareRoutine(HomecareRoutine.SKIN_MOISTURIZING)
+			.homecareRoutine(DEFAULT_HOMECARE_ROUTINE)
 			.title(DEFAULT_CHALLENGE_TITLE)
 			.startDate(startDate)
 			.build();
@@ -228,7 +227,7 @@ public class ChallengeTestFixture {
 
 		Challenge challenge = Challenge.builder()
 			.userId(DEFAULT_USER_ID)
-			.homecareRoutine(HomecareRoutine.SKIN_MOISTURIZING)
+			.homecareRoutine(DEFAULT_HOMECARE_ROUTINE)
 			.title("테스트 챌린지")
 			.startDate(FIXED_START_DATE)
 			.build();
