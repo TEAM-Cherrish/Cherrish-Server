@@ -24,6 +24,8 @@ import com.sopt.cherrish.domain.challenge.core.exception.ChallengeException;
 import com.sopt.cherrish.domain.challenge.core.fixture.ChallengeTestFixture;
 import com.sopt.cherrish.domain.challenge.homecare.domain.model.HomecareRoutine;
 
+import static com.sopt.cherrish.domain.challenge.core.fixture.ChallengeTestFixture.DEFAULT_HOMECARE_ROUTINE;
+
 @ExtendWith(MockitoExtension.class)
 @DisplayName("ChallengeService 단위 테스트")
 class ChallengeServiceTest {
@@ -67,7 +69,7 @@ class ChallengeServiceTest {
 	void createChallengeSuccess() {
 		// given
 		Long userId = 1L;
-		HomecareRoutine routine = HomecareRoutine.SKIN_MOISTURIZING;
+		HomecareRoutine routine = DEFAULT_HOMECARE_ROUTINE;
 		LocalDate startDate = LocalDate.now();
 
 		Challenge expectedChallenge = Challenge.builder()

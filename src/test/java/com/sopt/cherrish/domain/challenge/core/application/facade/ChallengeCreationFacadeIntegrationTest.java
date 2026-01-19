@@ -26,6 +26,8 @@ import com.sopt.cherrish.domain.challenge.core.presentation.dto.request.Challeng
 import com.sopt.cherrish.domain.challenge.core.presentation.dto.response.ChallengeCreateResponseDto;
 import com.sopt.cherrish.domain.challenge.homecare.domain.model.HomecareRoutine;
 import com.sopt.cherrish.domain.user.domain.model.User;
+
+import static com.sopt.cherrish.domain.challenge.core.fixture.ChallengeTestFixture.DEFAULT_HOMECARE_ROUTINE;
 import com.sopt.cherrish.domain.user.domain.repository.UserRepository;
 import com.sopt.cherrish.domain.user.exception.UserErrorCode;
 import com.sopt.cherrish.domain.user.exception.UserException;
@@ -75,7 +77,7 @@ class ChallengeCreationFacadeIntegrationTest {
 		User user = createTestUser();
 
 		ChallengeCreateRequestDto request = new ChallengeCreateRequestDto(
-			1, // SKIN_MOISTURIZING
+			DEFAULT_HOMECARE_ROUTINE.getId(),
 			List.of("아침 세안", "토너 바르기", "크림 바르기")
 		);
 
@@ -84,7 +86,7 @@ class ChallengeCreationFacadeIntegrationTest {
 
 		// then - Response 검증
 		assertThat(response.challengeId()).isNotNull();
-		assertThat(response.title()).isEqualTo("피부 보습 관리");
+		assertThat(response.title()).isEqualTo(DEFAULT_HOMECARE_ROUTINE.getDescription());
 		assertThat(response.totalDays()).isEqualTo(7);
 		assertThat(response.totalRoutineCount()).isEqualTo(21); // 3 × 7
 		assertThat(response.routines()).hasSize(21);
@@ -92,7 +94,7 @@ class ChallengeCreationFacadeIntegrationTest {
 		// then - DB 실제 저장 확인
 		Challenge savedChallenge = challengeRepository.findById(response.challengeId()).orElseThrow();
 		assertThat(savedChallenge.getUserId()).isEqualTo(user.getId());
-		assertThat(savedChallenge.getHomecareRoutine()).isEqualTo(HomecareRoutine.SKIN_MOISTURIZING);
+		assertThat(savedChallenge.getHomecareRoutine()).isEqualTo(DEFAULT_HOMECARE_ROUTINE);
 		assertThat(savedChallenge.getIsActive()).isTrue();
 
 		List<ChallengeRoutine> savedRoutines = routineRepository.findAll();
@@ -112,7 +114,7 @@ class ChallengeCreationFacadeIntegrationTest {
 		User user = createTestUser();
 
 		ChallengeCreateRequestDto request = new ChallengeCreateRequestDto(
-			2, // SKIN_BRIGHTENING
+			DEFAULT_HOMECARE_ROUTINE.getId(),
 			List.of("아침 보습")
 		);
 
@@ -154,7 +156,7 @@ class ChallengeCreationFacadeIntegrationTest {
 		// 이미 활성 챌린지가 존재
 		challengeRepository.save(Challenge.builder()
 			.userId(user.getId())
-			.homecareRoutine(HomecareRoutine.SKIN_MOISTURIZING)
+			.homecareRoutine(DEFAULT_HOMECARE_ROUTINE)
 			.title("기존 챌린지")
 			.startDate(java.time.LocalDate.now())
 			.build());
@@ -199,7 +201,7 @@ class ChallengeCreationFacadeIntegrationTest {
 		// 이미 활성 챌린지 존재
 		challengeRepository.save(Challenge.builder()
 			.userId(user.getId())
-			.homecareRoutine(HomecareRoutine.SKIN_MOISTURIZING)
+			.homecareRoutine(DEFAULT_HOMECARE_ROUTINE)
 			.title("기존 챌린지")
 			.startDate(java.time.LocalDate.now())
 			.build());

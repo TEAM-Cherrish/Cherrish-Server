@@ -1,5 +1,6 @@
 package com.sopt.cherrish.domain.challenge.core.application.facade;
 
+import static com.sopt.cherrish.domain.challenge.core.fixture.ChallengeTestFixture.DEFAULT_HOMECARE_ROUTINE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -284,7 +285,7 @@ class ChallengeQueryFacadeIntegrationTest {
 	private Challenge createAndSaveChallengeWithRoutines(Long userId, LocalDate startDate, int routineCountPerDay) {
 		Challenge challenge = Challenge.builder()
 			.userId(userId)
-			.homecareRoutine(HomecareRoutine.SKIN_MOISTURIZING)
+			.homecareRoutine(DEFAULT_HOMECARE_ROUTINE)
 			.title(ChallengeTestFixture.DEFAULT_CHALLENGE_TITLE)
 			.startDate(startDate)
 			.build();

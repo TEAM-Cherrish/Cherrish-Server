@@ -1,6 +1,7 @@
 package com.sopt.cherrish.domain.challenge.core.application.facade;
 
 import static com.sopt.cherrish.domain.challenge.core.fixture.ChallengeTestFixture.DEFAULT_CHALLENGE_TITLE;
+import static com.sopt.cherrish.domain.challenge.core.fixture.ChallengeTestFixture.DEFAULT_HOMECARE_ROUTINE;
 import static com.sopt.cherrish.domain.challenge.core.fixture.ChallengeTestFixture.FIXED_START_DATE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -79,7 +80,7 @@ class ChallengeCustomRoutineFacadeIntegrationTest {
 		// FIXED_START_DATE(2024-01-01)부터 2024-01-07까지 챌린지
 		Challenge challenge = challengeRepository.save(Challenge.builder()
 			.userId(user.getId())
-			.homecareRoutine(HomecareRoutine.SKIN_MOISTURIZING)
+			.homecareRoutine(DEFAULT_HOMECARE_ROUTINE)
 			.title(DEFAULT_CHALLENGE_TITLE)
 			.startDate(FIXED_START_DATE)
 			.build());

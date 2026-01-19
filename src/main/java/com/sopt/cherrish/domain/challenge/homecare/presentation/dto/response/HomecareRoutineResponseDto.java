@@ -9,10 +9,10 @@ public record HomecareRoutineResponseDto(
 	@Schema(description = "홈케어 루틴 ID", example = "1")
 	int id,
 
-	@Schema(description = "홈케어 루틴 이름 (enum)", example = "SKIN_MOISTURIZING")
+	@Schema(description = "홈케어 루틴 이름 (enum)", example = "SKIN_CONDITION")
 	String name,
 
-	@Schema(description = "홈케어 루틴 설명", example = "피부 보습 관리")
+	@Schema(description = "홈케어 루틴 설명", example = "피부 컨디션")
 	String description
 ) {
 	public static HomecareRoutineResponseDto from(HomecareRoutine routine) {
