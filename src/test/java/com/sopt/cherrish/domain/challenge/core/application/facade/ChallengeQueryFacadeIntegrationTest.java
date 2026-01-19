@@ -1,7 +1,8 @@
 package com.sopt.cherrish.domain.challenge.core.application.facade;
 
-import static com.sopt.cherrish.domain.challenge.core.fixture.ChallengeTestFixture.*;
-import static org.assertj.core.api.Assertions.*;
+import static com.sopt.cherrish.domain.challenge.core.fixture.ChallengeTestFixture.DEFAULT_HOMECARE_ROUTINE;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
