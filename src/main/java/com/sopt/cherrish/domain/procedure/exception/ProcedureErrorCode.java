@@ -15,8 +15,7 @@ public enum ProcedureErrorCode implements ErrorType {
 	// Elasticsearch 에러 (P100 ~ P199)
 	ELASTICSEARCH_INDEX_CREATION_FAILED("P100", "Elasticsearch 인덱스 생성에 실패했습니다", 500),
 	ELASTICSEARCH_INDEXING_FAILED("P101", "Elasticsearch 인덱싱에 실패했습니다", 500),
-	ELASTICSEARCH_SEARCH_FAILED("P102", "Elasticsearch 검색에 실패했습니다", 500),
-	ELASTICSEARCH_CONNECTION_FAILED("P103", "Elasticsearch 연결에 실패했습니다", 503);
+	ELASTICSEARCH_CONNECTION_FAILED("P102", "Elasticsearch 연결에 실패했습니다", 503);
 
 	private final String code;
 	private final String message;
