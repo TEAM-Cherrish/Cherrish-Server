@@ -18,10 +18,10 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum CherryLevel {
 
-	LEVEL_1(1, "새싹 체리"),    // 0-24%
-	LEVEL_2(2, "꽃핀 체리"),    // 25-49%
-	LEVEL_3(3, "열매 체리"),    // 50-74%
-	LEVEL_4(4, "완숙 체리");    // 75-100%
+	LEVEL_1(1, "몽롱체리"),    // 0-24%
+	LEVEL_2(2, "뽀득체리"),    // 25-49%
+	LEVEL_3(3, "팡팡체리"),    // 50-74%
+	LEVEL_4(4, "꾸꾸체리");    // 75-100%
 
 	private final int level;
 	private final String name;
