@@ -1,6 +1,7 @@
 package com.sopt.cherrish.domain.challenge.core.domain.model;
 
 import static com.sopt.cherrish.domain.challenge.core.fixture.ChallengeTestFixture.DEFAULT_CHALLENGE_TITLE;
+import static com.sopt.cherrish.domain.challenge.core.fixture.ChallengeTestFixture.DEFAULT_HOMECARE_ROUTINE;
 import static com.sopt.cherrish.domain.challenge.core.fixture.ChallengeTestFixture.DEFAULT_USER_ID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -13,7 +14,6 @@ import org.junit.jupiter.api.Test;
 
 import com.sopt.cherrish.domain.challenge.core.exception.ChallengeErrorCode;
 import com.sopt.cherrish.domain.challenge.core.exception.ChallengeException;
-import com.sopt.cherrish.domain.challenge.homecare.domain.model.HomecareRoutine;
 
 @DisplayName("ChallengeRoutine 도메인 단위 테스트")
 class ChallengeRoutineTest {
@@ -23,7 +23,7 @@ class ChallengeRoutineTest {
 	private Challenge createTestChallenge() {
 		return Challenge.builder()
 			.userId(DEFAULT_USER_ID)
-			.homecareRoutine(HomecareRoutine.SKIN_MOISTURIZING)
+			.homecareRoutine(DEFAULT_HOMECARE_ROUTINE)
 			.title(DEFAULT_CHALLENGE_TITLE)
 			.startDate(TEST_DATE)
 			.build();
