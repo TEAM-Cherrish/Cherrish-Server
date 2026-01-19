@@ -1,6 +1,7 @@
 {
   "number_of_shards": 1,
   "number_of_replicas": 0,
+  "index.max_ngram_diff": 10,
   "analysis": {
     "filter": {
       "korean_synonym": {
@@ -16,10 +17,10 @@
           "XSA", "XSN", "XSV", "UNA", "NA", "VSV"
         ]
       },
-      "edge_ngram_filter": {
-        "type": "edge_ngram",
+      "ngram_filter": {
+        "type": "ngram",
         "min_gram": 1,
-        "max_gram": 20
+        "max_gram": 10
       }
     },
     "tokenizer": {
@@ -49,14 +50,21 @@
           "korean_synonym"
         ]
       },
-      "edge_ngram_analyzer": {
+      "ngram_analyzer": {
         "type": "custom",
         "tokenizer": "nori_tokenizer",
         "filter": [
           "nori_posfilter",
           "nori_readingform",
           "lowercase",
-          "edge_ngram_filter"
+          "ngram_filter"
+        ]
+      },
+      "ngram_search_analyzer": {
+        "type": "custom",
+        "tokenizer": "standard",
+        "filter": [
+          "lowercase"
         ]
       }
     }
