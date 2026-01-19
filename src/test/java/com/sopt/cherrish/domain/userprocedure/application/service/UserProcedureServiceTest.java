@@ -64,6 +64,7 @@ class UserProcedureServiceTest {
 
 		UserProcedureCreateRequestDto request = new UserProcedureCreateRequestDto(
 			scheduledAt,
+			null,
 			List.of(
 				new UserProcedureCreateRequestItemDto(procedure1.getId(), 6),
 				new UserProcedureCreateRequestItemDto(procedure2.getId(), 3)
@@ -99,6 +100,7 @@ class UserProcedureServiceTest {
 		Long userId = 999L;
 		UserProcedureCreateRequestDto request = new UserProcedureCreateRequestDto(
 			LocalDateTime.of(2025, 1, 1, 16, 0),
+			null,
 			List.of(new UserProcedureCreateRequestItemDto(1L, 6))
 		);
 
@@ -121,6 +123,7 @@ class UserProcedureServiceTest {
 
 		UserProcedureCreateRequestDto request = new UserProcedureCreateRequestDto(
 			scheduledAt,
+			null,
 			List.of(
 				new UserProcedureCreateRequestItemDto(procedure.getId(), 6),
 				new UserProcedureCreateRequestItemDto(999L, 3)
@@ -147,6 +150,7 @@ class UserProcedureServiceTest {
 
 		UserProcedureCreateRequestDto request = new UserProcedureCreateRequestDto(
 			scheduledAt,
+			null,
 			List.of(new UserProcedureCreateRequestItemDto(procedure.getId(), 0))
 		);
 
@@ -180,6 +184,7 @@ class UserProcedureServiceTest {
 
 		UserProcedureCreateRequestDto request = new UserProcedureCreateRequestDto(
 			scheduledAt,
+			null,
 			List.of(
 				new UserProcedureCreateRequestItemDto(procedure1.getId(), 5),
 				new UserProcedureCreateRequestItemDto(procedure2.getId(), 7),

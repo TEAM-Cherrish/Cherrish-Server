@@ -24,6 +24,10 @@ public record ProcedureEventDowntimeResponseDto(
 	@Schema(description = "다운타임(일)", example = "7")
 	Integer downtimeDays,
 
+	@Schema(description = "회복 목표일", example = "2026-01-22")
+	@JsonFormat(pattern = "yyyy-MM-dd")
+	LocalDate recoveryTargetDate,
+
 	@Schema(description = "민감기 날짜 목록", example = "[\"2026-01-15\", \"2026-01-16\", \"2026-01-17\"]")
 	@JsonSerialize(contentUsing = LocalDateSerializer.class)
 	List<LocalDate> sensitiveDays,
@@ -43,6 +47,7 @@ public record ProcedureEventDowntimeResponseDto(
 			userProcedure.getId(),
 			userProcedure.getScheduledAt(),
 			userProcedure.getDowntimeDays(),
+			userProcedure.getRecoveryTargetDate(),
 			downtimePeriod.getSensitiveDays(),
 			downtimePeriod.getCautionDays(),
 			downtimePeriod.getRecoveryDays()

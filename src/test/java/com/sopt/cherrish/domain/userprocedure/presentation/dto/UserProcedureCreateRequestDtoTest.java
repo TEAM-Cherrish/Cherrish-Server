@@ -2,6 +2,7 @@ package com.sopt.cherrish.domain.userprocedure.presentation.dto;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -25,6 +26,7 @@ class UserProcedureCreateRequestDtoTest {
 		// given
 		User user = UserFixture.createUser();
 		LocalDateTime scheduledAt = LocalDateTime.of(2025, 1, 15, 14, 30);
+		LocalDate recoveryTargetDate = LocalDate.of(2025, 1, 25);
 
 		Procedure procedure1 = ProcedureFixture.createProcedure("레이저 토닝", "레이저", 0, 1);
 		Procedure procedure2 = ProcedureFixture.createProcedure("필러", "주사", 1, 3);
@@ -32,6 +34,7 @@ class UserProcedureCreateRequestDtoTest {
 
 		UserProcedureCreateRequestDto request = new UserProcedureCreateRequestDto(
 			scheduledAt,
+			recoveryTargetDate,
 			List.of(
 				new UserProcedureCreateRequestItemDto(procedure1.getId(), 5),
 				new UserProcedureCreateRequestItemDto(procedure2.getId(), 7)
@@ -49,12 +52,14 @@ class UserProcedureCreateRequestDtoTest {
 		assertThat(result.get(0).getProcedure()).isEqualTo(procedure1);
 		assertThat(result.get(0).getScheduledAt()).isEqualTo(scheduledAt);
 		assertThat(result.get(0).getDowntimeDays()).isEqualTo(5);
+		assertThat(result.get(0).getRecoveryTargetDate()).isEqualTo(recoveryTargetDate);
 
 		// 두 번째 UserProcedure 검증
 		assertThat(result.get(1).getUser()).isEqualTo(user);
 		assertThat(result.get(1).getProcedure()).isEqualTo(procedure2);
 		assertThat(result.get(1).getScheduledAt()).isEqualTo(scheduledAt);
 		assertThat(result.get(1).getDowntimeDays()).isEqualTo(7);
+		assertThat(result.get(1).getRecoveryTargetDate()).isEqualTo(recoveryTargetDate);
 	}
 
 	@Test
@@ -66,6 +71,7 @@ class UserProcedureCreateRequestDtoTest {
 
 		UserProcedureCreateRequestDto request = new UserProcedureCreateRequestDto(
 			scheduledAt,
+			null,
 			List.of()
 		);
 

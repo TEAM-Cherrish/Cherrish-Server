@@ -166,11 +166,12 @@ class CalendarServiceTest {
 		// given
 		Long userId = 1L;
 		Long userProcedureId = 101L;
+		LocalDate recoveryTargetDate = LocalDate.of(2025, 1, 20);
 
 		User mockUser = createMockUser("테스트 사용자", 25);
 		Procedure mockProcedure = createMockProcedure("레이저 토닝");
 		UserProcedure userProcedure = createUserProcedure(
-			mockUser, mockProcedure, LocalDateTime.of(2025, 1, 15, 14, 0), downtimeDays);
+			mockUser, mockProcedure, LocalDateTime.of(2025, 1, 15, 14, 0), downtimeDays, recoveryTargetDate);
 
 		given(userRepository.existsById(userId)).willReturn(true);
 		given(userProcedureRepository.findByIdAndUserId(userProcedureId, userId))
@@ -181,6 +182,7 @@ class CalendarServiceTest {
 
 		// then
 		assertThat(result.downtimeDays()).isEqualTo(downtimeDays);
+		assertThat(result.recoveryTargetDate()).isEqualTo(recoveryTargetDate);
 		assertThat(result.sensitiveDays()).hasSize(expectedSensitive);
 		assertThat(result.cautionDays()).hasSize(expectedCaution);
 		assertThat(result.recoveryDays()).hasSize(expectedRecovery);

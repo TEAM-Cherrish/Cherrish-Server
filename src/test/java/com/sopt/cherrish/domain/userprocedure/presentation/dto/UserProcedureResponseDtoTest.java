@@ -2,6 +2,7 @@ package com.sopt.cherrish.domain.userprocedure.presentation.dto;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -27,13 +28,15 @@ class UserProcedureResponseDtoTest {
 		User user = UserFixture.createUser();
 		Procedure procedure = ProcedureFixture.createProcedure("레이저 토닝", "레이저", 0, 1);
 		LocalDateTime scheduledAt = LocalDateTime.of(2025, 1, 15, 14, 30);
+		LocalDate recoveryTargetDate = LocalDate.of(2025, 1, 20);
 
 		UserProcedure userProcedure = UserProcedureFixture.createUserProcedure(
 			10L,
 			user,
 			procedure,
 			scheduledAt,
-			5
+			5,
+			recoveryTargetDate
 		);
 
 		// when
@@ -45,6 +48,7 @@ class UserProcedureResponseDtoTest {
 		assertThat(result.procedureName()).isEqualTo("레이저 토닝");
 		assertThat(result.scheduledAt()).isEqualTo(scheduledAt);
 		assertThat(result.downtimeDays()).isEqualTo(5);
+		assertThat(result.recoveryTargetDate()).isEqualTo(recoveryTargetDate);
 	}
 
 	@Test
@@ -55,10 +59,11 @@ class UserProcedureResponseDtoTest {
 		Procedure procedure1 = ProcedureFixture.createProcedure("레이저 토닝", "레이저", 0, 1);
 		Procedure procedure2 = ProcedureFixture.createProcedure("필러", "주사", 1, 3);
 		LocalDateTime scheduledAt = LocalDateTime.of(2025, 1, 15, 14, 30);
+		LocalDate recoveryTargetDate = LocalDate.of(2025, 1, 20);
 
 		List<UserProcedure> userProcedures = List.of(
-			UserProcedureFixture.createUserProcedure(10L, user, procedure1, scheduledAt, 5),
-			UserProcedureFixture.createUserProcedure(11L, user, procedure2, scheduledAt, 7)
+			UserProcedureFixture.createUserProcedure(10L, user, procedure1, scheduledAt, 5, recoveryTargetDate),
+			UserProcedureFixture.createUserProcedure(11L, user, procedure2, scheduledAt, 7, recoveryTargetDate)
 		);
 
 		// when
@@ -73,6 +78,7 @@ class UserProcedureResponseDtoTest {
 		assertThat(result.procedures().get(0).procedureName()).isEqualTo("레이저 토닝");
 		assertThat(result.procedures().get(0).scheduledAt()).isEqualTo(scheduledAt);
 		assertThat(result.procedures().get(0).downtimeDays()).isEqualTo(5);
+		assertThat(result.procedures().get(0).recoveryTargetDate()).isEqualTo(recoveryTargetDate);
 
 		// 두 번째 항목 검증
 		assertThat(result.procedures().get(1).userProcedureId()).isEqualTo(11L);
@@ -80,5 +86,6 @@ class UserProcedureResponseDtoTest {
 		assertThat(result.procedures().get(1).procedureName()).isEqualTo("필러");
 		assertThat(result.procedures().get(1).scheduledAt()).isEqualTo(scheduledAt);
 		assertThat(result.procedures().get(1).downtimeDays()).isEqualTo(7);
+		assertThat(result.procedures().get(1).recoveryTargetDate()).isEqualTo(recoveryTargetDate);
 	}
 }

@@ -1,5 +1,6 @@
 package com.sopt.cherrish.domain.userprocedure.presentation.dto.response;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -23,7 +24,11 @@ public record UserProcedureResponseDto(
 	LocalDateTime scheduledAt,
 
 	@Schema(description = "개인 다운타임(일)", example = "6")
-	Integer downtimeDays
+	Integer downtimeDays,
+
+	@Schema(description = "회복 목표일", example = "2026-01-10")
+	@JsonFormat(pattern = "yyyy-MM-dd")
+	LocalDate recoveryTargetDate
 ) {
 	public static UserProcedureResponseDto from(UserProcedure userProcedure) {
 		return new UserProcedureResponseDto(
@@ -31,7 +36,8 @@ public record UserProcedureResponseDto(
 			userProcedure.getProcedure().getId(),
 			userProcedure.getProcedure().getName(),
 			userProcedure.getScheduledAt(),
-			userProcedure.getDowntimeDays()
+			userProcedure.getDowntimeDays(),
+			userProcedure.getRecoveryTargetDate()
 		);
 	}
 }
