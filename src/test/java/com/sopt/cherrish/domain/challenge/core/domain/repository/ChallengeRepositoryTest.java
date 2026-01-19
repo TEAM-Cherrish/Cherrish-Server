@@ -120,10 +120,11 @@ class ChallengeRepositoryTest {
 	void bulkUpdateExpiredChallengesMultipleExpired() {
 		// Given: 추가로 만료된 챌린지 2개 생성
 		LocalDate today = LocalDate.now();
+		HomecareRoutine[] routines = HomecareRoutine.values();
 
 		Challenge expired2 = Challenge.builder()
 			.userId(5L)
-			.homecareRoutine(HomecareRoutine.PORE_CARE)
+			.homecareRoutine(routines[0])
 			.title("만료된 챌린지 2")
 			.startDate(today.minusDays(15))
 			.build();
@@ -131,7 +132,7 @@ class ChallengeRepositoryTest {
 
 		Challenge expired3 = Challenge.builder()
 			.userId(6L)
-			.homecareRoutine(HomecareRoutine.ELASTICITY_CARE)
+			.homecareRoutine(routines[1 % routines.length])
 			.title("만료된 챌린지 3")
 			.startDate(today.minusDays(20))
 			.build();
