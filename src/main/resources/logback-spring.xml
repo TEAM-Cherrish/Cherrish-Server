@@ -1,13 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration scan="true" scanPeriod="30 seconds">
     <include resource="console-appender.xml"/>
+    <include resource="discord-appender.xml"/>
 
-    <springProperty name="DISCORD_WEBHOOK_URL" source="logging.discord.webhook-url" defaultValue=""/>
+    <springProperty name="DISCORD_ERROR_WEBHOOK_URL" source="logging.discord.error-webhook-url" defaultValue=""/>
 
-    <!-- dev 환경: 텍스트 로그 -->
+    <!-- dev 환경: 텍스트 로그 + Discord 알림 -->
     <springProfile name="dev,local,test">
         <root level="INFO">
             <appender-ref ref="CONSOLE"/>
+            <appender-ref ref="ASYNC_DISCORD"/>
         </root>
         <logger name="com.sopt.cherrish" level="DEBUG"/>
         <logger name="org.hibernate.SQL" level="DEBUG"/>
@@ -16,7 +18,6 @@
 
     <!-- prod 환경: JSON 로그 + Discord 알림 -->
     <springProfile name="prod">
-        <include resource="discord-appender.xml"/>
         <root level="INFO">
             <appender-ref ref="JSON_CONSOLE"/>
             <appender-ref ref="ASYNC_DISCORD"/>
