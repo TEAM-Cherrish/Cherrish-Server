@@ -1,13 +1,14 @@
 package com.sopt.cherrish.domain.challenge.core.application.facade;
 
-import static com.sopt.cherrish.domain.challenge.core.fixture.ChallengeTestFixture.DEFAULT_HOMECARE_ROUTINE;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static com.sopt.cherrish.domain.challenge.core.fixture.ChallengeTestFixture.*;
+import static org.assertj.core.api.Assertions.*;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.hibernate.SessionFactory;
+import org.hibernate.stat.Statistics;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -16,10 +17,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 
-import com.sopt.cherrish.domain.challenge.core.application.service.CheeringMessageGenerator;
 import com.sopt.cherrish.domain.challenge.core.application.service.ChallengeRoutineService;
 import com.sopt.cherrish.domain.challenge.core.application.service.ChallengeService;
 import com.sopt.cherrish.domain.challenge.core.application.service.ChallengeStatisticsService;
+import com.sopt.cherrish.domain.challenge.core.application.service.CheeringMessageGenerator;
 import com.sopt.cherrish.domain.challenge.core.domain.model.Challenge;
 import com.sopt.cherrish.domain.challenge.core.domain.model.ChallengeRoutine;
 import com.sopt.cherrish.domain.challenge.core.domain.model.ChallengeStatistics;
@@ -31,15 +32,11 @@ import com.sopt.cherrish.domain.challenge.core.exception.ChallengeException;
 import com.sopt.cherrish.domain.challenge.core.fixture.ChallengeTestFixture;
 import com.sopt.cherrish.domain.challenge.core.presentation.dto.response.ChallengeDetailResponseDto;
 import com.sopt.cherrish.domain.challenge.core.presentation.dto.response.ChallengeRoutineResponseDto;
-import com.sopt.cherrish.domain.challenge.homecare.domain.model.HomecareRoutine;
 import com.sopt.cherrish.global.config.QueryDslConfig;
 import com.sopt.cherrish.global.config.TestClockConfig;
 import com.sopt.cherrish.global.config.TestJpaAuditConfig;
 
 import jakarta.persistence.EntityManager;
-
-import org.hibernate.SessionFactory;
-import org.hibernate.stat.Statistics;
 
 @DataJpaTest
 @Import({

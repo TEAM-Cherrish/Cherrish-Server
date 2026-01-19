@@ -1,7 +1,7 @@
 package com.sopt.cherrish.domain.challenge.core.application.facade;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static com.sopt.cherrish.domain.challenge.core.fixture.ChallengeTestFixture.*;
+import static org.assertj.core.api.Assertions.*;
 
 import java.util.List;
 
@@ -24,10 +24,7 @@ import com.sopt.cherrish.domain.challenge.core.exception.ChallengeErrorCode;
 import com.sopt.cherrish.domain.challenge.core.exception.ChallengeException;
 import com.sopt.cherrish.domain.challenge.core.presentation.dto.request.ChallengeCreateRequestDto;
 import com.sopt.cherrish.domain.challenge.core.presentation.dto.response.ChallengeCreateResponseDto;
-import com.sopt.cherrish.domain.challenge.homecare.domain.model.HomecareRoutine;
 import com.sopt.cherrish.domain.user.domain.model.User;
-
-import static com.sopt.cherrish.domain.challenge.core.fixture.ChallengeTestFixture.DEFAULT_HOMECARE_ROUTINE;
 import com.sopt.cherrish.domain.user.domain.repository.UserRepository;
 import com.sopt.cherrish.domain.user.exception.UserErrorCode;
 import com.sopt.cherrish.domain.user.exception.UserException;
