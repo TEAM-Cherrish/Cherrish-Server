@@ -142,13 +142,19 @@ public class DiscordEmbedAppender extends AppenderBase<ILoggingEvent> {
     }
 
     private String truncate(String text, int maxLength) {
-        if (text == null) return "";
-        if (text.length() <= maxLength) return text;
+        if (text == null) {
+            return "";
+        }
+        if (text.length() <= maxLength) {
+            return text;
+        }
         return text.substring(0, maxLength - 12) + "...truncated";
     }
 
     private String escapeJson(String text) {
-        if (text == null) return "";
+        if (text == null) {
+            return "";
+        }
         return text
                 .replace("\\", "\\\\")
                 .replace("\"", "\\\"")
