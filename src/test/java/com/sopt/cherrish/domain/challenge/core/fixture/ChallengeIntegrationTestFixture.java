@@ -46,6 +46,7 @@ public class ChallengeIntegrationTestFixture {
 	// 상수 정의
 	// TestClockConfig의 고정 날짜를 참조하여 일관성 유지
 	public static final LocalDate FIXED_START_DATE = TestClockConfig.FIXED_TEST_DATE;
+	public static final HomecareRoutine DEFAULT_HOMECARE_ROUTINE = HomecareRoutine.SKIN_CONDITION;
 	public static final String DEFAULT_USER_NAME = "테스트 유저";
 	public static final int DEFAULT_USER_AGE = 25;
 	public static final String OTHER_USER_NAME = "다른 유저";
@@ -99,7 +100,7 @@ public class ChallengeIntegrationTestFixture {
 		// 챌린지 생성
 		Challenge challenge = challengeRepository.save(Challenge.builder()
 			.userId(user.getId())
-			.homecareRoutine(HomecareRoutine.SKIN_MOISTURIZING)
+			.homecareRoutine(DEFAULT_HOMECARE_ROUTINE)
 			.title(DEFAULT_CHALLENGE_TITLE)
 			.startDate(startDate)
 			.build());
@@ -128,7 +129,7 @@ public class ChallengeIntegrationTestFixture {
 	public Challenge createChallengeWithoutStatistics(User user) {
 		Challenge challenge = challengeRepository.save(Challenge.builder()
 			.userId(user.getId())
-			.homecareRoutine(HomecareRoutine.SKIN_MOISTURIZING)
+			.homecareRoutine(DEFAULT_HOMECARE_ROUTINE)
 			.title(DEFAULT_CHALLENGE_TITLE)
 			.startDate(FIXED_START_DATE)
 			.build());

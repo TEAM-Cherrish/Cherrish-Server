@@ -35,11 +35,12 @@ class ChallengeRepositoryTest {
 	void setUp() {
 		// Given: 다양한 상태의 챌린지 생성
 		LocalDate today = LocalDate.now();
+		HomecareRoutine[] routines = HomecareRoutine.values();
 
 		// 1. endDate가 어제인 활성 챌린지 (만료 대상)
 		expiredActiveChallenge = Challenge.builder()
 			.userId(1L)
-			.homecareRoutine(HomecareRoutine.SKIN_MOISTURIZING)
+			.homecareRoutine(routines[0])
 			.title("만료된 활성 챌린지")
 			.startDate(today.minusDays(10))
 			.build();
@@ -48,7 +49,7 @@ class ChallengeRepositoryTest {
 		// 2. endDate가 오늘인 활성 챌린지 (만료 대상 아님)
 		todayEndChallenge = Challenge.builder()
 			.userId(2L)
-			.homecareRoutine(HomecareRoutine.SKIN_BRIGHTENING)
+			.homecareRoutine(routines[1 % routines.length])
 			.title("오늘 종료되는 챌린지")
 			.startDate(today.minusDays(6))
 			.build();
@@ -57,7 +58,7 @@ class ChallengeRepositoryTest {
 		// 3. endDate가 내일인 활성 챌린지 (만료 대상 아님)
 		futureEndChallenge = Challenge.builder()
 			.userId(3L)
-			.homecareRoutine(HomecareRoutine.WRINKLE_CARE)
+			.homecareRoutine(routines[2 % routines.length])
 			.title("미래 종료 챌린지")
 			.startDate(today.minusDays(5))
 			.build();
@@ -66,7 +67,7 @@ class ChallengeRepositoryTest {
 		// 4. endDate가 어제이지만 이미 비활성화된 챌린지 (만료 대상 아님)
 		expiredInactiveChallenge = Challenge.builder()
 			.userId(4L)
-			.homecareRoutine(HomecareRoutine.TROUBLE_CARE)
+			.homecareRoutine(routines[3 % routines.length])
 			.title("이미 비활성화된 챌린지")
 			.startDate(today.minusDays(10))
 			.build();
