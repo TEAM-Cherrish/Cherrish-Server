@@ -7,14 +7,15 @@ import org.springframework.stereotype.Component;
 
 import jakarta.persistence.EntityManager;
 import com.sopt.cherrish.domain.challenge.core.domain.model.Challenge;
-import com.sopt.cherrish.global.config.TestClockConfig;
 import com.sopt.cherrish.domain.challenge.core.domain.model.ChallengeRoutine;
 import com.sopt.cherrish.domain.challenge.core.domain.model.ChallengeStatistics;
 import com.sopt.cherrish.domain.challenge.core.domain.repository.ChallengeRepository;
 import com.sopt.cherrish.domain.challenge.core.domain.repository.ChallengeRoutineRepository;
 import com.sopt.cherrish.domain.challenge.core.domain.repository.ChallengeStatisticsRepository;
-import com.sopt.cherrish.domain.challenge.homecare.domain.model.HomecareRoutine;
 import com.sopt.cherrish.domain.user.domain.model.User;
+
+import static com.sopt.cherrish.domain.challenge.core.fixture.ChallengeTestConstants.FIXED_START_DATE;
+import static com.sopt.cherrish.domain.challenge.core.fixture.ChallengeTestConstants.DEFAULT_HOMECARE_ROUTINE;
 import com.sopt.cherrish.domain.user.domain.repository.UserRepository;
 
 /**
@@ -43,10 +44,8 @@ public class ChallengeIntegrationTestFixture {
 		this.entityManager = entityManager;
 	}
 
-	// 상수 정의
-	// TestClockConfig의 고정 날짜를 참조하여 일관성 유지
-	public static final LocalDate FIXED_START_DATE = TestClockConfig.FIXED_TEST_DATE;
-	public static final HomecareRoutine DEFAULT_HOMECARE_ROUTINE = HomecareRoutine.SKIN_CONDITION;
+	// 공통 상수는 ChallengeTestConstants에서 static import
+	// FIXED_START_DATE, DEFAULT_HOMECARE_ROUTINE
 	public static final String DEFAULT_USER_NAME = "테스트 유저";
 	public static final int DEFAULT_USER_AGE = 25;
 	public static final String OTHER_USER_NAME = "다른 유저";
