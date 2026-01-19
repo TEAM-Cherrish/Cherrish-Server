@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static com.sopt.cherrish.domain.challenge.core.fixture.ChallengeTestFixture.DEFAULT_HOMECARE_ROUTINE;
 
 import java.time.LocalDate;
 import java.util.Optional;
@@ -23,8 +24,6 @@ import com.sopt.cherrish.domain.challenge.core.exception.ChallengeErrorCode;
 import com.sopt.cherrish.domain.challenge.core.exception.ChallengeException;
 import com.sopt.cherrish.domain.challenge.core.fixture.ChallengeTestFixture;
 import com.sopt.cherrish.domain.challenge.homecare.domain.model.HomecareRoutine;
-
-import static com.sopt.cherrish.domain.challenge.core.fixture.ChallengeTestFixture.DEFAULT_HOMECARE_ROUTINE;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("ChallengeService 단위 테스트")
