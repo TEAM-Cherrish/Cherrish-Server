@@ -5,6 +5,7 @@ spring:
     properties:
       hibernate:
         format_sql: true
+    open-in-view: false
   swagger:
     base-url: http://localhost:8080
 
@@ -14,3 +15,9 @@ logging:
     com.sopt.cherrish: DEBUG
     org.hibernate.SQL: DEBUG
     org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true

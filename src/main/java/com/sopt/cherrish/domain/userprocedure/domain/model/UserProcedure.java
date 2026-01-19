@@ -52,12 +52,22 @@ public class UserProcedure extends BaseTimeEntity {
 	@Column(name = "downtime_days", nullable = false)
 	private Integer downtimeDays;
 
+	@Column(name = "recovery_target_date")
+	private LocalDate recoveryTargetDate;
+
 	@Builder
-	private UserProcedure(User user, Procedure procedure, LocalDateTime scheduledAt, Integer downtimeDays) {
+	private UserProcedure(
+		User user,
+		Procedure procedure,
+		LocalDateTime scheduledAt,
+		Integer downtimeDays,
+		LocalDate recoveryTargetDate
+	) {
 		this.user = user;
 		this.procedure = procedure;
 		this.scheduledAt = scheduledAt;
 		this.downtimeDays = downtimeDays;
+		this.recoveryTargetDate = recoveryTargetDate;
 	}
 
 	/**

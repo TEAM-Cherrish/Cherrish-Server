@@ -1,5 +1,6 @@
 package com.sopt.cherrish.domain.userprocedure.presentation.dto.request;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -21,6 +22,9 @@ public record UserProcedureCreateRequestDto(
 	@NotNull(message = "예약 날짜 및 시간은 필수입니다")
 	LocalDateTime scheduledAt,
 
+	@Schema(description = "회복 목표일", example = "2026-01-22")
+	LocalDate recoveryTargetDate,
+
 	@Schema(description = "시술 목록", requiredMode = Schema.RequiredMode.REQUIRED)
 	@NotEmpty(message = "시술 목록은 비어 있을 수 없습니다")
 	@Valid
@@ -36,6 +40,7 @@ public record UserProcedureCreateRequestDto(
 				.procedure(procedureMap.get(item.procedureId()))
 				.scheduledAt(scheduledAt)
 				.downtimeDays(item.downtimeDays())
+				.recoveryTargetDate(recoveryTargetDate)
 				.build())
 			.toList();
 	}

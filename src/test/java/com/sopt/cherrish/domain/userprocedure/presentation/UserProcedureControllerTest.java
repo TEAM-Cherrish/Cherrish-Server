@@ -1,5 +1,6 @@
 package com.sopt.cherrish.domain.userprocedure.presentation;
 
+import static com.sopt.cherrish.domain.userprocedure.fixture.UserProcedureTestFixture.DEFAULT_RECOVERY_TARGET_DATE_STRING;
 import static com.sopt.cherrish.domain.userprocedure.fixture.UserProcedureTestFixture.DEFAULT_SCHEDULED_AT_STRING;
 import static com.sopt.cherrish.domain.userprocedure.fixture.UserProcedureTestFixture.createInvalidRequestMissingScheduledAt;
 import static com.sopt.cherrish.domain.userprocedure.fixture.UserProcedureTestFixture.createInvalidRequestWithEmptyProcedures;
@@ -76,12 +77,14 @@ class UserProcedureControllerTest {
 				.andExpect(jsonPath("$.data.procedures[0].procedureName").value("레이저 토닝"))
 				.andExpect(jsonPath("$.data.procedures[0].scheduledAt").value(DEFAULT_SCHEDULED_AT_STRING))
 				.andExpect(jsonPath("$.data.procedures[0].downtimeDays").value(6))
+				.andExpect(jsonPath("$.data.procedures[0].recoveryTargetDate").value(DEFAULT_RECOVERY_TARGET_DATE_STRING))
 				// 두 번째 시술 검증
 				.andExpect(jsonPath("$.data.procedures[1].userProcedureId").value(11))
 				.andExpect(jsonPath("$.data.procedures[1].procedureId").value(2))
 				.andExpect(jsonPath("$.data.procedures[1].procedureName").value("필러"))
 				.andExpect(jsonPath("$.data.procedures[1].scheduledAt").value(DEFAULT_SCHEDULED_AT_STRING))
-				.andExpect(jsonPath("$.data.procedures[1].downtimeDays").value(3));
+				.andExpect(jsonPath("$.data.procedures[1].downtimeDays").value(3))
+				.andExpect(jsonPath("$.data.procedures[1].recoveryTargetDate").value(DEFAULT_RECOVERY_TARGET_DATE_STRING));
 		}
 
 		@Test

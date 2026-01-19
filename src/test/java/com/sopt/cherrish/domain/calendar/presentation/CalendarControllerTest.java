@@ -158,6 +158,7 @@ class CalendarControllerTest {
 			userProcedureId,
 			LocalDateTime.of(2025, 1, 15, 14, 0),
 			9,
+			LocalDate.of(2025, 1, 24),
 			List.of(
 				LocalDate.of(2025, 1, 15),
 				LocalDate.of(2025, 1, 16),
@@ -183,6 +184,7 @@ class CalendarControllerTest {
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.data.userProcedureId").value(123))
 			.andExpect(jsonPath("$.data.downtimeDays").value(9))
+			.andExpect(jsonPath("$.data.recoveryTargetDate").value("2025-01-24"))
 			.andExpect(jsonPath("$.data.sensitiveDays").isArray())
 			.andExpect(jsonPath("$.data.sensitiveDays.length()").value(3))
 			.andExpect(jsonPath("$.data.cautionDays").isArray())

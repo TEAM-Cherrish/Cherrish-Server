@@ -23,3 +23,11 @@ logging:
     root: INFO
     com.sopt.cherrish: INFO
     org.hibernate.SQL: WARN
+  discord:
+    error-webhook-url: ${DISCORD_ERROR_WEBHOOK_URL:}
+
+springdoc:
+  api-docs:
+    enabled: false
+  swagger-ui:
+    enabled: false

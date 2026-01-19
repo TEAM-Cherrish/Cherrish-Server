@@ -1,6 +1,7 @@
 package com.sopt.cherrish.domain.challenge.core.domain.model;
 
 import static com.sopt.cherrish.domain.challenge.core.fixture.ChallengeTestFixture.DEFAULT_CHALLENGE_TITLE;
+import static com.sopt.cherrish.domain.challenge.core.fixture.ChallengeTestFixture.DEFAULT_HOMECARE_ROUTINE;
 import static com.sopt.cherrish.domain.challenge.core.fixture.ChallengeTestFixture.DEFAULT_USER_ID;
 import static com.sopt.cherrish.domain.challenge.core.fixture.ChallengeTestFixture.FIXED_START_DATE;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -10,15 +11,13 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
-import com.sopt.cherrish.domain.challenge.homecare.domain.model.HomecareRoutine;
-
 @DisplayName("ChallengeStatistics 도메인 단위 테스트")
 class ChallengeStatisticsTest {
 
 	private Challenge createTestChallenge() {
 		return Challenge.builder()
 			.userId(DEFAULT_USER_ID)
-			.homecareRoutine(HomecareRoutine.SKIN_MOISTURIZING)
+			.homecareRoutine(DEFAULT_HOMECARE_ROUTINE)
 			.title(DEFAULT_CHALLENGE_TITLE)
 			.startDate(FIXED_START_DATE)
 			.build();

@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static com.sopt.cherrish.domain.challenge.core.fixture.ChallengeTestFixture.DEFAULT_HOMECARE_ROUTINE;
 
 import java.time.LocalDate;
 import java.util.Optional;
@@ -67,7 +68,7 @@ class ChallengeServiceTest {
 	void createChallengeSuccess() {
 		// given
 		Long userId = 1L;
-		HomecareRoutine routine = HomecareRoutine.SKIN_MOISTURIZING;
+		HomecareRoutine routine = DEFAULT_HOMECARE_ROUTINE;
 		LocalDate startDate = LocalDate.now();
 
 		Challenge expectedChallenge = Challenge.builder()

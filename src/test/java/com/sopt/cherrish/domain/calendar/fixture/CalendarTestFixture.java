@@ -36,11 +36,22 @@ public class CalendarTestFixture {
 		LocalDateTime scheduledAt,
 		int downtimeDays
 	) {
+		return createUserProcedure(user, procedure, scheduledAt, downtimeDays, null);
+	}
+
+	public static UserProcedure createUserProcedure(
+		User user,
+		Procedure procedure,
+		LocalDateTime scheduledAt,
+		int downtimeDays,
+		LocalDate recoveryTargetDate
+	) {
 		return UserProcedure.builder()
 			.user(user)
 			.procedure(procedure)
 			.scheduledAt(scheduledAt)
 			.downtimeDays(downtimeDays)
+			.recoveryTargetDate(recoveryTargetDate)
 			.build();
 	}
 
@@ -67,6 +78,7 @@ public class CalendarTestFixture {
 		Long userProcedureId,
 		LocalDateTime scheduledAt,
 		int downtimeDays,
+		LocalDate recoveryTargetDate,
 		List<LocalDate> sensitiveDays,
 		List<LocalDate> cautionDays,
 		List<LocalDate> recoveryDays
@@ -75,6 +87,7 @@ public class CalendarTestFixture {
 			userProcedureId,
 			scheduledAt,
 			downtimeDays,
+			recoveryTargetDate,
 			sensitiveDays,
 			cautionDays,
 			recoveryDays
