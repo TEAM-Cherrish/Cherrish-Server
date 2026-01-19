@@ -53,7 +53,6 @@ class HomecareRoutineTest {
 			.map(HomecareRoutine::getId)
 			.toArray(Integer[]::new);
 		assertThat(routines)
-			.hasSize(routines.length)
 			.extracting(HomecareRoutine::getId)
 			.containsExactly(expectedIds);
 	}
