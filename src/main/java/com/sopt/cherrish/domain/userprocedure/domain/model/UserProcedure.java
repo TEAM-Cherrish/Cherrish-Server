@@ -52,7 +52,7 @@ public class UserProcedure extends BaseTimeEntity {
 	@Column(name = "downtime_days", nullable = false)
 	private Integer downtimeDays;
 
-	@Column(name = "recovery_target_date", nullable = true)
+	@Column(name = "recovery_target_date")
 	private LocalDate recoveryTargetDate;
 
 	@Builder
