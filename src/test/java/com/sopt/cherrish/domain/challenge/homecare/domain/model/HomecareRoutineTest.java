@@ -3,6 +3,8 @@ package com.sopt.cherrish.domain.challenge.homecare.domain.model;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import java.util.Arrays;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -47,9 +49,12 @@ class HomecareRoutineTest {
 		HomecareRoutine[] routines = HomecareRoutine.values();
 
 		// then
+		Integer[] expectedIds = Arrays.stream(routines)
+			.map(HomecareRoutine::getId)
+			.toArray(Integer[]::new);
 		assertThat(routines)
-			.hasSize(6)
+			.hasSize(routines.length)
 			.extracting(HomecareRoutine::getId)
-			.containsExactly(1, 2, 3, 4, 5, 6);
+			.containsExactly(expectedIds);
 	}
 }
