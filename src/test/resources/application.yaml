@@ -25,3 +25,10 @@ spring:
   ai:
     openai:
       api-key: test-dummy-api-key-for-unit-tests
+
+  elasticsearch:
+    uris: http://localhost:9200
+
+cherrish:
+  elasticsearch:
+    enabled: false
