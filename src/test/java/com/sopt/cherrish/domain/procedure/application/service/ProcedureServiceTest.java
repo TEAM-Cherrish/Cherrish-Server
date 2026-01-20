@@ -18,6 +18,8 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import com.sopt.cherrish.domain.procedure.domain.model.Procedure;
 import com.sopt.cherrish.domain.procedure.domain.model.ProcedureWorry;
+import com.sopt.cherrish.domain.procedure.domain.port.ProcedureSearchPort;
+import com.sopt.cherrish.domain.procedure.domain.port.ProcedureSearchResult;
 import com.sopt.cherrish.domain.procedure.domain.repository.ProcedureRepository;
 import com.sopt.cherrish.domain.procedure.domain.repository.ProcedureWorryRepository;
 import com.sopt.cherrish.domain.procedure.fixture.ProcedureFixture;
@@ -36,6 +38,9 @@ class ProcedureServiceTest {
 
 	@Mock
 	private ProcedureWorryRepository procedureWorryRepository;
+
+	@Mock
+	private ProcedureSearchPort procedureSearchPort;
 
 	@Test
 	@DisplayName("시술 검색 성공 - keyword, worryId 둘 다 null")
@@ -69,6 +74,8 @@ class ProcedureServiceTest {
 		String keyword = "레이저";
 		Procedure procedure = ProcedureFixture.createProcedure("레이저 토닝", "레이저", 0, 1);
 
+		given(procedureSearchPort.searchByKeyword(keyword))
+			.willReturn(ProcedureSearchResult.unavailable());
 		given(procedureRepository.searchProcedures(keyword, null)).willReturn(Collections.singletonList(procedure));
 		given(procedureWorryRepository.findAllByProcedureIdInWithWorry(any()))
 			.willReturn(List.of(procedureWorry(procedure, "여드름/트러블")));
@@ -109,6 +116,8 @@ class ProcedureServiceTest {
         Long worryId = 1L;
         Procedure procedure = ProcedureFixture.createProcedure("레이저 토닝", "레이저", 0, 1);
 
+		given(procedureSearchPort.searchByKeyword(keyword))
+			.willReturn(ProcedureSearchResult.unavailable());
         given(procedureRepository.searchProcedures(keyword, worryId))
                 .willReturn(Collections.singletonList(procedure));
 		given(procedureWorryRepository.findAllByProcedureIdInWithWorryAndWorryId(any(), any()))
@@ -128,7 +137,7 @@ class ProcedureServiceTest {
     void searchProceduresWithEmptyKeyword() {
         // given
         String emptyKeyword = "";
-        given(procedureRepository.searchProcedures(emptyKeyword, null))
+        given(procedureRepository.searchProcedures(null, null))
                 .willReturn(Collections.emptyList());
 
         // when
@@ -143,6 +152,8 @@ class ProcedureServiceTest {
 	void searchProceduresWithNoResults() {
 		// given
 		String keyword = "존재하지않는시술";
+		given(procedureSearchPort.searchByKeyword(keyword))
+			.willReturn(ProcedureSearchResult.unavailable());
 		given(procedureRepository.searchProcedures(keyword, null)).willReturn(Collections.emptyList());
 
 		// when
