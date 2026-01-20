@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Document(indexName = ProcedureDocument.INDEX_NAME)
+@Document(indexName = ProcedureDocument.INDEX_NAME, createIndex = false)
 public class ProcedureDocument {
 
 	public static final String INDEX_NAME = "procedures";
