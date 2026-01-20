@@ -1,7 +1,10 @@
 package com.sopt.cherrish.global.config;
 
 import org.springframework.beans.factory.annotation.Value;
+import java.time.Duration;
+
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.convert.DurationStyle;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.elasticsearch.client.ClientConfiguration;
 import org.springframework.data.elasticsearch.client.elc.ElasticsearchConfiguration;
@@ -25,10 +28,13 @@ public class ElasticsearchConfig extends ElasticsearchConfiguration {
 
 	@Override
 	public ClientConfiguration clientConfiguration() {
+		Duration connectTimeoutDuration = DurationStyle.detectAndParse(connectionTimeout);
+		Duration socketTimeoutDuration = DurationStyle.detectAndParse(socketTimeout);
+
 		return ClientConfiguration.builder()
 			.connectedTo(elasticsearchUri.replace("http://", "").replace("https://", ""))
-			.withConnectTimeout(java.time.Duration.parse("PT" + connectionTimeout.toUpperCase()))
-			.withSocketTimeout(java.time.Duration.parse("PT" + socketTimeout.toUpperCase()))
+			.withConnectTimeout(connectTimeoutDuration)
+			.withSocketTimeout(socketTimeoutDuration)
 			.build();
 	}
 }

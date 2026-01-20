@@ -81,6 +81,7 @@ public class ProcedureSearchAdapter implements ProcedureSearchPort {
 
 	private Query buildSearchQuery(String keyword) {
 		String trimmedKeyword = keyword.trim();
+		String escapedKeyword = escapeWildcard(trimmedKeyword);
 		BoolQuery.Builder boolQuery = new BoolQuery.Builder();
 
 		// 1. 완전 일치 - 검색어가 시술명과 정확히 같은 경우 (가장 높은 가중치)
@@ -93,22 +94,22 @@ public class ProcedureSearchAdapter implements ProcedureSearchPort {
 			.build());
 
 		// 2. Prefix 매칭 - 검색어로 시작하는 시술 (높은 가중치)
-		boolQuery.should(new Query.Builder()
-			.wildcard(new WildcardQuery.Builder()
-				.field("name.keyword")
-				.value(trimmedKeyword + "*")
-				.boost(PREFIX_MATCH_BOOST)
-				.build())
-			.build());
+			boolQuery.should(new Query.Builder()
+				.wildcard(new WildcardQuery.Builder()
+					.field("name.keyword")
+					.value(escapedKeyword + "*")
+					.boost(PREFIX_MATCH_BOOST)
+					.build())
+				.build());
 
 		// 3. Contains 매칭 - 검색어가 포함된 시술 (한글자 검색 지원)
-		boolQuery.should(new Query.Builder()
-			.wildcard(new WildcardQuery.Builder()
-				.field("name.keyword")
-				.value("*" + trimmedKeyword + "*")
-				.boost(CONTAINS_MATCH_BOOST)
-				.build())
-			.build());
+			boolQuery.should(new Query.Builder()
+				.wildcard(new WildcardQuery.Builder()
+					.field("name.keyword")
+					.value("*" + escapedKeyword + "*")
+					.boost(CONTAINS_MATCH_BOOST)
+					.build())
+				.build());
 
 		// 4. Phrase 매칭 - 검색어 순서대로 포함 (예: "보톡스 사각" -> "보톡스...사각" 순서로 포함)
 		boolQuery.should(new Query.Builder()
@@ -175,5 +176,11 @@ public class ProcedureSearchAdapter implements ProcedureSearchPort {
 		} else {
 			return "2";
 		}
+	}
+
+	private String escapeWildcard(String keyword) {
+		return keyword.replace("\\", "\\\\")
+			.replace("*", "\\*")
+			.replace("?", "\\?");
 	}
 }

@@ -46,6 +46,7 @@ DISCORD_ERROR_WEBHOOK_URL=$(aws ssm get-parameter --name "/cherrish/DISCORD_ERRO
 ELASTICSEARCH_ENABLED=$(aws ssm get-parameter --name "/cherrish/ELASTICSEARCH_ENABLED" --region "${AWS_REGION}" --query "Parameter.Value" --output text 2>/dev/null || echo "true")
 
 # Start Elasticsearch container (if enabled)
+ES_ENV=()
 if [ "${ELASTICSEARCH_ENABLED}" = "true" ]; then
   echo "Starting Elasticsearch container..."
   docker rm -f "${ES_CONTAINER_NAME}" 2>/dev/null || true
@@ -75,9 +76,9 @@ if [ "${ELASTICSEARCH_ENABLED}" = "true" ]; then
   done
 
   ELASTICSEARCH_URI="http://${ES_CONTAINER_NAME}:9200"
+  ES_ENV=(-e ELASTICSEARCH_URI="${ELASTICSEARCH_URI}")
 else
   echo "Elasticsearch is disabled, skipping..."
-  ELASTICSEARCH_URI=""
 fi
 
 # Stop and remove existing app container
@@ -102,7 +103,7 @@ docker run -d \
   -e SERVER_URL="${SERVER_URL}" \
   -e DISCORD_ERROR_WEBHOOK_URL="${DISCORD_ERROR_WEBHOOK_URL}" \
   -e ELASTICSEARCH_ENABLED="${ELASTICSEARCH_ENABLED}" \
-  -e ELASTICSEARCH_URI="${ELASTICSEARCH_URI}" \
+  "${ES_ENV[@]}" \
   "${IMAGE}"
 
 # Cleanup old images
