@@ -1,5 +1,6 @@
 package com.sopt.cherrish.domain.challenge.recommendation.application.service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -62,6 +63,10 @@ public class AiChallengeRecommendationService {
 	}
 
 	private List<String> adjustRoutineCount(List<String> routines) {
+		if (routines == null || routines.isEmpty()) {
+			log.warn("AI 응답 루틴이 null이거나 비어있습니다");
+			return Collections.emptyList();
+		}
 		if (routines.size() > ROUTINE_COUNT) {
 			log.warn("AI 응답 루틴 개수 초과: {}개 -> {}개로 조정", routines.size(), ROUTINE_COUNT);
 			return routines.subList(0, ROUTINE_COUNT);
