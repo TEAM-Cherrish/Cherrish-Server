@@ -17,13 +17,13 @@ import org.springframework.data.elasticsearch.repository.config.EnableElasticsea
 )
 public class ElasticsearchConfig extends ElasticsearchConfiguration {
 
-	@Value("${spring.elasticsearch.uris:http://localhost:9200}")
+	@Value("${spring.elasticsearch.uris}")
 	private String elasticsearchUri;
 
-	@Value("${spring.elasticsearch.connection-timeout:5s}")
+	@Value("${spring.elasticsearch.connection-timeout}")
 	private String connectionTimeout;
 
-	@Value("${spring.elasticsearch.socket-timeout:30s}")
+	@Value("${spring.elasticsearch.socket-timeout}")
 	private String socketTimeout;
 
 	@Override
