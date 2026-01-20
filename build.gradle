@@ -32,6 +32,9 @@ dependencies {
 	// Database
 	runtimeOnly 'org.postgresql:postgresql'
 
+	// Docker Compose Support (로컬 개발 시 자동으로 컨테이너 실행)
+	developmentOnly 'org.springframework.boot:spring-boot-docker-compose'
+
 	// Lombok
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'

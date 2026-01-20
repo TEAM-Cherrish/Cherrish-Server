@@ -8,6 +8,10 @@ spring:
     open-in-view: false
   swagger:
     base-url: http://localhost:8080
+  docker:
+    compose:
+      file: docker-compose.local.yml
+      lifecycle-management: start_and_stop
 
 logging:
   level:
