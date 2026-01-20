@@ -52,6 +52,8 @@ class ProcedureSearchAdapterTest {
 	@DynamicPropertySource
 	static void elasticsearchProperties(DynamicPropertyRegistry registry) {
 		registry.add("spring.elasticsearch.uris", elasticsearchContainer::getHttpHostAddress);
+		registry.add("spring.elasticsearch.connection-timeout", () -> "5s");
+		registry.add("spring.elasticsearch.socket-timeout", () -> "30s");
 		registry.add("cherrish.elasticsearch.enabled", () -> true);
 	}
 
