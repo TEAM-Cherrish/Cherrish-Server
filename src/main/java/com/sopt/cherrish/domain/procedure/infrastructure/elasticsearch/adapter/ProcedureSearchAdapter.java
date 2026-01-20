@@ -41,18 +41,9 @@ public class ProcedureSearchAdapter implements ProcedureSearchPort {
 		private static final float CONTAINS_MATCH = 30.0f;
 		private static final float PHRASE_MATCH = 20.0f;
 		private static final float ALL_TERMS_MATCH = 10.0f;
-		private static final float FUZZY_MATCH = 0.5f;
 		private static final float PARTIAL_MATCH = 1.0f;
 
 		private SearchBoost() {
-		}
-	}
-
-	private static final class FuzzyRule {
-		private static final int OFF_MAX_LENGTH = 2;
-		private static final int EDIT_1_MAX_LENGTH = 5;
-
-		private FuzzyRule() {
 		}
 	}
 
@@ -158,50 +149,11 @@ public class ProcedureSearchAdapter implements ProcedureSearchPort {
 					.build())
 				.build());
 
-		// 7. Fuzzy 매칭 - 오타 허용 (5글자 이상일 때만)
-		String fuzziness = determineFuzziness(trimmedKeyword);
-		if (fuzziness != null) {
-			boolQuery.should(new Query.Builder()
-				.match(new MatchQuery.Builder()
-						.field("name")
-						.query(trimmedKeyword)
-						.fuzziness(fuzziness)
-						.prefixLength(1)
-						.boost(SearchBoost.FUZZY_MATCH)
-						.build())
-					.build());
-		}
-
 		boolQuery.minimumShouldMatch("1");
 
 		return new Query.Builder()
 			.bool(boolQuery.build())
 			.build();
-	}
-
-	/**
-	 * 키워드 길이와 언어에 따른 Fuzzy edit distance 결정
-	 * - 1-2글자: Fuzzy OFF (짧은 단어 과매칭 방지)
-	 * - 한글 3글자 이상: Edit Distance 2 (한글은 1글자 변경 = 2바이트 차이)
-	 * - 영문 3-5글자: Edit Distance 1
-	 * - 영문 6글자 이상: Edit Distance 2
-	 */
-	private String determineFuzziness(String keyword) {
-		int length = keyword.length();
-		if (length <= FuzzyRule.OFF_MAX_LENGTH) {
-			return null;
-		}
-		if (containsKorean(keyword)) {
-			return "2";
-		}
-		if (length <= FuzzyRule.EDIT_1_MAX_LENGTH) {
-			return "1";
-		}
-		return "2";
-	}
-
-	private boolean containsKorean(String text) {
-		return text.codePoints().anyMatch(cp -> cp >= 0xAC00 && cp <= 0xD7A3);
 	}
 
 	private String escapeWildcard(String keyword) {

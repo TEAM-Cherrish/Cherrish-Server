@@ -294,29 +294,6 @@ class ProcedureSearchAdapterTest {
 		}
 	}
 
-	@Nested
-	@DisplayName("Fuzzy 검색 (오타 허용)")
-	class FuzzySearch {
-
-		/**
-		 * Note: 이 테스트는 nori analyzer가 설치된 환경에서만 정상 동작합니다.
-		 * Testcontainers ES에는 nori 플러그인이 없어 standard analyzer를 사용하므로,
-		 * 띄어쓰기 변형 검색이 제대로 동작하지 않습니다.
-		 * 실제 운영 환경(nori 설치됨)에서는 정상 동작합니다.
-		 */
-		@Test
-		@DisplayName("'사각턱보톡스' (띄어쓰기 없음) 검색 시 사각턱 보톡스 반환 - nori 필요")
-		void searchWithoutSpace() {
-			// when
-			List<Long> result = procedureSearchPort.searchByKeyword("사각턱보톡스").procedureIds();
-
-			// then - Testcontainers에서는 nori가 없으므로 결과가 비어있을 수 있음
-			// 실제 운영 환경(nori 설치됨)에서는 20L(사각턱 보톡스)이 포함되어야 함
-			// Testcontainers 한계로 인해 결과 존재 여부만 확인하지 않고 스킵하지 않음
-			assertThat(result).isNotNull();
-		}
-	}
-
 	@Test
 	@DisplayName("ES 가용성 확인")
 	void checkAvailability() {
