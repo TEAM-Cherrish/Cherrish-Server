@@ -55,8 +55,11 @@ jobs:
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         run: |
-          docker build -t ${ECR_REGISTRY}/${{ env.ECR_REPOSITORY_ES }}:latest ./elasticsearch
+          docker build -t ${ECR_REGISTRY}/${{ env.ECR_REPOSITORY_ES }}:latest \
+                       -t ${ECR_REGISTRY}/${{ env.ECR_REPOSITORY_ES }}:${{ github.sha }} \
+                       ./elasticsearch
           docker push ${ECR_REGISTRY}/${{ env.ECR_REPOSITORY_ES }}:latest
+          docker push ${ECR_REGISTRY}/${{ env.ECR_REPOSITORY_ES }}:${{ github.sha }}
 
       - name: Deploy to EC2 via SSM
         env:
