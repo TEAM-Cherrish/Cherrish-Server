@@ -1,18 +1,12 @@
 package com.sopt.cherrish.domain.challenge.demo.application.facade;
 
-import java.time.LocalDate;
-import java.util.List;
-
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.sopt.cherrish.domain.challenge.core.presentation.dto.response.ChallengeDetailResponseDto;
-import com.sopt.cherrish.domain.challenge.demo.application.service.DemoChallengeRoutineService;
 import com.sopt.cherrish.domain.challenge.demo.application.service.DemoChallengeService;
 import com.sopt.cherrish.domain.challenge.demo.application.service.DemoChallengeStatisticsService;
 import com.sopt.cherrish.domain.challenge.demo.domain.model.DemoChallenge;
-import com.sopt.cherrish.domain.challenge.demo.domain.model.DemoChallengeRoutine;
-import com.sopt.cherrish.domain.challenge.demo.domain.model.DemoChallengeStatistics;
 
 import lombok.RequiredArgsConstructor;
 
@@ -23,7 +17,6 @@ public class DemoChallengeAdvanceDayFacade {
 	private final DemoChallengeService challengeService;
 	private final DemoChallengeStatisticsService statisticsService;
 	private final DemoChallengeQueryFacade queryFacade;
-	private final DemoChallengeRoutineService routineService;
 
 	/**
 	 * 다음 날로 넘어가기 및 통계 재계산
@@ -46,25 +39,10 @@ public class DemoChallengeAdvanceDayFacade {
 		// 4. 챌린지 종료 여부에 따라 응답 생성
 		if (!challenge.getIsActive()) {
 			// 챌린지가 종료된 경우: 이미 조회한 challenge 객체로 응답 생성
-			return buildChallengeDetailResponse(challenge);
+			return queryFacade.buildChallengeDetailResponse(challenge);
 		}
 
 		// 챌린지가 계속 진행 중인 경우: QueryFacade 재사용
 		return queryFacade.getActiveChallengeDetail(userId);
-	}
-
-	private ChallengeDetailResponseDto buildChallengeDetailResponse(DemoChallenge challenge) {
-		LocalDate currentDate = challenge.getCurrentVirtualDate();
-		List<DemoChallengeRoutine> todayRoutines = routineService.getRoutinesByDate(challenge.getId(), currentDate);
-		DemoChallengeStatistics statistics = challenge.getStatistics();
-		int currentDay = challenge.getCurrentDay();
-
-		return ChallengeDetailResponseDto.from(
-			challenge,
-			currentDay,
-			statistics,
-			todayRoutines,
-			""
-		);
 	}
 }
