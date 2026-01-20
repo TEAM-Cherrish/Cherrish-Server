@@ -46,7 +46,6 @@ DISCORD_ERROR_WEBHOOK_URL=$(aws ssm get-parameter --name "/cherrish/DISCORD_ERRO
 ELASTICSEARCH_ENABLED=$(aws ssm get-parameter --name "/cherrish/ELASTICSEARCH_ENABLED" --region "${AWS_REGION}" --query "Parameter.Value" --output text 2>/dev/null || echo "true")
 
 # Start Elasticsearch container (if enabled)
-ES_ENV=()
 if [ "${ELASTICSEARCH_ENABLED}" = "true" ]; then
   echo "Starting Elasticsearch container..."
   docker rm -f "${ES_CONTAINER_NAME}" 2>/dev/null || true
@@ -66,19 +65,33 @@ if [ "${ELASTICSEARCH_ENABLED}" = "true" ]; then
 
   # Wait for ES to be ready
   echo "Waiting for Elasticsearch to be ready..."
+  ES_READY=false
   for i in $(seq 1 30); do
     if docker exec "${ES_CONTAINER_NAME}" curl -sf http://localhost:9200/_cluster/health > /dev/null 2>&1; then
       echo "Elasticsearch is ready!"
+      ES_READY=true
       break
     fi
     echo "ES not ready yet, waiting... (${i}/30)"
     sleep 5
   done
 
+  if [ "${ES_READY}" = "false" ]; then
+    echo "ERROR: Elasticsearch failed to start within timeout"
+    docker logs "${ES_CONTAINER_NAME}" --tail 50
+    exit 1
+  fi
+
   ELASTICSEARCH_URI="http://${ES_CONTAINER_NAME}:9200"
-  ES_ENV=(-e ELASTICSEARCH_URI="${ELASTICSEARCH_URI}")
 else
   echo "Elasticsearch is disabled, skipping..."
+  ELASTICSEARCH_URI=""
+fi
+
+# Initialize ES_ENV array (empty if ES disabled, with URI if enabled)
+ES_ENV=()
+if [ "${ELASTICSEARCH_ENABLED}" = "true" ]; then
+  ES_ENV=(-e ELASTICSEARCH_URI="${ELASTICSEARCH_URI}")
 fi
 
 # Stop and remove existing app container
@@ -103,7 +116,7 @@ docker run -d \
   -e SERVER_URL="${SERVER_URL}" \
   -e DISCORD_ERROR_WEBHOOK_URL="${DISCORD_ERROR_WEBHOOK_URL}" \
   -e ELASTICSEARCH_ENABLED="${ELASTICSEARCH_ENABLED}" \
-  "${ES_ENV[@]}" \
+  ${ES_ENV[@]+"${ES_ENV[@]}"} \
   "${IMAGE}"
 
 # Cleanup old images
