@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.HandlerMethodValidationException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
@@ -112,6 +113,15 @@ public class GlobalExceptionHandler {
 	public CommonApiResponse<Void> handleOptimisticLockingFailure(ObjectOptimisticLockingFailureException e) {
 		log.warn("Optimistic locking failure: {}", e.getMessage());
 		return CommonApiResponse.fail(ErrorCode.CONCURRENT_UPDATE);
+	}
+
+	// 존재하지 않는 리소스 요청 처리
+	@ExceptionHandler(NoResourceFoundException.class)
+	@ResponseStatus(HttpStatus.NOT_FOUND)
+	public CommonApiResponse<Map<String, String>> handleNoResourceFound(NoResourceFoundException e) {
+		log.debug("Resource not found: {}", e.getResourcePath());
+		Map<String, String> details = Map.of("path", "/" + e.getResourcePath());
+		return CommonApiResponse.fail(ErrorCode.NOT_FOUND, details);
 	}
 
 	// 그 외 모든 예외 처리

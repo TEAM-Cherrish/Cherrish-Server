@@ -1,5 +1,7 @@
 package com.sopt.cherrish.domain.challenge.recommendation.application.service;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.stereotype.Service;
@@ -19,6 +21,8 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @RequiredArgsConstructor
 public class AiChallengeRecommendationService {
+
+	private static final int ROUTINE_COUNT = 6;
 
 	private final AiClient aiClient;
 	private final ChallengePromptTemplate challengePromptTemplate;
@@ -51,8 +55,25 @@ public class AiChallengeRecommendationService {
 			OpenAiChallengeRecommendationResponseDto.class
 		);
 
-		log.info("AI 챌린지 추천 생성 완료: routines={}", aiResponse.routines());
+		List<String> routines = adjustRoutineCount(aiResponse.routines());
 
-		return AiRecommendationResponseDto.of(aiResponse.routines());
+		log.info("AI 챌린지 추천 생성 완료: routines={}", routines);
+
+		return AiRecommendationResponseDto.of(routines);
+	}
+
+	private List<String> adjustRoutineCount(List<String> routines) {
+		if (routines == null || routines.isEmpty()) {
+			log.warn("AI 응답 루틴이 null이거나 비어있습니다");
+			return Collections.emptyList();
+		}
+		if (routines.size() > ROUTINE_COUNT) {
+			log.warn("AI 응답 루틴 개수 초과: {}개 -> {}개로 조정", routines.size(), ROUTINE_COUNT);
+			return routines.subList(0, ROUTINE_COUNT);
+		}
+		if (routines.size() < ROUTINE_COUNT) {
+			log.warn("AI 응답 루틴 개수 부족: {}개", routines.size());
+		}
+		return routines;
 	}
 }
