@@ -30,7 +30,6 @@ services:
       - "9300:9300"
     volumes:
       - elasticsearch_data:/usr/share/elasticsearch/data
-      - ./elasticsearch/analysis:/usr/share/elasticsearch/config/analysis
     healthcheck:
       test: ["CMD-SHELL", "curl -s http://localhost:9200/_cluster/health | grep -q '\"status\":\"green\"\\|\"status\":\"yellow\"'"]
       interval: 30s
