@@ -14,6 +14,7 @@ import com.sopt.cherrish.domain.procedure.domain.model.ProcedureWorry;
 import com.sopt.cherrish.domain.procedure.domain.repository.ProcedureRepository;
 import com.sopt.cherrish.domain.procedure.domain.repository.ProcedureWorryRepository;
 import com.sopt.cherrish.domain.procedure.domain.port.ProcedureSearchPort;
+import com.sopt.cherrish.domain.procedure.domain.port.ProcedureSearchResult;
 import com.sopt.cherrish.domain.procedure.presentation.dto.response.ProcedureListResponseDto;
 import com.sopt.cherrish.domain.procedure.presentation.dto.response.ProcedureResponseDto;
 import com.sopt.cherrish.domain.procedure.presentation.dto.response.ProcedureWorryResponseDto;
@@ -64,21 +65,17 @@ public class ProcedureService {
 			return new SearchResult(procedureRepository.searchProcedures(null, worryId), false);
 		}
 
-		// ES 검색 시도
-		if (procedureSearchPort.isAvailable()) {
-			try {
-				List<Long> procedureIds = procedureSearchPort.searchByKeyword(keyword);
-				if (procedureIds.isEmpty()) {
-					return new SearchResult(List.of(), true);
-				}
-
-				// ES 순서를 유지하면서 DB 조회
-				List<Procedure> procedures = procedureRepository.findByIdInAndWorryId(procedureIds, worryId);
-				List<Procedure> orderedProcedures = reorderByEsResult(procedures, procedureIds);
-				return new SearchResult(orderedProcedures, true);
-			} catch (Exception e) {
-				log.warn("ES 검색 실패, QueryDSL 폴백: {}", e.getMessage());
+		ProcedureSearchResult searchResult = procedureSearchPort.searchByKeyword(keyword);
+		if (searchResult.isAvailable()) {
+			List<Long> procedureIds = searchResult.procedureIds();
+			if (procedureIds.isEmpty()) {
+				return new SearchResult(List.of(), true);
 			}
+
+			// ES 순서를 유지하면서 DB 조회
+			List<Procedure> procedures = procedureRepository.findByIdInAndWorryId(procedureIds, worryId);
+			List<Procedure> orderedProcedures = reorderByEsResult(procedures, procedureIds);
+			return new SearchResult(orderedProcedures, true);
 		}
 
 		// 폴백: 기존 QueryDSL LIKE 검색

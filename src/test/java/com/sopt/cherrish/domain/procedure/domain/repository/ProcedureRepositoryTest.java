@@ -163,4 +163,28 @@ class ProcedureRepositoryTest {
 		// Then: 빈 리스트 반환
 		assertThat(result).isEmpty();
 	}
+
+	@Test
+	@DisplayName("ID 목록과 피부 고민 ID로 시술 조회 성공")
+	void findByIdInAndWorryId() {
+		// When: 레이저 토닝, 보톡스 ID로 worry2 조건 조회
+		List<Long> ids = List.of(laserToning.getId(), botox.getId());
+		List<Procedure> result = procedureRepository.findByIdInAndWorryId(ids, worry2.getId());
+
+		// Then: worry2와 연결된 레이저 토닝만 반환
+		assertThat(result).extracting(Procedure::getName)
+			.containsExactly("레이저 토닝");
+	}
+
+	@Test
+	@DisplayName("ID 목록으로 시술 조회 성공")
+	void findByIdInWithoutWorryFilter() {
+		// When: 레이저 토닝, 보톡스 ID로 조회
+		List<Long> ids = List.of(laserToning.getId(), botox.getId());
+		List<Procedure> result = procedureRepository.findByIdInAndWorryId(ids, null);
+
+		// Then: ID 목록에 해당하는 시술 반환
+		assertThat(result).extracting(Procedure::getName)
+			.containsExactlyInAnyOrder("레이저 토닝", "보톡스");
+	}
 }

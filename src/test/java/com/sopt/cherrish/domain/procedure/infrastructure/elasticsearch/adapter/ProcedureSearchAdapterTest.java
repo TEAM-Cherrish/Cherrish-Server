@@ -141,7 +141,7 @@ class ProcedureSearchAdapterTest {
 		@DisplayName("'필' 검색 시 아쿠아필, 라라필, 세라필 반환")
 		void searchByPil() {
 			// when
-			List<Long> result = procedureSearchPort.searchByKeyword("필");
+			List<Long> result = procedureSearchPort.searchByKeyword("필").procedureIds();
 
 			// then
 			assertThat(result).containsExactlyInAnyOrder(10L, 11L, 13L);
@@ -151,7 +151,7 @@ class ProcedureSearchAdapterTest {
 		@DisplayName("'주' 검색 시 주사 관련 시술 반환")
 		void searchByJu() {
 			// when
-			List<Long> result = procedureSearchPort.searchByKeyword("주");
+			List<Long> result = procedureSearchPort.searchByKeyword("주").procedureIds();
 
 			// then
 			assertThat(result).contains(22L, 23L); // 윤곽 주사, 얼굴지방분해주사
@@ -166,7 +166,7 @@ class ProcedureSearchAdapterTest {
 		@DisplayName("'보톡스' 검색 시 '보톡스'가 맨 위에 반환")
 		void searchBotoxExactMatch() {
 			// when
-			List<Long> result = procedureSearchPort.searchByKeyword("보톡스");
+			List<Long> result = procedureSearchPort.searchByKeyword("보톡스").procedureIds();
 
 			// then
 			assertThat(result).isNotEmpty();
@@ -178,7 +178,7 @@ class ProcedureSearchAdapterTest {
 		@DisplayName("'토닝' 검색 시 토닝 관련 시술 반환")
 		void searchToning() {
 			// when
-			List<Long> result = procedureSearchPort.searchByKeyword("토닝");
+			List<Long> result = procedureSearchPort.searchByKeyword("토닝").procedureIds();
 
 			// then
 			assertThat(result).containsExactlyInAnyOrder(17L, 18L, 19L);
@@ -193,7 +193,7 @@ class ProcedureSearchAdapterTest {
 		@DisplayName("'사각턱 보톡스' 검색 시 사각턱 보톡스가 맨 위에 반환")
 		void searchSagakBotox() {
 			// when
-			List<Long> result = procedureSearchPort.searchByKeyword("사각턱 보톡스");
+			List<Long> result = procedureSearchPort.searchByKeyword("사각턱 보톡스").procedureIds();
 
 			// then
 			assertThat(result).isNotEmpty();
@@ -204,7 +204,7 @@ class ProcedureSearchAdapterTest {
 		@DisplayName("'종아리 보톡스' 검색 시 종아리 보톡스가 맨 위에 반환")
 		void searchCaflBotox() {
 			// when
-			List<Long> result = procedureSearchPort.searchByKeyword("종아리 보톡스");
+			List<Long> result = procedureSearchPort.searchByKeyword("종아리 보톡스").procedureIds();
 
 			// then
 			assertThat(result).isNotEmpty();
@@ -215,7 +215,7 @@ class ProcedureSearchAdapterTest {
 		@DisplayName("'피코' 검색 시 피코 토닝, 피코 프락셀 반환")
 		void searchPico() {
 			// when
-			List<Long> result = procedureSearchPort.searchByKeyword("피코");
+			List<Long> result = procedureSearchPort.searchByKeyword("피코").procedureIds();
 
 			// then
 			assertThat(result).containsExactlyInAnyOrder(17L, 31L);
@@ -230,7 +230,7 @@ class ProcedureSearchAdapterTest {
 		@DisplayName("'리프팅' 검색 시 리프팅 관련 시술 반환")
 		void searchLifting() {
 			// when
-			List<Long> result = procedureSearchPort.searchByKeyword("리프팅");
+			List<Long> result = procedureSearchPort.searchByKeyword("리프팅").procedureIds();
 
 			// then
 			assertThat(result).containsExactlyInAnyOrder(4L, 9L); // 온다 리프팅, 실 리프팅
@@ -240,7 +240,7 @@ class ProcedureSearchAdapterTest {
 		@DisplayName("'레이저' 검색 시 레이저 토닝 반환")
 		void searchLaser() {
 			// when
-			List<Long> result = procedureSearchPort.searchByKeyword("레이저");
+			List<Long> result = procedureSearchPort.searchByKeyword("레이저").procedureIds();
 
 			// then
 			assertThat(result).contains(19L); // 레이저 토닝
@@ -255,7 +255,7 @@ class ProcedureSearchAdapterTest {
 		@DisplayName("빈 키워드 검색 시 빈 결과 반환")
 		void searchWithEmptyKeyword() {
 			// when
-			List<Long> result = procedureSearchPort.searchByKeyword("");
+			List<Long> result = procedureSearchPort.searchByKeyword("").procedureIds();
 
 			// then
 			assertThat(result).isEmpty();
@@ -265,7 +265,7 @@ class ProcedureSearchAdapterTest {
 		@DisplayName("null 키워드 검색 시 빈 결과 반환")
 		void searchWithNullKeyword() {
 			// when
-			List<Long> result = procedureSearchPort.searchByKeyword(null);
+			List<Long> result = procedureSearchPort.searchByKeyword(null).procedureIds();
 
 			// then
 			assertThat(result).isEmpty();
@@ -275,7 +275,7 @@ class ProcedureSearchAdapterTest {
 		@DisplayName("매칭되는 시술이 없을 때 빈 결과 반환")
 		void searchWithNoMatch() {
 			// when
-			List<Long> result = procedureSearchPort.searchByKeyword("존재하지않는시술");
+			List<Long> result = procedureSearchPort.searchByKeyword("존재하지않는시술").procedureIds();
 
 			// then
 			assertThat(result).isEmpty();
@@ -285,7 +285,7 @@ class ProcedureSearchAdapterTest {
 		@DisplayName("공백만 있는 키워드 검색 시 빈 결과 반환")
 		void searchWithWhitespace() {
 			// when
-			List<Long> result = procedureSearchPort.searchByKeyword("   ");
+			List<Long> result = procedureSearchPort.searchByKeyword("   ").procedureIds();
 
 			// then
 			assertThat(result).isEmpty();
@@ -306,7 +306,7 @@ class ProcedureSearchAdapterTest {
 		@DisplayName("'사각턱보톡스' (띄어쓰기 없음) 검색 시 사각턱 보톡스 반환 - nori 필요")
 		void searchWithoutSpace() {
 			// when
-			List<Long> result = procedureSearchPort.searchByKeyword("사각턱보톡스");
+			List<Long> result = procedureSearchPort.searchByKeyword("사각턱보톡스").procedureIds();
 
 			// then - Testcontainers에서는 nori가 없으므로 결과가 비어있을 수 있음
 			// 실제 운영 환경(nori 설치됨)에서는 20L(사각턱 보톡스)이 포함되어야 함
@@ -319,7 +319,7 @@ class ProcedureSearchAdapterTest {
 	@DisplayName("ES 가용성 확인")
 	void checkAvailability() {
 		// when
-		boolean available = procedureSearchPort.isAvailable();
+		boolean available = procedureSearchPort.searchByKeyword("보톡스").isAvailable();
 
 		// then
 		assertThat(available).isTrue();

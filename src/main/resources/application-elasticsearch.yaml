@@ -1,6 +1,7 @@
 spring:
   elasticsearch:
     uris: ${ELASTICSEARCH_URI:http://localhost:9200}
+    # 연결/소켓 타임아웃은 네트워크 지연을 고려한 기본값
     connection-timeout: 5s
     socket-timeout: 30s
 

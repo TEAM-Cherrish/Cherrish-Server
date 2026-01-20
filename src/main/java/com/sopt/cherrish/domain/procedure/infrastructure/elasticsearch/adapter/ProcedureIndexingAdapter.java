@@ -48,7 +48,12 @@ public class ProcedureIndexingAdapter {
 		}
 
 		try {
-			reindexAll();
+			boolean indexCreatedOrUpdated = createOrUpdateIndex();
+			if (!indexCreatedOrUpdated && procedureSearchRepository.count() > 0) {
+				log.info("ES 인덱스에 데이터가 존재합니다. 재인덱싱을 건너뜁니다.");
+				return;
+			}
+			reindexAll(false);
 		} catch (ProcedureException e) {
 			log.error("애플리케이션 시작 시 시술 인덱싱 실패: {}", e.getMessage(), e);
 		}
@@ -59,8 +64,14 @@ public class ProcedureIndexingAdapter {
 	 * @throws ProcedureException 인덱싱 실패 시
 	 */
 	public void reindexAll() {
+		reindexAll(true);
+	}
+
+	private void reindexAll(boolean ensureIndex) {
 		try {
-			createOrUpdateIndex();
+			if (ensureIndex) {
+				createOrUpdateIndex();
+			}
 
 			List<Procedure> procedures = procedureRepository.findAll();
 			List<ProcedureDocument> documents = procedures.stream()
@@ -117,7 +128,7 @@ public class ProcedureIndexingAdapter {
 		return false;
 	}
 
-	private void createOrUpdateIndex() {
+	private boolean createOrUpdateIndex() {
 		IndexOperations indexOps = elasticsearchOperations.indexOps(
 			IndexCoordinates.of(ProcedureDocument.INDEX_NAME)
 		);
@@ -127,10 +138,13 @@ public class ProcedureIndexingAdapter {
 				log.warn("인덱스 매핑이 올바르지 않습니다. 인덱스를 재생성합니다.");
 				indexOps.delete();
 				createIndexWithSettings(indexOps);
+				return true;
 			}
-		} else {
-			createIndexWithSettings(indexOps);
+			return false;
 		}
+
+		createIndexWithSettings(indexOps);
+		return true;
 	}
 
 	private boolean isIndexMappingValid(IndexOperations indexOps) {
