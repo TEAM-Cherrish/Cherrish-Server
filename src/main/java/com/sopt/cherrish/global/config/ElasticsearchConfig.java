@@ -11,7 +11,7 @@ import org.springframework.data.elasticsearch.client.elc.ElasticsearchConfigurat
 import org.springframework.data.elasticsearch.repository.config.EnableElasticsearchRepositories;
 
 @Configuration
-@ConditionalOnProperty(name = "cherrish.elasticsearch.enabled", havingValue = "true", matchIfMissing = false)
+@ConditionalOnProperty(name = "cherrish.elasticsearch.enabled", havingValue = "true", matchIfMissing = true)
 @EnableElasticsearchRepositories(
 	basePackages = "com.sopt.cherrish.domain.procedure.infrastructure.elasticsearch"
 )
