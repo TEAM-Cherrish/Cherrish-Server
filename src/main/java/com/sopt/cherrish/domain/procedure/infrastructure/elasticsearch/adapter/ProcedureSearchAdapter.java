@@ -180,20 +180,28 @@ public class ProcedureSearchAdapter implements ProcedureSearchPort {
 	}
 
 	/**
-	 * 키워드 길이에 따른 Fuzzy edit distance 결정 (글자 단위)
+	 * 키워드 길이와 언어에 따른 Fuzzy edit distance 결정
 	 * - 1-2글자: Fuzzy OFF (짧은 단어 과매칭 방지)
-	 * - 3-5글자: Edit Distance 1
-	 * - 6글자 이상: Edit Distance 2
+	 * - 한글 3글자 이상: Edit Distance 2 (한글은 1글자 변경 = 2바이트 차이)
+	 * - 영문 3-5글자: Edit Distance 1
+	 * - 영문 6글자 이상: Edit Distance 2
 	 */
 	private String determineFuzziness(String keyword) {
 		int length = keyword.length();
 		if (length <= FuzzyRule.OFF_MAX_LENGTH) {
 			return null;
-		} else if (length <= FuzzyRule.EDIT_1_MAX_LENGTH) {
-			return "1";
-		} else {
+		}
+		if (containsKorean(keyword)) {
 			return "2";
 		}
+		if (length <= FuzzyRule.EDIT_1_MAX_LENGTH) {
+			return "1";
+		}
+		return "2";
+	}
+
+	private boolean containsKorean(String text) {
+		return text.codePoints().anyMatch(cp -> cp >= 0xAC00 && cp <= 0xD7A3);
 	}
 
 	private String escapeWildcard(String keyword) {

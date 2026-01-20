@@ -234,8 +234,8 @@ class ProcedureSearchAdapterTest {
 			// when
 			List<Long> result = procedureSearchPort.searchByKeyword("리프팅").procedureIds();
 
-			// then
-			assertThat(result).containsExactlyInAnyOrder(4L, 9L); // 온다 리프팅, 실 리프팅
+			// then - fuzzy 매칭으로 추가 결과가 나올 수 있어 contains로 검증
+			assertThat(result).contains(4L, 9L); // 온다 리프팅, 실 리프팅
 		}
 
 		@Test
