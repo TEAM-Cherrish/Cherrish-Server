@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -127,12 +129,23 @@ public class GlobalExceptionHandler {
 
 	// 지원하지 않는 HTTP 메서드 요청 처리
 	@ExceptionHandler(HttpRequestMethodNotSupportedException.class)
-	@ResponseStatus(HttpStatus.METHOD_NOT_ALLOWED)
-	public CommonApiResponse<Map<String, String>> handleMethodNotSupported(
+	public ResponseEntity<CommonApiResponse<Map<String, String>>> handleMethodNotSupported(
 		HttpRequestMethodNotSupportedException e) {
 		log.debug("Method not supported: {}", e.getMethod());
 		Map<String, String> details = Map.of("method", e.getMethod());
-		return CommonApiResponse.fail(ErrorCode.METHOD_NOT_ALLOWED, details);
+
+		HttpHeaders headers = new HttpHeaders();
+		if (e.getSupportedHttpMethods() != null && !e.getSupportedHttpMethods().isEmpty()) {
+			String allowedMethods = e.getSupportedHttpMethods().stream()
+				.map(HttpMethod::name)
+				.collect(Collectors.joining(", "));
+			headers.add(HttpHeaders.ALLOW, allowedMethods);
+		}
+
+		return ResponseEntity
+			.status(HttpStatus.METHOD_NOT_ALLOWED)
+			.headers(headers)
+			.body(CommonApiResponse.fail(ErrorCode.METHOD_NOT_ALLOWED, details));
 	}
 
 	// 그 외 모든 예외 처리
