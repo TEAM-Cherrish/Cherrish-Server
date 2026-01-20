@@ -3,8 +3,7 @@ package com.sopt.cherrish.domain.challenge.demo.application.facade;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.sopt.cherrish.domain.challenge.core.exception.ChallengeErrorCode;
-import com.sopt.cherrish.domain.challenge.core.exception.ChallengeException;
+import com.sopt.cherrish.domain.challenge.core.exception.ChallengeEndedException;
 import com.sopt.cherrish.domain.challenge.core.presentation.dto.response.ChallengeDetailResponseDto;
 import com.sopt.cherrish.domain.challenge.demo.application.service.DemoChallengeService;
 import com.sopt.cherrish.domain.challenge.demo.application.service.DemoChallengeStatisticsService;
@@ -27,7 +26,7 @@ public class DemoChallengeAdvanceDayFacade {
 	 * 3. 통계 재계산
 	 * 4. 새 날짜의 챌린지 상세 정보 조회 및 반환
 	 */
-	@Transactional(noRollbackFor = ChallengeException.class)
+	@Transactional(noRollbackFor = ChallengeEndedException.class)
 	public ChallengeDetailResponseDto advanceDay(Long userId) {
 		// 1. 활성 챌린지 조회
 		DemoChallenge challenge = challengeService.getActiveChallengeWithStatistics(userId);
@@ -40,7 +39,7 @@ public class DemoChallengeAdvanceDayFacade {
 
 		// 4. 챌린지 종료 시 예외 발생 (트랜잭션은 커밋됨)
 		if (!challenge.getIsActive()) {
-			throw new ChallengeException(ChallengeErrorCode.CHALLENGE_NOT_FOUND);
+			throw new ChallengeEndedException();
 		}
 
 		// 챌린지가 계속 진행 중인 경우
