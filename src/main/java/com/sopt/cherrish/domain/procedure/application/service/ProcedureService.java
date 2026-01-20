@@ -33,19 +33,24 @@ public class ProcedureService {
 	private final ProcedureSearchPort procedureSearchPort;
 
 	public ProcedureListResponseDto searchProcedures(String keyword, Long worryId) {
-		List<Procedure> procedures = searchProceduresInternal(keyword, worryId);
+		SearchResult searchResult = searchProceduresInternal(keyword, worryId);
 		Map<Long, List<ProcedureWorryResponseDto>> worriesByProcedureId = fetchWorriesByProcedure(
-			procedures,
+			searchResult.procedures(),
 			worryId
 		);
-		List<ProcedureResponseDto> responses = procedures.stream()
+
+		List<ProcedureResponseDto> responses = searchResult.procedures().stream()
 			.map(procedure -> ProcedureResponseDto.from(
 				procedure,
 				worriesByProcedureId.getOrDefault(procedure.getId(), List.of())
 			))
 			.toList();
 
-		// DB의 한글 collation 설정과 무관하게 정확한 한글 정렬을 보장하기 위해 Java에서 정렬
+		// ES 검색 결과는 관련도순 유지, 그 외에는 한글 가나다순 정렬
+		if (searchResult.isEsResult()) {
+			return ProcedureListResponseDto.of(responses);
+		}
+
 		return ProcedureListResponseDto.of(
 			responses.stream()
 				.sorted((p1, p2) -> KOREAN_COLLATOR.compare(p1.name(), p2.name()))
@@ -53,10 +58,10 @@ public class ProcedureService {
 		);
 	}
 
-	private List<Procedure> searchProceduresInternal(String keyword, Long worryId) {
+	private SearchResult searchProceduresInternal(String keyword, Long worryId) {
 		// 키워드가 없으면 기존 QueryDSL 검색 사용
 		if (keyword == null || keyword.isBlank()) {
-			return procedureRepository.searchProcedures(null, worryId);
+			return new SearchResult(procedureRepository.searchProcedures(null, worryId), false);
 		}
 
 		// ES 검색 시도
@@ -64,16 +69,36 @@ public class ProcedureService {
 			try {
 				List<Long> procedureIds = procedureSearchPort.searchByKeyword(keyword);
 				if (procedureIds.isEmpty()) {
-					return List.of();
+					return new SearchResult(List.of(), true);
 				}
-				return procedureRepository.findByIdInAndWorryId(procedureIds, worryId);
+
+				// ES 순서를 유지하면서 DB 조회
+				List<Procedure> procedures = procedureRepository.findByIdInAndWorryId(procedureIds, worryId);
+				List<Procedure> orderedProcedures = reorderByEsResult(procedures, procedureIds);
+				return new SearchResult(orderedProcedures, true);
 			} catch (Exception e) {
 				log.warn("ES 검색 실패, QueryDSL 폴백: {}", e.getMessage());
 			}
 		}
 
 		// 폴백: 기존 QueryDSL LIKE 검색
-		return procedureRepository.searchProcedures(keyword, worryId);
+		return new SearchResult(procedureRepository.searchProcedures(keyword, worryId), false);
+	}
+
+	/**
+	 * ES 검색 결과 순서대로 Procedure 목록을 재정렬
+	 */
+	private List<Procedure> reorderByEsResult(List<Procedure> procedures, List<Long> esOrderedIds) {
+		Map<Long, Procedure> procedureMap = procedures.stream()
+			.collect(Collectors.toMap(Procedure::getId, p -> p));
+
+		return esOrderedIds.stream()
+			.map(procedureMap::get)
+			.filter(p -> p != null)
+			.toList();
+	}
+
+	private record SearchResult(List<Procedure> procedures, boolean isEsResult) {
 	}
 
 	private Map<Long, List<ProcedureWorryResponseDto>> fetchWorriesByProcedure(
