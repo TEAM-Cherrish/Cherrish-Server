@@ -14,6 +14,7 @@ import org.springframework.web.bind.MissingRequestHeaderException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.method.annotation.HandlerMethodValidationException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
@@ -122,6 +123,16 @@ public class GlobalExceptionHandler {
 		log.debug("Resource not found: {}", e.getResourcePath());
 		Map<String, String> details = Map.of("path", "/" + e.getResourcePath());
 		return CommonApiResponse.fail(ErrorCode.NOT_FOUND, details);
+	}
+
+	// 지원하지 않는 HTTP 메서드 요청 처리
+	@ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+	@ResponseStatus(HttpStatus.METHOD_NOT_ALLOWED)
+	public CommonApiResponse<Map<String, String>> handleMethodNotSupported(
+		HttpRequestMethodNotSupportedException e) {
+		log.debug("Method not supported: {}", e.getMethod());
+		Map<String, String> details = Map.of("method", e.getMethod());
+		return CommonApiResponse.fail(ErrorCode.METHOD_NOT_ALLOWED, details);
 	}
 
 	// 그 외 모든 예외 처리
