@@ -4,7 +4,6 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
-import org.springframework.data.elasticsearch.annotations.Setting;
 
 import com.sopt.cherrish.domain.procedure.domain.model.Procedure;
 
@@ -15,9 +14,10 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Document(indexName = "procedures")
-@Setting(settingPath = "elasticsearch/procedure-settings.json")
+@Document(indexName = ProcedureDocument.INDEX_NAME)
 public class ProcedureDocument {
+
+	public static final String INDEX_NAME = "procedures";
 
 	@Id
 	private Long id;
