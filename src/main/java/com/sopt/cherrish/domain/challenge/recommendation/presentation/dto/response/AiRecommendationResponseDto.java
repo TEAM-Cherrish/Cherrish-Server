@@ -6,7 +6,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 @Schema(description = "AI 챌린지 추천 응답")
 public record AiRecommendationResponseDto(
-	@Schema(description = "추천 루틴 리스트 (3-5개)")
+	@Schema(description = "추천 루틴 리스트 (6개)")
 	List<String> routines
 ) {
 	public static AiRecommendationResponseDto of(List<String> routines) {
