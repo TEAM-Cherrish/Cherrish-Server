@@ -1,0 +1,12 @@
+apiVersion: 1
+
+contactPoints:
+  - orgId: 1
+    name: discord-monitoring
+    receivers:
+      - uid: discord-monitoring
+        type: discord
+        settings:
+          url: ${DISCORD_MONITORING_WEBHOOK_URL}
+          use_discord_username: true
+        disableResolveMessage: false
