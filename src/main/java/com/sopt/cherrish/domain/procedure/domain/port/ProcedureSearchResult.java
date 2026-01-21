@@ -10,7 +10,7 @@ public record ProcedureSearchResult(Status status, List<Long> procedureIds) {
 	}
 
 	public static ProcedureSearchResult available(List<Long> procedureIds) {
-		return new ProcedureSearchResult(Status.AVAILABLE, procedureIds);
+		return new ProcedureSearchResult(Status.AVAILABLE, procedureIds != null ? procedureIds : List.of());
 	}
 
 	public static ProcedureSearchResult unavailable() {

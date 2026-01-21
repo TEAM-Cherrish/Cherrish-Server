@@ -135,6 +135,16 @@ class ProcedureSearchAdapterTest {
 		indexOps.create(settings, mappings);
 	}
 
+	@Test
+	@DisplayName("ES 가용성 확인")
+	void checkAvailability() {
+		// when
+		boolean available = procedureSearchPort.searchByKeyword("보톡스").isAvailable();
+
+		// then
+		assertThat(available).isTrue();
+	}
+
 	@Nested
 	@DisplayName("한글자 검색")
 	class SingleCharacterSearch {
@@ -234,7 +244,7 @@ class ProcedureSearchAdapterTest {
 			// when
 			List<Long> result = procedureSearchPort.searchByKeyword("리프팅").procedureIds();
 
-			// then - fuzzy 매칭으로 추가 결과가 나올 수 있어 contains로 검증
+			// then
 			assertThat(result).contains(4L, 9L); // 온다 리프팅, 실 리프팅
 		}
 
@@ -292,15 +302,5 @@ class ProcedureSearchAdapterTest {
 			// then
 			assertThat(result).isEmpty();
 		}
-	}
-
-	@Test
-	@DisplayName("ES 가용성 확인")
-	void checkAvailability() {
-		// when
-		boolean available = procedureSearchPort.searchByKeyword("보톡스").isAvailable();
-
-		// then
-		assertThat(available).isTrue();
 	}
 }

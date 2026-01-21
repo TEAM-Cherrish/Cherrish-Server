@@ -103,22 +103,22 @@ public class ProcedureSearchAdapter implements ProcedureSearchPort {
 				.build());
 
 		// 2. Prefix 매칭 - 검색어로 시작하는 시술 (높은 가중치)
-			boolQuery.should(new Query.Builder()
-				.wildcard(new WildcardQuery.Builder()
-					.field("name.keyword")
-					.value(escapedKeyword + "*")
-					.boost(SearchBoost.PREFIX_MATCH)
-					.build())
-				.build());
+		boolQuery.should(new Query.Builder()
+			.wildcard(new WildcardQuery.Builder()
+				.field("name.keyword")
+				.value(escapedKeyword + "*")
+				.boost(SearchBoost.PREFIX_MATCH)
+				.build())
+			.build());
 
 		// 3. Contains 매칭 - 검색어가 포함된 시술 (한글자 검색 지원)
-			boolQuery.should(new Query.Builder()
-				.wildcard(new WildcardQuery.Builder()
-					.field("name.keyword")
-					.value("*" + escapedKeyword + "*")
-					.boost(SearchBoost.CONTAINS_MATCH)
-					.build())
-				.build());
+		boolQuery.should(new Query.Builder()
+			.wildcard(new WildcardQuery.Builder()
+				.field("name.keyword")
+				.value("*" + escapedKeyword + "*")
+				.boost(SearchBoost.CONTAINS_MATCH)
+				.build())
+			.build());
 
 		// 4. Phrase 매칭 - 검색어 순서대로 포함 (예: "보톡스 사각" -> "보톡스...사각" 순서로 포함)
 		boolQuery.should(new Query.Builder()

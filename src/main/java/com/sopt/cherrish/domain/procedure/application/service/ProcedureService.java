@@ -79,6 +79,7 @@ public class ProcedureService {
 		}
 
 		// 폴백: 기존 QueryDSL LIKE 검색
+		log.info("ES 사용 불가, DB LIKE 검색으로 폴백: keyword={}", keyword);
 		return new SearchResult(procedureRepository.searchProcedures(keyword, worryId), false);
 	}
 
@@ -87,7 +88,7 @@ public class ProcedureService {
 	 */
 	private List<Procedure> reorderByEsResult(List<Procedure> procedures, List<Long> esOrderedIds) {
 		Map<Long, Procedure> procedureMap = procedures.stream()
-			.collect(Collectors.toMap(Procedure::getId, p -> p));
+			.collect(Collectors.toMap(Procedure::getId, p -> p, (existing, replacement) -> existing));
 
 		return esOrderedIds.stream()
 			.map(procedureMap::get)

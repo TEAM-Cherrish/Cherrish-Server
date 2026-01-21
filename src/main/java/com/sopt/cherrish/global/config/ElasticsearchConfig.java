@@ -1,8 +1,9 @@
 package com.sopt.cherrish.global.config;
 
-import org.springframework.beans.factory.annotation.Value;
+import java.net.URI;
 import java.time.Duration;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.convert.DurationStyle;
 import org.springframework.context.annotation.Configuration;
@@ -32,9 +33,16 @@ public class ElasticsearchConfig extends ElasticsearchConfiguration {
 		Duration socketTimeoutDuration = DurationStyle.detectAndParse(socketTimeout);
 
 		return ClientConfiguration.builder()
-			.connectedTo(elasticsearchUri.replace("http://", "").replace("https://", ""))
+			.connectedTo(parseHostAndPort(elasticsearchUri))
 			.withConnectTimeout(connectTimeoutDuration)
 			.withSocketTimeout(socketTimeoutDuration)
 			.build();
+	}
+
+	private String parseHostAndPort(String uriString) {
+		URI uri = URI.create(uriString);
+		String host = uri.getHost();
+		int port = uri.getPort();
+		return port > 0 ? host + ":" + port : host;
 	}
 }
