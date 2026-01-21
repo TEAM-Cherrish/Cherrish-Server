@@ -40,9 +40,20 @@ public class ElasticsearchConfig extends ElasticsearchConfiguration {
 	}
 
 	private String parseHostAndPort(String uriString) {
-		URI uri = URI.create(uriString);
+		if (uriString == null || uriString.isBlank()) {
+			return uriString;
+		}
+		String trimmed = uriString.trim();
+		if (!trimmed.contains("://")) {
+			return trimmed;
+		}
+
+		URI uri = URI.create(trimmed);
 		String host = uri.getHost();
 		int port = uri.getPort();
+		if (host == null) {
+			return trimmed;
+		}
 		return port > 0 ? host + ":" + port : host;
 	}
 }
