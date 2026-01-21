@@ -1,0 +1,16 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  - job_name: 'cherrish-server'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['host.docker.internal:8080']  # Docker에서 호스트 접근 (로컬 개발용)
+    # 프로덕션에서는 실제 서버 주소 사용
+    # static_configs:
+    #   - targets: ['cherrish-server:8081']
