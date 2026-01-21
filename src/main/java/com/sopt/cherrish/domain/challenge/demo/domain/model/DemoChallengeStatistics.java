@@ -130,12 +130,9 @@ public class DemoChallengeStatistics extends BaseTimeEntity {
 
 	/**
 	 * 다음 레벨까지 남은 루틴 개수 계산
+	 * 레벨 4일 때는 100%까지 남은 루틴 개수를 반환
 	 */
 	public int getRemainingRoutinesToNextLevel() {
-		if (cherryLevel >= 4) {
-			return 0;
-		}
-
 		double nextThreshold = switch (cherryLevel) {
 			case 1 -> LEVEL_2_THRESHOLD;
 			case 2 -> LEVEL_3_THRESHOLD;
