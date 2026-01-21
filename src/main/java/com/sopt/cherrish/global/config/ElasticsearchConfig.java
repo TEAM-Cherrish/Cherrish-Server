@@ -11,6 +11,9 @@ import org.springframework.data.elasticsearch.client.ClientConfiguration;
 import org.springframework.data.elasticsearch.client.elc.ElasticsearchConfiguration;
 import org.springframework.data.elasticsearch.repository.config.EnableElasticsearchRepositories;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Configuration
 @ConditionalOnProperty(name = "cherrish.elasticsearch.enabled", havingValue = "true", matchIfMissing = true)
 @EnableElasticsearchRepositories(
@@ -48,12 +51,17 @@ public class ElasticsearchConfig extends ElasticsearchConfiguration {
 			return trimmed;
 		}
 
-		URI uri = URI.create(trimmed);
-		String host = uri.getHost();
-		int port = uri.getPort();
-		if (host == null) {
-			return trimmed;
+		try {
+			URI uri = URI.create(trimmed);
+			String host = uri.getHost();
+			int port = uri.getPort();
+			if (host == null) {
+				return trimmed;
+			}
+			return port > 0 ? host + ":" + port : host;
+		} catch (IllegalArgumentException e) {
+			log.warn("Invalid Elasticsearch URI: {}", trimmed, e);
+			throw new IllegalArgumentException("Invalid Elasticsearch URI: " + trimmed, e);
 		}
-		return port > 0 ? host + ":" + port : host;
 	}
 }
