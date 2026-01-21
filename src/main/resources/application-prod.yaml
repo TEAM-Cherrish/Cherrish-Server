@@ -10,10 +10,8 @@ spring:
     base-url: ${SERVER_URL:http://localhost:8080}
 
 management:
-  endpoints:
-    web:
-      exposure:
-        include: health
+  server:
+    port: 8081
   endpoint:
     health:
       show-details: never
