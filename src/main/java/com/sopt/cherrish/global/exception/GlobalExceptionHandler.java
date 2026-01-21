@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.MissingRequestHeaderException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.method.annotation.HandlerMethodValidationException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
@@ -122,6 +125,27 @@ public class GlobalExceptionHandler {
 		log.debug("Resource not found: {}", e.getResourcePath());
 		Map<String, String> details = Map.of("path", "/" + e.getResourcePath());
 		return CommonApiResponse.fail(ErrorCode.NOT_FOUND, details);
+	}
+
+	// 지원하지 않는 HTTP 메서드 요청 처리
+	@ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+	public ResponseEntity<CommonApiResponse<Map<String, String>>> handleMethodNotSupported(
+		HttpRequestMethodNotSupportedException e) {
+		log.debug("Method not supported: {}", e.getMethod());
+		Map<String, String> details = Map.of("method", e.getMethod());
+
+		HttpHeaders headers = new HttpHeaders();
+		if (e.getSupportedHttpMethods() != null && !e.getSupportedHttpMethods().isEmpty()) {
+			String allowedMethods = e.getSupportedHttpMethods().stream()
+				.map(HttpMethod::name)
+				.collect(Collectors.joining(", "));
+			headers.add(HttpHeaders.ALLOW, allowedMethods);
+		}
+
+		return ResponseEntity
+			.status(HttpStatus.METHOD_NOT_ALLOWED)
+			.headers(headers)
+			.body(CommonApiResponse.fail(ErrorCode.METHOD_NOT_ALLOWED, details));
 	}
 
 	// 그 외 모든 예외 처리
