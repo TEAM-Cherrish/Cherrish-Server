@@ -24,6 +24,7 @@ import com.sopt.cherrish.domain.procedure.domain.repository.ProcedureRepository;
 import com.sopt.cherrish.domain.procedure.domain.repository.ProcedureWorryRepository;
 import com.sopt.cherrish.domain.procedure.fixture.ProcedureFixture;
 import com.sopt.cherrish.domain.procedure.presentation.dto.response.ProcedureListResponseDto;
+import com.sopt.cherrish.domain.procedure.presentation.dto.response.ProcedureResponseDto;
 import com.sopt.cherrish.domain.worry.domain.model.Worry;
 
 @ExtendWith(MockitoExtension.class)
@@ -87,6 +88,30 @@ class ProcedureServiceTest {
 		assertThat(result.procedures()).hasSize(1);
 		assertThat(result.procedures().get(0).name()).isEqualTo("레이저 토닝");
 		assertThat(result.procedures().get(0).worries()).hasSize(1);
+	}
+
+	@Test
+	@DisplayName("시술 검색 성공 - ES 결과 순서 유지")
+	void searchProceduresByKeywordWithEsOrder() {
+		// given
+		String keyword = "레이저";
+		Procedure procedure1 = ProcedureFixture.createProcedure("레이저 토닝", "레이저", 0, 1);
+		Procedure procedure2 = ProcedureFixture.createProcedure("보톡스", "보톡스/필러", 1, 3);
+		List<Long> esOrderedIds = List.of(procedure2.getId(), procedure1.getId());
+
+		given(procedureSearchPort.searchByKeyword(keyword))
+			.willReturn(ProcedureSearchResult.available(esOrderedIds));
+		given(procedureRepository.findByIdInAndWorryId(esOrderedIds, null))
+			.willReturn(List.of(procedure1, procedure2));
+		given(procedureWorryRepository.findAllByProcedureIdInWithWorry(any()))
+			.willReturn(List.of());
+
+		// when
+		ProcedureListResponseDto result = procedureService.searchProcedures(keyword, null);
+
+		// then
+		assertThat(result.procedures()).extracting(ProcedureResponseDto::id)
+			.containsExactlyElementsOf(esOrderedIds);
 	}
 
 	@Test

@@ -165,6 +165,26 @@ class ProcedureRepositoryTest {
 	}
 
 	@Test
+	@DisplayName("빈 ID 목록으로 시술 조회")
+	void findByIdInWithEmptyIds() {
+		// When: 빈 ID 목록으로 조회
+		List<Procedure> result = procedureRepository.findByIdInAndWorryId(List.of(), null);
+
+		// Then: 빈 리스트 반환
+		assertThat(result).isEmpty();
+	}
+
+	@Test
+	@DisplayName("null ID 목록으로 시술 조회")
+	void findByIdInWithNullIds() {
+		// When: null ID 목록으로 조회
+		List<Procedure> result = procedureRepository.findByIdInAndWorryId(null, null);
+
+		// Then: 빈 리스트 반환
+		assertThat(result).isEmpty();
+	}
+
+	@Test
 	@DisplayName("ID 목록과 피부 고민 ID로 시술 조회 성공")
 	void findByIdInAndWorryId() {
 		// When: 레이저 토닝, 보톡스 ID로 worry2 조건 조회
@@ -173,7 +193,7 @@ class ProcedureRepositoryTest {
 
 		// Then: worry2와 연결된 레이저 토닝만 반환
 		assertThat(result).extracting(Procedure::getName)
-			.containsExactly("레이저 토닝");
+			.containsExactlyInAnyOrder("레이저 토닝");
 	}
 
 	@Test
