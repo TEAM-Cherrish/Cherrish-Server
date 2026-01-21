@@ -137,7 +137,6 @@ public class DemoChallengeStatistics extends BaseTimeEntity {
 			case 1 -> LEVEL_2_THRESHOLD;
 			case 2 -> LEVEL_3_THRESHOLD;
 			case 3 -> LEVEL_4_THRESHOLD;
-			case 4 -> 100.0;
 			default -> 100.0;
 		};
 
