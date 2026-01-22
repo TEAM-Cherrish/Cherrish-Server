@@ -10,4 +10,4 @@ scrape_configs:
   - job_name: 'cherrish-server'
     metrics_path: '/actuator/prometheus'
     static_configs:
-      - targets: ['host.docker.internal:8080']
+      - targets: ['cherrish-server:8081']
