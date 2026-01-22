@@ -53,7 +53,7 @@ groups:
               maxDataPoints: 43200
               refId: C
               type: math
-        noDataState: OK
+        noDataState: NoData
         execErrState: Error
         for: 2m
         annotations:
@@ -100,7 +100,7 @@ groups:
               maxDataPoints: 43200
               refId: B
               type: threshold
-        noDataState: OK
+        noDataState: NoData
         execErrState: Error
         for: 5m
         annotations:
@@ -108,4 +108,51 @@ groups:
           description: "P95 response time is above 1 second for the last 5 minutes"
         labels:
           severity: warning
+        isPaused: false
+
+      - uid: metrics-collection-health
+        title: Metrics Collection Down
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: up{job="cherrish-server"}
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 1
+                    type: lt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - B
+                  reducer:
+                    type: last
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: threshold
+        noDataState: Alerting
+        execErrState: Error
+        for: 1m
+        annotations:
+          summary: "Cherrish Server metrics collection is down"
+          description: "Prometheus cannot scrape metrics from Cherrish Server. The application may be down or unreachable."
+        labels:
+          severity: critical
         isPaused: false
