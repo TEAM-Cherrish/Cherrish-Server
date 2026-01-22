@@ -18,7 +18,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum CherryLevel {
 
-	LEVEL_1(1, "몽롱체리"),    // 0-24%
+	LEVEL_0(0, "몽롱체리"),    // completedCount == 0
+	LEVEL_1(1, "몽롱체리"),    // 1개 이상, 0-24%
 	LEVEL_2(2, "뽀득체리"),    // 25-49%
 	LEVEL_3(3, "팡팡체리"),    // 50-74%
 	LEVEL_4(4, "꾸꾸체리");    // 75-100%
@@ -34,6 +35,7 @@ public enum CherryLevel {
 	 * 레벨 숫자로 CherryLevel 찾기
 	 *
 	 * @param level 체리 레벨 (1-4)
+	 *              데모용으로 현재 (0-4)
 	 * @return 해당하는 CherryLevel enum
 	 * @throws ChallengeException 존재하지 않는 레벨인 경우
 	 */
