@@ -6,8 +6,6 @@ management:
   endpoint:
     health:
       show-details: when_authorized
-    prometheus:
-      access:
   metrics:
     tags:
       application: cherrish
