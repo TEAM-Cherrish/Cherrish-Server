@@ -10,18 +10,14 @@ contactPoints:
           url: ${DISCORD_MONITORING_WEBHOOK_URL}
           use_discord_username: true
           avatar_url: "https://grafana.com/static/assets/img/fav32.png"
-          title: '{{ if eq .Status "firing" }}:rotating_light: ALERT{{ else }}:white_check_mark: RESOLVED{{ end }}'
+          title: '{{ if eq .Status "firing" }}:rotating_light: ALERT{{ else }}:white_check_mark: RESOLVED{{ end }} ({{ len .Alerts }} alerts)'
           message: |
-            **:bar_chart: {{ .CommonLabels.rulename }}**
-
-            {{ if eq .Status "firing" }}:red_circle:{{ else }}:green_circle:{{ end }} **Status:** {{ .Status | toUpper }}
-            :warning: **Severity:** {{ .CommonLabels.severity | toUpper }}
-            :file_folder: **Folder:** {{ .CommonLabels.grafana_folder }}
-
             {{ range .Alerts }}
-            ----------------------
+            {{ if eq $.Status "firing" }}:red_circle:{{ else }}:green_circle:{{ end }} **{{ .Labels.rulename }}**
+            :warning: **Severity:** {{ .Labels.severity | toUpper }}
             :clipboard: **Summary:** {{ .Annotations.summary }}
             :memo: **Detail:** {{ .Annotations.description }}
             :link: **View:** {{ .GeneratorURL }}
+
             {{ end }}
         disableResolveMessage: false

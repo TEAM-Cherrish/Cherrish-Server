@@ -149,9 +149,9 @@ groups:
               maxDataPoints: 43200
               refId: B
               type: threshold
-        noDataState: Alerting
+        noDataState: NoData
         execErrState: Error
-        for: 1m
+        for: 2m
         annotations:
           summary: "Cherrish Server metrics collection is down"
           description: "Prometheus cannot scrape metrics from Cherrish Server. The application may be down or unreachable."
