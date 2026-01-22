@@ -20,7 +20,7 @@ public enum ChallengeErrorCode implements ErrorType {
 	DUPLICATE_ROUTINE_IDS("CH009", "중복된 루틴 ID가 포함되어 있습니다", 400),
 	CHALLENGE_NOT_ACTIVE("CH010", "비활성 챌린지에는 루틴을 추가할 수 없습니다", 400),
 	CUSTOM_ROUTINE_LIMIT_EXCEEDED("CH011", "최대로 추가할 수 있는 루틴은 20개입니다", 400),
-	INVALID_CHERRY_LEVEL("CH012", "유효하지 않은 체리 레벨입니다 (1-4)", 400);
+	INVALID_CHERRY_LEVEL("CH012", "유효하지 않은 체리 레벨입니다 (0-4)", 400);
 
 	private final String code;
 	private final String message;
