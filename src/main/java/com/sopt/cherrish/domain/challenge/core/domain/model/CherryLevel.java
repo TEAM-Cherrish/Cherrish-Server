@@ -35,6 +35,7 @@ public enum CherryLevel {
 	 * 레벨 숫자로 CherryLevel 찾기
 	 *
 	 * @param level 체리 레벨 (1-4)
+	 *              데모용으로 현재 (0-4)
 	 * @return 해당하는 CherryLevel enum
 	 * @throws ChallengeException 존재하지 않는 레벨인 경우
 	 */
