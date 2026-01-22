@@ -61,6 +61,7 @@ groups:
           description: "Error rate is above 5% for the last 2 minutes"
         labels:
           severity: critical
+          rulename: "High Error Rate"
         isPaused: false
 
       - uid: high-latency
@@ -108,6 +109,7 @@ groups:
           description: "P95 response time is above 1 second for the last 5 minutes"
         labels:
           severity: warning
+          rulename: "High Latency (P95)"
         isPaused: false
 
       - uid: metrics-collection-health
@@ -155,4 +157,5 @@ groups:
           description: "Prometheus cannot scrape metrics from Cherrish Server. The application may be down or unreachable."
         labels:
           severity: critical
+          rulename: "Metrics Collection Down"
         isPaused: false
