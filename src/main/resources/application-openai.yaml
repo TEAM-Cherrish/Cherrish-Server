@@ -4,6 +4,6 @@ spring:
       api-key: ${OPENAI_API_KEY}
       chat:
         options:
-          model: ${OPENAI_MODEL:gpt-4.1-mini}
+          model: ${OPENAI_MODEL:gpt-5.1}
           temperature: ${OPENAI_TEMPERATURE:0.7}
-          max-tokens: ${OPENAI_MAX_TOKENS:500}
+          max-completion-tokens: ${OPENAI_MAX_COMPLETION_TOKENS:500}
