@@ -47,14 +47,14 @@ public class DemoChallengeStatistics extends BaseTimeEntity {
 	private Integer totalRoutineCount;
 
 	@Column(nullable = false, name = "cherry_level")
-	private Integer cherryLevel = 1;
+	private Integer cherryLevel = 0;
 
 	@Builder
 	private DemoChallengeStatistics(DemoChallenge demoChallenge, Integer totalRoutineCount) {
 		this.demoChallenge = demoChallenge;
 		this.completedCount = 0;
 		this.totalRoutineCount = totalRoutineCount;
-		this.cherryLevel = 1;
+		this.cherryLevel = 0;
 	}
 
 	/**
@@ -86,10 +86,15 @@ public class DemoChallengeStatistics extends BaseTimeEntity {
 
 	/**
 	 * 완료 진행률 기반 체리 레벨 계산
+	 * - 레벨 0: completedCount == 0 (몽롱체리)
+	 * - 레벨 1: 1개 이상, 0% ~ 24.99%
+	 * - 레벨 2: 25% ~ 49.99%
+	 * - 레벨 3: 50% ~ 74.99%
+	 * - 레벨 4: 75% ~ 100%
 	 */
 	public int calculateCherryLevel() {
-		if (totalRoutineCount == 0) {
-			return 1;
+		if (completedCount == 0) {
+			return 0;
 		}
 
 		double progressPercentage = getProgressPercentage();
@@ -110,7 +115,7 @@ public class DemoChallengeStatistics extends BaseTimeEntity {
 	 * 현재 레벨 구간 내에서의 진척도 계산 (0-100%)
 	 */
 	public double getProgressToNextLevel() {
-		if (totalRoutineCount == 0) {
+		if (totalRoutineCount == 0 || completedCount == 0) {
 			return 0.0;
 		}
 
@@ -130,11 +135,12 @@ public class DemoChallengeStatistics extends BaseTimeEntity {
 
 	/**
 	 * 다음 레벨까지 남은 루틴 개수 계산
+	 * 레벨 0, 1일 때는 레벨 2(25%)까지 남은 개수 반환
 	 * 레벨 4일 때는 100%까지 남은 루틴 개수를 반환
 	 */
 	public int getRemainingRoutinesToNextLevel() {
 		double nextThreshold = switch (cherryLevel) {
-			case 1 -> LEVEL_2_THRESHOLD;
+			case 0, 1 -> LEVEL_2_THRESHOLD;
 			case 2 -> LEVEL_3_THRESHOLD;
 			case 3 -> LEVEL_4_THRESHOLD;
 			default -> 100.0;
