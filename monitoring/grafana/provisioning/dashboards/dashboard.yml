@@ -1,0 +1,11 @@
+apiVersion: 1
+
+providers:
+  - name: 'Cherrish Dashboards'
+    orgId: 1
+    folder: 'Cherrish'
+    type: file
+    disableDeletion: true
+    updateIntervalSeconds: 120
+    options:
+      path: /etc/grafana/provisioning/dashboards/json

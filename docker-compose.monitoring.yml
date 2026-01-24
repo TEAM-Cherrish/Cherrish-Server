@@ -1,0 +1,53 @@
+services:
+  prometheus:
+    image: prom/prometheus:v3.5.1
+    container_name: cherrish-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention.time=15d'
+      - '--web.enable-lifecycle'
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:9090/-/healthy"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - monitoring
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana:11.6.9
+    container_name: cherrish-grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD:-admin}
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - DISCORD_MONITORING_WEBHOOK_URL=${DISCORD_MONITORING_WEBHOOK_URL}
+    volumes:
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning
+      - grafana_data:/var/lib/grafana
+    networks:
+      - monitoring
+    depends_on:
+      prometheus:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  prometheus_data:
+  grafana_data:
+
+networks:
+  monitoring:
+    driver: bridge

@@ -54,6 +54,9 @@ dependencies {
 	implementation 'net.logstash.logback:logstash-logback-encoder:8.1'
 	implementation 'com.github.napstr:logback-discord-appender:1.0.0'
 
+	// Metrics
+	implementation 'io.micrometer:micrometer-registry-prometheus'
+
 	// Test
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
