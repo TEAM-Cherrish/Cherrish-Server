@@ -16,6 +16,13 @@ import com.sopt.cherrish.domain.auth.exception.AuthException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * 카카오 로그인 토큰 검증 클라이언트.
+ *
+ * <p>카카오 Access Token을 사용하여 카카오 API에서 사용자 정보를 조회합니다.</p>
+ *
+ * @see <a href="https://developers.kakao.com/docs/latest/ko/kakaologin/rest-api">카카오 로그인 API 문서</a>
+ */
 @Slf4j
 @Component
 @RequiredArgsConstructor
@@ -25,6 +32,15 @@ public class KakaoAuthClient implements SocialAuthClient {
 
 	private final RestTemplate restTemplate;
 
+	/**
+	 * 카카오 Access Token으로 사용자 정보를 조회합니다.
+	 *
+	 * <p>카카오 사용자 정보 API(/v2/user/me)를 호출하여 사용자 정보를 가져옵니다.</p>
+	 *
+	 * @param accessToken 카카오에서 발급한 Access Token
+	 * @return 소셜 사용자 정보 (socialId, email, nickname)
+	 * @throws AuthException 토큰이 유효하지 않거나 API 호출에 실패한 경우
+	 */
 	@Override
 	public SocialUserInfo getUserInfo(String accessToken) {
 		try {

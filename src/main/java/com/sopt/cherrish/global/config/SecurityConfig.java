@@ -29,6 +29,13 @@ public class SecurityConfig {
 	private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 	private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
 
+	/**
+	 * Security Filter Chain을 구성합니다.
+	 *
+	 * @param http HttpSecurity 설정 객체
+	 * @return 구성된 SecurityFilterChain
+	 * @throws Exception 설정 중 발생할 수 있는 예외
+	 */
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		return http

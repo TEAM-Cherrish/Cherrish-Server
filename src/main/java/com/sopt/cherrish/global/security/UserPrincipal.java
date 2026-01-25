@@ -12,6 +12,12 @@ import com.sopt.cherrish.domain.user.domain.model.User;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+/**
+ * Spring Security의 UserDetails 구현체.
+ *
+ * <p>JWT 인증 후 SecurityContext에 저장되어 현재 인증된 사용자 정보를 제공합니다.
+ * {@link CurrentUser} 어노테이션을 통해 컨트롤러에서 주입받을 수 있습니다.</p>
+ */
 @Getter
 @RequiredArgsConstructor
 public class UserPrincipal implements UserDetails {
@@ -20,6 +26,12 @@ public class UserPrincipal implements UserDetails {
 	private final String name;
 	private final Collection<? extends GrantedAuthority> authorities;
 
+	/**
+	 * User 엔티티로부터 UserPrincipal을 생성합니다.
+	 *
+	 * @param user 사용자 엔티티
+	 * @return UserPrincipal 인스턴스
+	 */
 	public static UserPrincipal from(User user) {
 		return new UserPrincipal(
 			user.getId(),

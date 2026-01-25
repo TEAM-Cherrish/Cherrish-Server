@@ -23,6 +23,14 @@ import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * Apple Sign In 토큰 검증 클라이언트.
+ *
+ * <p>Apple Identity Token을 검증하고 사용자 정보를 추출합니다.
+ * Apple 공개키는 24시간 동안 캐싱되어 성능을 최적화합니다.</p>
+ *
+ * @see <a href="https://developer.apple.com/documentation/sign_in_with_apple">Apple Sign In Documentation</a>
+ */
 @Slf4j
 @Component
 public class AppleAuthClient implements SocialAuthClient {
@@ -45,6 +53,15 @@ public class AppleAuthClient implements SocialAuthClient {
 		this.objectMapper = objectMapper;
 	}
 
+	/**
+	 * Apple Identity Token을 검증하고 사용자 정보를 추출합니다.
+	 *
+	 * <p>토큰의 서명을 Apple 공개키로 검증하고, issuer와 audience를 확인합니다.</p>
+	 *
+	 * @param identityToken Apple에서 발급한 Identity Token (JWT)
+	 * @return 소셜 사용자 정보 (socialId, email)
+	 * @throws AuthException 토큰이 유효하지 않거나 검증에 실패한 경우
+	 */
 	@Override
 	public SocialUserInfo getUserInfo(String identityToken) {
 		try {

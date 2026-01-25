@@ -19,6 +19,11 @@ import com.sopt.cherrish.domain.user.domain.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
 
+/**
+ * 인증 관련 비즈니스 로직을 처리하는 서비스.
+ *
+ * <p>소셜 로그인, 토큰 재발급, 로그아웃 기능을 제공합니다.</p>
+ */
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -32,6 +37,16 @@ public class AuthService {
 	private final JwtTokenProvider jwtTokenProvider;
 	private final RefreshTokenRepository refreshTokenRepository;
 
+	/**
+	 * 소셜 로그인을 처리합니다.
+	 *
+	 * <p>소셜 토큰을 검증하고, 신규 사용자인 경우 회원가입을 진행합니다.
+	 * 이후 Access Token과 Refresh Token을 발급합니다.</p>
+	 *
+	 * @param request 소셜 로그인 요청 (provider, token)
+	 * @return 로그인 응답 (userId, isNewUser, accessToken, refreshToken)
+	 * @throws AuthException 소셜 토큰이 유효하지 않은 경우
+	 */
 	@Transactional
 	public LoginResponseDto login(SocialLoginRequestDto request) {
 		SocialUserInfo socialUserInfo = socialLoginService.authenticate(
@@ -72,6 +87,15 @@ public class AuthService {
 		return new LoginResponseDto(user.getId(), isNewUser, accessToken, refreshToken);
 	}
 
+	/**
+	 * Refresh Token으로 새로운 토큰 쌍을 발급합니다.
+	 *
+	 * <p>Refresh Token Rotation(RTR) 방식을 적용하여 재발급시 새로운 Refresh Token도 함께 발급합니다.</p>
+	 *
+	 * @param request 토큰 재발급 요청 (refreshToken)
+	 * @return 새로운 Access Token과 Refresh Token
+	 * @throws AuthException Refresh Token이 유효하지 않거나 만료된 경우
+	 */
 	@Transactional
 	public TokenResponseDto refresh(TokenRefreshRequestDto request) {
 		String refreshToken = request.refreshToken();
@@ -107,6 +131,13 @@ public class AuthService {
 		return new TokenResponseDto(newAccessToken, newRefreshToken);
 	}
 
+	/**
+	 * 로그아웃을 처리합니다.
+	 *
+	 * <p>Redis에 저장된 Refresh Token을 삭제하여 해당 토큰으로 더 이상 재발급이 불가능하게 합니다.</p>
+	 *
+	 * @param userId 로그아웃할 사용자 ID
+	 */
 	@Transactional
 	public void logout(Long userId) {
 		refreshTokenRepository.deleteByUserId(userId);
