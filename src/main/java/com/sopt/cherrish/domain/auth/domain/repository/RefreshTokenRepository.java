@@ -34,6 +34,6 @@ public class RefreshTokenRepository {
 
 	public boolean existsByUserId(Long userId) {
 		String key = KEY_PREFIX + userId;
-		return Boolean.TRUE.equals(redisTemplate.hasKey(key));
+		return redisTemplate.hasKey(key);
 	}
 }
