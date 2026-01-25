@@ -1,9 +1,12 @@
 package com.sopt.cherrish.domain.user.domain.model;
 
+import com.sopt.cherrish.domain.auth.domain.model.SocialProvider;
 import com.sopt.cherrish.global.entity.BaseTimeEntity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -29,10 +32,23 @@ public class User extends BaseTimeEntity {
 	@Column(nullable = false)
 	private int age;
 
+	@Enumerated(EnumType.STRING)
+	@Column(nullable = false, length = 10)
+	private SocialProvider socialProvider;
+
+	@Column(nullable = false, unique = true)
+	private String socialId;
+
+	@Column(unique = true)
+	private String email;
+
 	@Builder
-	private User(String name, int age) {
+	private User(String name, int age, SocialProvider socialProvider, String socialId, String email) {
 		this.name = name;
 		this.age = age;
+		this.socialProvider = socialProvider;
+		this.socialId = socialId;
+		this.email = email;
 	}
 
 	public void update(String name, Integer age) {
