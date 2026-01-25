@@ -14,7 +14,10 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import com.sopt.cherrish.domain.auth.domain.repository.AccessTokenBlacklistRepository;
 import com.sopt.cherrish.domain.auth.infrastructure.jwt.JwtAuthenticationFilter;
+import com.sopt.cherrish.domain.auth.infrastructure.jwt.JwtTokenProvider;
+import com.sopt.cherrish.domain.user.domain.repository.UserRepository;
 import com.sopt.cherrish.global.security.JwtAccessDeniedHandler;
 import com.sopt.cherrish.global.security.JwtAuthenticationEntryPoint;
 
@@ -25,7 +28,9 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-	private final JwtAuthenticationFilter jwtAuthenticationFilter;
+	private final JwtTokenProvider jwtTokenProvider;
+	private final UserRepository userRepository;
+	private final AccessTokenBlacklistRepository accessTokenBlacklistRepository;
 	private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 	private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
 
@@ -55,8 +60,13 @@ public class SecurityConfig {
 					"/actuator/health"
 				).permitAll()
 				.anyRequest().authenticated())
-			.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+			.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
 			.build();
+	}
+
+	@Bean
+	public JwtAuthenticationFilter jwtAuthenticationFilter() {
+		return new JwtAuthenticationFilter(jwtTokenProvider, userRepository, accessTokenBlacklistRepository);
 	}
 
 	@Bean

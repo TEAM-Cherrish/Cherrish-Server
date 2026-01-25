@@ -34,7 +34,6 @@ import lombok.extern.slf4j.Slf4j;
  * 401 응답을 반환합니다.</p>
  */
 @Slf4j
-@Component
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
