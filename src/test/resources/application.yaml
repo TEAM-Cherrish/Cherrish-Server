@@ -1,5 +1,13 @@
 spring:
 
+  profiles:
+    active: test
+
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration
+      - org.springframework.boot.autoconfigure.data.redis.RedisRepositoriesAutoConfiguration
+
   datasource:
     url: jdbc:h2:mem:testdb
     driver-class-name: org.h2.Driver
@@ -25,3 +33,17 @@ spring:
   ai:
     openai:
       api-key: test-dummy-api-key-for-unit-tests
+
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
+jwt:
+  secret-key: dGVzdC1zZWNyZXQta2V5LWZvci11bml0LXRlc3RzLW11c3QtYmUtYXQtbGVhc3QtMjU2LWJpdHMtbG9uZw==
+  access-token-expiration: 1800000
+  refresh-token-expiration: 1209600000
+
+social:
+  apple:
+    client-id: com.test.app
