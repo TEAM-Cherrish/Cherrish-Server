@@ -1,0 +1,8 @@
+jwt:
+  secret-key: ${JWT_SECRET_KEY:defaultSecretKeyForDevelopmentOnlyPleaseChangeInProduction1234567890}
+  access-token-expiration: 1800000      # 30분 (밀리초)
+  refresh-token-expiration: 1209600000  # 14일 (밀리초)
+
+social:
+  apple:
+    client-id: ${APPLE_CLIENT_ID:com.sopt.cherrish}  # iOS Bundle ID

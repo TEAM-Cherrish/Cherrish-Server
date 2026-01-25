@@ -7,6 +7,8 @@ spring:
     include:
       - db
       - openai
+      - auth
+      - redis
 
   config:
     import: optional:file:.env[.properties]
