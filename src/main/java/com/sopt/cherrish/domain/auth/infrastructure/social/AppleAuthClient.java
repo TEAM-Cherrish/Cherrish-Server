@@ -6,9 +6,11 @@ import java.security.PublicKey;
 import java.security.spec.RSAPublicKeySpec;
 import java.util.Base64;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -19,16 +21,15 @@ import com.sopt.cherrish.domain.auth.exception.AuthException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Component
-@RequiredArgsConstructor
 public class AppleAuthClient implements SocialAuthClient {
 
 	private static final String APPLE_PUBLIC_KEY_URL = "https://appleid.apple.com/auth/keys";
 	private static final String APPLE_ISSUER = "https://appleid.apple.com";
+	private static final long CACHE_DURATION_HOURS = 24;
 
 	private final RestTemplate restTemplate;
 	private final ObjectMapper objectMapper;
@@ -36,17 +37,18 @@ public class AppleAuthClient implements SocialAuthClient {
 	@Value("${social.apple.client-id}")
 	private String clientId;
 
+	private volatile ApplePublicKeys cachedKeys;
+	private volatile long cacheExpireTime;
+
+	public AppleAuthClient(RestTemplate restTemplate, ObjectMapper objectMapper) {
+		this.restTemplate = restTemplate;
+		this.objectMapper = objectMapper;
+	}
+
 	@Override
 	public SocialUserInfo getUserInfo(String identityToken) {
 		try {
-			ApplePublicKeys applePublicKeys = restTemplate.getForObject(
-				APPLE_PUBLIC_KEY_URL,
-				ApplePublicKeys.class
-			);
-
-			if (applePublicKeys == null || applePublicKeys.keys() == null) {
-				throw new AuthException(AuthErrorCode.SOCIAL_AUTH_FAILED);
-			}
+			ApplePublicKeys applePublicKeys = getApplePublicKeys();
 
 			String[] tokenParts = identityToken.split("\\.");
 			if (tokenParts.length != 3) {
@@ -58,10 +60,17 @@ public class AppleAuthClient implements SocialAuthClient {
 			String kid = headerNode.get("kid").asText();
 			String alg = headerNode.get("alg").asText();
 
-			ApplePublicKey matchedKey = applePublicKeys.keys().stream()
-				.filter(key -> key.kid().equals(kid) && key.alg().equals(alg))
-				.findFirst()
-				.orElseThrow(() -> new AuthException(AuthErrorCode.INVALID_SOCIAL_TOKEN));
+			ApplePublicKey matchedKey = findMatchingKey(applePublicKeys, kid, alg);
+
+			if (matchedKey == null) {
+				log.info("Apple public key not found in cache, refreshing keys for kid: {}", kid);
+				applePublicKeys = refreshApplePublicKeys();
+				matchedKey = findMatchingKey(applePublicKeys, kid, alg);
+
+				if (matchedKey == null) {
+					throw new AuthException(AuthErrorCode.INVALID_SOCIAL_TOKEN);
+				}
+			}
 
 			PublicKey publicKey = generatePublicKey(matchedKey);
 
@@ -104,6 +113,59 @@ public class AppleAuthClient implements SocialAuthClient {
 			log.error("Failed to generate Apple public key: {}", e.getMessage(), e);
 			throw new AuthException(AuthErrorCode.SOCIAL_AUTH_FAILED);
 		}
+	}
+
+	private ApplePublicKeys getApplePublicKeys() {
+		long now = System.currentTimeMillis();
+
+		if (cachedKeys != null && now < cacheExpireTime) {
+			return cachedKeys;
+		}
+
+		return refreshApplePublicKeys();
+	}
+
+	private synchronized ApplePublicKeys refreshApplePublicKeys() {
+		long now = System.currentTimeMillis();
+
+		if (cachedKeys != null && now < cacheExpireTime) {
+			return cachedKeys;
+		}
+
+		try {
+			ApplePublicKeys keys = restTemplate.getForObject(
+				APPLE_PUBLIC_KEY_URL,
+				ApplePublicKeys.class
+			);
+
+			if (keys == null || keys.keys() == null) {
+				if (cachedKeys != null) {
+					log.warn("Failed to fetch Apple public keys, using cached keys");
+					return cachedKeys;
+				}
+				throw new AuthException(AuthErrorCode.SOCIAL_AUTH_FAILED);
+			}
+
+			cachedKeys = keys;
+			cacheExpireTime = now + TimeUnit.HOURS.toMillis(CACHE_DURATION_HOURS);
+			log.info("Apple public keys cached successfully, {} keys loaded", keys.keys().size());
+
+			return cachedKeys;
+		} catch (RestClientException e) {
+			if (cachedKeys != null) {
+				log.warn("Failed to refresh Apple public keys: {}, using cached keys", e.getMessage());
+				return cachedKeys;
+			}
+			log.error("Failed to fetch Apple public keys and no cache available: {}", e.getMessage());
+			throw new AuthException(AuthErrorCode.SOCIAL_AUTH_FAILED);
+		}
+	}
+
+	private ApplePublicKey findMatchingKey(ApplePublicKeys keys, String kid, String alg) {
+		return keys.keys().stream()
+			.filter(key -> key.kid().equals(kid) && key.alg().equals(alg))
+			.findFirst()
+			.orElse(null);
 	}
 
 	private record ApplePublicKeys(
