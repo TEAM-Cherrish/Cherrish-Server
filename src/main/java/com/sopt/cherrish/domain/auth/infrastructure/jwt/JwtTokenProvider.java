@@ -69,10 +69,9 @@ public class JwtTokenProvider {
 		return Long.parseLong(claims.getSubject());
 	}
 
-	public boolean validateToken(String token) {
+	public void validateToken(String token) {
 		try {
 			parseClaims(token);
-			return true;
 		} catch (ExpiredJwtException e) {
 			log.debug("Expired JWT token: {}", e.getMessage());
 			throw new AuthException(AuthErrorCode.TOKEN_EXPIRED);

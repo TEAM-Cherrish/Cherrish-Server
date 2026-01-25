@@ -43,21 +43,21 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 		if (token != null) {
 			try {
-				if (jwtTokenProvider.validateToken(token)) {
-					Long userId = jwtTokenProvider.getUserId(token);
-					User user = userRepository.findById(userId)
-						.orElseThrow(() -> new AuthException(AuthErrorCode.USER_NOT_FOUND));
+				jwtTokenProvider.validateToken(token);
 
-					UserPrincipal userPrincipal = UserPrincipal.from(user);
-					UsernamePasswordAuthenticationToken authentication =
-						new UsernamePasswordAuthenticationToken(
-							userPrincipal,
-							null,
-							userPrincipal.getAuthorities()
-						);
-					authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-					SecurityContextHolder.getContext().setAuthentication(authentication);
-				}
+				Long userId = jwtTokenProvider.getUserId(token);
+				User user = userRepository.findById(userId)
+					.orElseThrow(() -> new AuthException(AuthErrorCode.USER_NOT_FOUND));
+
+				UserPrincipal userPrincipal = UserPrincipal.from(user);
+				UsernamePasswordAuthenticationToken authentication =
+					new UsernamePasswordAuthenticationToken(
+						userPrincipal,
+						null,
+						userPrincipal.getAuthorities()
+					);
+				authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+				SecurityContextHolder.getContext().setAuthentication(authentication);
 			} catch (AuthException e) {
 				log.debug("JWT authentication failed: {}", e.getMessage());
 			}
