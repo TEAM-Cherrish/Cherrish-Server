@@ -2,6 +2,7 @@ package com.sopt.cherrish.domain.auth.presentation;
 
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -19,6 +20,7 @@ import com.sopt.cherrish.global.security.CurrentUser;
 import com.sopt.cherrish.global.security.UserPrincipal;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -59,14 +61,15 @@ public class AuthController {
 
 	@Operation(
 		summary = "로그아웃",
-		description = "현재 사용자의 Refresh Token을 무효화합니다."
+		description = "현재 사용자의 Refresh Token을 무효화하고 Access Token을 블랙리스트에 추가합니다."
 	)
 	@ApiExceptions({AuthErrorCode.class, ErrorCode.class})
 	@PostMapping("/logout")
 	public CommonApiResponse<Void> logout(
-		@CurrentUser UserPrincipal userPrincipal
+		@CurrentUser UserPrincipal userPrincipal,
+		@Parameter(hidden = true) @RequestHeader("Authorization") String authorizationHeader
 	) {
-		authService.logout(userPrincipal.getUserId());
+		authService.logout(userPrincipal.getUserId(), authorizationHeader);
 		return CommonApiResponse.success(AuthSuccessCode.LOGOUT_SUCCESS);
 	}
 }

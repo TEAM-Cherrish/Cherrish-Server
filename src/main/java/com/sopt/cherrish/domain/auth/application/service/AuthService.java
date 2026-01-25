@@ -5,6 +5,7 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.sopt.cherrish.domain.auth.domain.repository.AccessTokenBlacklistRepository;
 import com.sopt.cherrish.domain.auth.domain.repository.RefreshTokenRepository;
 import com.sopt.cherrish.domain.auth.exception.AuthErrorCode;
 import com.sopt.cherrish.domain.auth.exception.AuthException;
@@ -36,6 +37,7 @@ public class AuthService {
 	private final UserRepository userRepository;
 	private final JwtTokenProvider jwtTokenProvider;
 	private final RefreshTokenRepository refreshTokenRepository;
+	private final AccessTokenBlacklistRepository accessTokenBlacklistRepository;
 
 	/**
 	 * 소셜 로그인을 처리합니다.
@@ -134,12 +136,20 @@ public class AuthService {
 	/**
 	 * 로그아웃을 처리합니다.
 	 *
-	 * <p>Redis에 저장된 Refresh Token을 삭제하여 해당 토큰으로 더 이상 재발급이 불가능하게 합니다.</p>
+	 * <p>Redis에 저장된 Refresh Token을 삭제하고, Access Token을 블랙리스트에 추가하여
+	 * 해당 토큰들로 더 이상 인증이 불가능하게 합니다.</p>
 	 *
 	 * @param userId 로그아웃할 사용자 ID
+	 * @param authorizationHeader Authorization 헤더 값 (Bearer 토큰)
 	 */
 	@Transactional
-	public void logout(Long userId) {
+	public void logout(Long userId, String authorizationHeader) {
 		refreshTokenRepository.deleteByUserId(userId);
+
+		String accessToken = jwtTokenProvider.extractToken(authorizationHeader);
+		if (accessToken != null) {
+			long remainingExpiration = jwtTokenProvider.getRemainingExpiration(accessToken);
+			accessTokenBlacklistRepository.add(accessToken, remainingExpiration);
+		}
 	}
 }

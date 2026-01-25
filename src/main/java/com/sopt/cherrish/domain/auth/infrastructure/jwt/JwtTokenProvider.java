@@ -142,6 +142,36 @@ public class JwtTokenProvider {
 		return jwtProperties.getRefreshTokenExpiration();
 	}
 
+	/**
+	 * 토큰의 남은 만료 시간(밀리초)을 반환합니다.
+	 *
+	 * @param token JWT 토큰
+	 * @return 남은 만료 시간 (밀리초), 이미 만료된 경우 0
+	 */
+	public long getRemainingExpiration(String token) {
+		try {
+			Claims claims = parseClaims(token);
+			Date expiration = claims.getExpiration();
+			long remaining = expiration.getTime() - System.currentTimeMillis();
+			return Math.max(0, remaining);
+		} catch (Exception e) {
+			return 0;
+		}
+	}
+
+	/**
+	 * Authorization 헤더에서 Bearer 토큰을 추출합니다.
+	 *
+	 * @param authorizationHeader Authorization 헤더 값
+	 * @return 추출된 토큰, 유효하지 않은 형식이면 null
+	 */
+	public String extractToken(String authorizationHeader) {
+		if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+			return authorizationHeader.substring(7);
+		}
+		return null;
+	}
+
 	private Claims parseClaims(String token) {
 		return Jwts.parser()
 			.verifyWith(secretKey)

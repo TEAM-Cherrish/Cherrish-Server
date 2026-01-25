@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import com.sopt.cherrish.domain.auth.domain.repository.AccessTokenBlacklistRepository;
 import com.sopt.cherrish.domain.auth.exception.AuthErrorCode;
 import com.sopt.cherrish.domain.auth.exception.AuthException;
 import com.sopt.cherrish.domain.user.domain.model.User;
@@ -42,6 +43,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 	private final JwtTokenProvider jwtTokenProvider;
 	private final UserRepository userRepository;
+	private final AccessTokenBlacklistRepository accessTokenBlacklistRepository;
 
 	@Override
 	protected void doFilterInternal(
@@ -54,6 +56,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 		if (token != null) {
 			try {
 				jwtTokenProvider.validateToken(token);
+
+				if (accessTokenBlacklistRepository.isBlacklisted(token)) {
+					log.debug("Token is blacklisted");
+					filterChain.doFilter(request, response);
+					return;
+				}
 
 				Long userId = jwtTokenProvider.getUserId(token);
 				User user = userRepository.findById(userId)
