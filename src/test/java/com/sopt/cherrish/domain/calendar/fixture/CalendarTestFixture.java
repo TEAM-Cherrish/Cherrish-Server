@@ -8,6 +8,7 @@ import com.sopt.cherrish.domain.calendar.domain.model.CalendarEventType;
 import com.sopt.cherrish.domain.calendar.presentation.dto.response.CalendarDailyResponseDto;
 import com.sopt.cherrish.domain.calendar.presentation.dto.response.ProcedureEventDowntimeResponseDto;
 import com.sopt.cherrish.domain.calendar.presentation.dto.response.ProcedureEventResponseDto;
+import com.sopt.cherrish.domain.auth.domain.model.SocialProvider;
 import com.sopt.cherrish.domain.procedure.domain.model.Procedure;
 import com.sopt.cherrish.domain.user.domain.model.User;
 import com.sopt.cherrish.domain.userprocedure.domain.model.UserProcedure;
@@ -21,6 +22,8 @@ public class CalendarTestFixture {
 		return User.builder()
 			.name(name)
 			.age(age)
+			.socialProvider(SocialProvider.KAKAO)
+			.socialId("test_social_id")
 			.build();
 	}
 

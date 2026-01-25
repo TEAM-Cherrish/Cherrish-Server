@@ -7,6 +7,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -27,6 +28,7 @@ import com.sopt.cherrish.domain.challenge.core.exception.ChallengeErrorCode;
 import com.sopt.cherrish.domain.challenge.core.exception.ChallengeException;
 import com.sopt.cherrish.domain.challenge.core.presentation.dto.request.CustomRoutineAddRequestDto;
 import com.sopt.cherrish.domain.challenge.core.presentation.dto.response.CustomRoutineAddResponseDto;
+import com.sopt.cherrish.domain.auth.domain.model.SocialProvider;
 import com.sopt.cherrish.domain.user.application.service.UserService;
 import com.sopt.cherrish.domain.user.domain.model.User;
 import com.sopt.cherrish.domain.user.domain.repository.UserRepository;
@@ -72,6 +74,8 @@ class ChallengeCustomRoutineFacadeIntegrationTest {
 		return userRepository.save(User.builder()
 			.name("테스트 유저")
 			.age(25)
+			.socialProvider(SocialProvider.KAKAO)
+			.socialId(UUID.randomUUID().toString())
 			.build());
 	}
 
@@ -206,6 +210,8 @@ class ChallengeCustomRoutineFacadeIntegrationTest {
 		User other = userRepository.save(User.builder()
 			.name("다른 유저")
 			.age(30)
+			.socialProvider(SocialProvider.KAKAO)
+			.socialId(UUID.randomUUID().toString())
 			.build());
 
 		createActiveChallengeWithRoutines(owner, 3);
