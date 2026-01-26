@@ -34,13 +34,28 @@ public class JwtTokenProvider {
 	private static final String TOKEN_TYPE_CLAIM = "type";
 	private static final String ACCESS_TOKEN_TYPE = "access";
 	private static final String REFRESH_TOKEN_TYPE = "refresh";
+	private static final int MIN_SECRET_KEY_BYTES = 32;
 
 	private final JwtProperties jwtProperties;
 	private SecretKey secretKey;
 
 	@PostConstruct
 	protected void init() {
-		byte[] keyBytes = Decoders.BASE64.decode(jwtProperties.getSecretKey());
+		byte[] keyBytes;
+		try {
+			keyBytes = Decoders.BASE64.decode(jwtProperties.getSecretKey());
+		} catch (Exception e) {
+			throw new IllegalStateException(
+				"JWT secret key is not valid Base64 encoded. Please provide a valid Base64 encoded key.", e);
+		}
+
+		if (keyBytes.length < MIN_SECRET_KEY_BYTES) {
+			throw new IllegalStateException(String.format(
+				"JWT secret key must be at least %d bytes (256 bits) for HMAC-SHA. Current key is %d bytes. "
+					+ "Generate a new key with: openssl rand -base64 32",
+				MIN_SECRET_KEY_BYTES, keyBytes.length));
+		}
+
 		this.secretKey = Keys.hmacShaKeyFor(keyBytes);
 	}
 
