@@ -37,11 +37,6 @@ spring:
     openai:
       api-key: test-dummy-api-key-for-unit-tests
 
-  data:
-    redis:
-      host: localhost
-      port: 6379
-
 jwt:
   secret-key: dGVzdC1zZWNyZXQta2V5LWZvci11bml0LXRlc3RzLW11c3QtYmUtYXQtbGVhc3QtMjU2LWJpdHMtbG9uZw==
   access-token-expiration: 1800000
