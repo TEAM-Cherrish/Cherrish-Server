@@ -1,5 +1,7 @@
 package com.sopt.cherrish.domain.auth.application.service;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
@@ -110,7 +112,7 @@ public class AuthService {
 		String storedToken = refreshTokenRepository.findByUserId(userId)
 			.orElseThrow(() -> new AuthException(AuthErrorCode.REFRESH_TOKEN_NOT_FOUND));
 
-		if (!storedToken.equals(refreshToken)) {
+		if (!constantTimeEquals(storedToken, refreshToken)) {
 			throw new AuthException(AuthErrorCode.INVALID_REFRESH_TOKEN);
 		}
 
@@ -148,5 +150,15 @@ public class AuthService {
 		);
 
 		return new TokenResponseDto(accessToken, refreshToken);
+	}
+
+	private boolean constantTimeEquals(String a, String b) {
+		if (a == null || b == null) {
+			return false;
+		}
+		return MessageDigest.isEqual(
+			a.getBytes(StandardCharsets.UTF_8),
+			b.getBytes(StandardCharsets.UTF_8)
+		);
 	}
 }
