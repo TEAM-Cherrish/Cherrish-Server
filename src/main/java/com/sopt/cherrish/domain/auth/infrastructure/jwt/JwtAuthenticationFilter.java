@@ -54,6 +54,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 			try {
 				jwtTokenProvider.validateToken(token);
 
+				if (!jwtTokenProvider.isAccessToken(token)) {
+					log.debug("Token is not an access token");
+					filterChain.doFilter(request, response);
+					return;
+				}
+
 				if (accessTokenBlacklistRepository.isBlacklisted(token)) {
 					log.debug("Token is blacklisted");
 					filterChain.doFilter(request, response);

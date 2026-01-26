@@ -109,6 +109,17 @@ public class JwtTokenProvider {
 	}
 
 	/**
+	 * 토큰이 Access Token인지 확인합니다.
+	 *
+	 * @param token JWT 토큰
+	 * @return Access Token이면 true, Refresh Token이면 false
+	 */
+	public boolean isAccessToken(String token) {
+		Claims claims = parseClaims(token);
+		return ACCESS_TOKEN_TYPE.equals(claims.get(TOKEN_TYPE_CLAIM, String.class));
+	}
+
+	/**
 	 * 토큰이 Refresh Token인지 확인합니다.
 	 *
 	 * @param token JWT 토큰
