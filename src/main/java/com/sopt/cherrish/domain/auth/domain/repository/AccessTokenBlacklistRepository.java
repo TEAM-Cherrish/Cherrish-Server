@@ -43,6 +43,6 @@ public class AccessTokenBlacklistRepository {
 	 */
 	public boolean isBlacklisted(String token) {
 		String key = KEY_PREFIX + token;
-		return redisTemplate.hasKey(key);
+		return Boolean.TRUE.equals(redisTemplate.hasKey(key));
 	}
 }
