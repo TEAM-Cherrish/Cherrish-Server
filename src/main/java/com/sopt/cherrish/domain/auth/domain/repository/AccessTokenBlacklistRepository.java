@@ -38,8 +38,10 @@ public class AccessTokenBlacklistRepository {
 	/**
 	 * Access Token이 블랙리스트에 있는지 확인합니다.
 	 *
+	 * <p>Redis 연결 문제 등으로 null이 반환될 수 있으므로 null-safe 비교를 수행합니다.</p>
+	 *
 	 * @param token 확인할 Access Token
-	 * @return 블랙리스트에 있으면 true
+	 * @return 블랙리스트에 있으면 true, 없거나 확인 불가 시 false
 	 */
 	public boolean isBlacklisted(String token) {
 		String key = KEY_PREFIX + token;

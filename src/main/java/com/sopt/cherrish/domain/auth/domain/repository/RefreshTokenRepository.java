@@ -25,13 +25,17 @@ public class RefreshTokenRepository {
 	/**
 	 * Refresh Token을 저장합니다.
 	 *
-	 * <p>기존에 저장된 토큰이 있으면 덮어씁니다.</p>
+	 * <p>기존에 저장된 토큰이 있으면 덮어씁니다.
+	 * 만료 시간이 0 이하인 경우 저장하지 않습니다.</p>
 	 *
 	 * @param userId 사용자 ID
 	 * @param refreshToken 저장할 Refresh Token
 	 * @param expirationMillis 만료 시간 (밀리초)
 	 */
 	public void save(Long userId, String refreshToken, long expirationMillis) {
+		if (expirationMillis <= 0) {
+			return;
+		}
 		String key = KEY_PREFIX + userId;
 		redisTemplate.opsForValue().set(key, refreshToken, expirationMillis, TimeUnit.MILLISECONDS);
 	}
@@ -63,11 +67,13 @@ public class RefreshTokenRepository {
 	/**
 	 * 사용자의 Refresh Token 존재 여부를 확인합니다.
 	 *
+	 * <p>Redis 연결 문제 등으로 null이 반환될 수 있으므로 null-safe 비교를 수행합니다.</p>
+	 *
 	 * @param userId 사용자 ID
-	 * @return 토큰이 존재하면 true
+	 * @return 토큰이 존재하면 true, 없거나 확인 불가 시 false
 	 */
 	public boolean existsByUserId(Long userId) {
 		String key = KEY_PREFIX + userId;
-		return redisTemplate.hasKey(key);
+		return Boolean.TRUE.equals(redisTemplate.hasKey(key));
 	}
 }
