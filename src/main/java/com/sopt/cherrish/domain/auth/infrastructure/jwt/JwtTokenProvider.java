@@ -164,7 +164,7 @@ public class JwtTokenProvider {
 	 * 토큰의 남은 만료 시간(밀리초)을 반환합니다.
 	 *
 	 * @param token JWT 토큰
-	 * @return 남은 만료 시간 (밀리초), 이미 만료된 경우 0
+	 * @return 남은 만료 시간 (밀리초), 이미 만료되었거나 유효하지 않은 경우 0
 	 */
 	public long getRemainingExpiration(String token) {
 		try {
@@ -172,7 +172,12 @@ public class JwtTokenProvider {
 			Date expiration = claims.getExpiration();
 			long remaining = expiration.getTime() - System.currentTimeMillis();
 			return Math.max(0, remaining);
+		} catch (ExpiredJwtException | UnsupportedJwtException | MalformedJwtException
+				 | SecurityException | IllegalArgumentException e) {
+			log.debug("Expected JWT exception in getRemainingExpiration: {}", e.getMessage());
+			return 0;
 		} catch (Exception e) {
+			log.warn("Unexpected exception in getRemainingExpiration: {}", e.getMessage(), e);
 			return 0;
 		}
 	}
