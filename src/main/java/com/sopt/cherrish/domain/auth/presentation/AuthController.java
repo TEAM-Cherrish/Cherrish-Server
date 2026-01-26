@@ -21,6 +21,7 @@ import com.sopt.cherrish.global.security.UserPrincipal;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -37,6 +38,7 @@ public class AuthController {
 		summary = "소셜 로그인",
 		description = "카카오 또는 애플 소셜 토큰으로 로그인합니다. 신규 사용자는 isNewUser: true를 반환합니다."
 	)
+	@SecurityRequirements
 	@ApiExceptions({AuthErrorCode.class, ErrorCode.class})
 	@PostMapping("/login")
 	public CommonApiResponse<LoginResponseDto> login(
@@ -50,6 +52,7 @@ public class AuthController {
 		summary = "토큰 재발급",
 		description = "Refresh Token으로 새로운 Access Token과 Refresh Token을 발급받습니다."
 	)
+	@SecurityRequirements
 	@ApiExceptions({AuthErrorCode.class, ErrorCode.class})
 	@PostMapping("/refresh")
 	public CommonApiResponse<TokenResponseDto> refresh(
