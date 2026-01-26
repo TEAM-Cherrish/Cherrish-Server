@@ -77,16 +77,9 @@ public class AuthService {
 			user = existingUser.get();
 		}
 
-		String accessToken = jwtTokenProvider.createAccessToken(user.getId());
-		String refreshToken = jwtTokenProvider.createRefreshToken(user.getId());
+		TokenResponseDto tokens = issueTokenPair(user.getId());
 
-		refreshTokenRepository.save(
-			user.getId(),
-			refreshToken,
-			jwtTokenProvider.getRefreshTokenExpiration()
-		);
-
-		return new LoginResponseDto(user.getId(), isNewUser, accessToken, refreshToken);
+		return new LoginResponseDto(user.getId(), isNewUser, tokens.accessToken(), tokens.refreshToken());
 	}
 
 	/**
@@ -121,16 +114,7 @@ public class AuthService {
 			throw new AuthException(AuthErrorCode.INVALID_REFRESH_TOKEN);
 		}
 
-		String newAccessToken = jwtTokenProvider.createAccessToken(userId);
-		String newRefreshToken = jwtTokenProvider.createRefreshToken(userId);
-
-		refreshTokenRepository.save(
-			userId,
-			newRefreshToken,
-			jwtTokenProvider.getRefreshTokenExpiration()
-		);
-
-		return new TokenResponseDto(newAccessToken, newRefreshToken);
+		return issueTokenPair(userId);
 	}
 
 	/**
@@ -151,5 +135,18 @@ public class AuthService {
 			long remainingExpiration = jwtTokenProvider.getRemainingExpiration(accessToken);
 			accessTokenBlacklistRepository.add(accessToken, remainingExpiration);
 		}
+	}
+
+	private TokenResponseDto issueTokenPair(Long userId) {
+		String accessToken = jwtTokenProvider.createAccessToken(userId);
+		String refreshToken = jwtTokenProvider.createRefreshToken(userId);
+
+		refreshTokenRepository.save(
+			userId,
+			refreshToken,
+			jwtTokenProvider.getRefreshTokenExpiration()
+		);
+
+		return new TokenResponseDto(accessToken, refreshToken);
 	}
 }
