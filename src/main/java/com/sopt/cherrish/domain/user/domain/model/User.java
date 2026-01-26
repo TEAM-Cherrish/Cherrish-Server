@@ -39,7 +39,6 @@ public class User extends BaseTimeEntity {
 	@Column(nullable = false, unique = true)
 	private String socialId;
 
-	@Column(unique = true)
 	private String email;
 
 	@Builder
