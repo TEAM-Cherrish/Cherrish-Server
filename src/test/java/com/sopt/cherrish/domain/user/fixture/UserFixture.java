@@ -2,6 +2,7 @@ package com.sopt.cherrish.domain.user.fixture;
 
 import java.lang.reflect.Field;
 import java.time.LocalDateTime;
+import java.util.concurrent.atomic.AtomicLong;
 
 import com.sopt.cherrish.domain.auth.domain.model.SocialProvider;
 import com.sopt.cherrish.domain.user.domain.model.User;
@@ -11,9 +12,10 @@ public class UserFixture {
 
 	private static final String DEFAULT_NAME = "홍길동";
 	private static final int DEFAULT_AGE = 25;
-	private static final Long DEFAULT_ID = 1L;
 	private static final SocialProvider DEFAULT_SOCIAL_PROVIDER = SocialProvider.KAKAO;
-	private static final String DEFAULT_SOCIAL_ID = "test_social_id_12345";
+
+	private static final AtomicLong ID_COUNTER = new AtomicLong(1);
+	private static final AtomicLong SOCIAL_ID_COUNTER = new AtomicLong(1);
 
 	private UserFixture() {
 		// Utility class
@@ -28,9 +30,9 @@ public class UserFixture {
 			.name(name)
 			.age(age)
 			.socialProvider(DEFAULT_SOCIAL_PROVIDER)
-			.socialId(DEFAULT_SOCIAL_ID)
+			.socialId(generateSocialId())
 			.build();
-		setField(user, User.class, "id", DEFAULT_ID);
+		setField(user, User.class, "id", ID_COUNTER.getAndIncrement());
 		setField(user, BaseTimeEntity.class, "createdAt", LocalDateTime.now());
 		return user;
 	}
@@ -40,11 +42,15 @@ public class UserFixture {
 			.name(name)
 			.age(age)
 			.socialProvider(DEFAULT_SOCIAL_PROVIDER)
-			.socialId(DEFAULT_SOCIAL_ID)
+			.socialId(generateSocialId())
 			.build();
-		setField(user, User.class, "id", DEFAULT_ID);
+		setField(user, User.class, "id", ID_COUNTER.getAndIncrement());
 		setField(user, BaseTimeEntity.class, "createdAt", createdAt);
 		return user;
+	}
+
+	private static String generateSocialId() {
+		return "test_social_id_" + SOCIAL_ID_COUNTER.getAndIncrement();
 	}
 
 	private static void setField(Object target, Class<?> clazz, String fieldName, Object value) {
