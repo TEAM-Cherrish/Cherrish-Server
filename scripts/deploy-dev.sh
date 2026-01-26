@@ -32,6 +32,11 @@ OPENAI_API_KEY=$(aws ssm get-parameter --name "/cherrish/OPENAI_API_KEY" --regio
 OPENAI_MODEL=$(aws ssm get-parameter --name "/cherrish/OPENAI_MODEL" --region "${AWS_REGION}" --query "Parameter.Value" --output text)
 SERVER_URL=$(aws ssm get-parameter --name "/cherrish/SERVER_URL" --region "${AWS_REGION}" --query "Parameter.Value" --output text)
 DISCORD_ERROR_WEBHOOK_URL=$(aws ssm get-parameter --name "/cherrish/DISCORD_ERROR_WEBHOOK_URL" --region "${AWS_REGION}" --with-decryption --query "Parameter.Value" --output text)
+REDIS_HOST=$(aws ssm get-parameter --name "/cherrish/REDIS_HOST" --region "${AWS_REGION}" --query "Parameter.Value" --output text)
+REDIS_PORT=$(aws ssm get-parameter --name "/cherrish/REDIS_PORT" --region "${AWS_REGION}" --query "Parameter.Value" --output text)
+REDIS_PASSWORD=$(aws ssm get-parameter --name "/cherrish/REDIS_PASSWORD" --region "${AWS_REGION}" --with-decryption --query "Parameter.Value" --output text)
+JWT_SECRET_KEY=$(aws ssm get-parameter --name "/cherrish/JWT_SECRET_KEY" --region "${AWS_REGION}" --with-decryption --query "Parameter.Value" --output text)
+APPLE_CLIENT_ID=$(aws ssm get-parameter --name "/cherrish/APPLE_CLIENT_ID" --region "${AWS_REGION}" --query "Parameter.Value" --output text)
 
 # Stop and remove existing container
 echo "Stopping existing container..."
@@ -53,6 +58,11 @@ docker run -d \
   -e OPENAI_MODEL="${OPENAI_MODEL}" \
   -e SERVER_URL="${SERVER_URL}" \
   -e DISCORD_ERROR_WEBHOOK_URL="${DISCORD_ERROR_WEBHOOK_URL}" \
+  -e REDIS_HOST="${REDIS_HOST}" \
+  -e REDIS_PORT="${REDIS_PORT}" \
+  -e REDIS_PASSWORD="${REDIS_PASSWORD}" \
+  -e JWT_SECRET_KEY="${JWT_SECRET_KEY}" \
+  -e APPLE_CLIENT_ID="${APPLE_CLIENT_ID}" \
   "${IMAGE}"
 
 # Cleanup old images
