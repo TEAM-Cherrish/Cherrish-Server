@@ -51,16 +51,7 @@ public class JwtTokenProvider {
 	 * @return 생성된 Access Token 문자열
 	 */
 	public String createAccessToken(Long userId) {
-		Date now = new Date();
-		Date expiration = new Date(now.getTime() + jwtProperties.getAccessTokenExpiration());
-
-		return Jwts.builder()
-			.subject(String.valueOf(userId))
-			.claim(TOKEN_TYPE_CLAIM, ACCESS_TOKEN_TYPE)
-			.issuedAt(now)
-			.expiration(expiration)
-			.signWith(secretKey)
-			.compact();
+		return createToken(userId, ACCESS_TOKEN_TYPE, jwtProperties.getAccessTokenExpiration());
 	}
 
 	/**
@@ -70,12 +61,16 @@ public class JwtTokenProvider {
 	 * @return 생성된 Refresh Token 문자열
 	 */
 	public String createRefreshToken(Long userId) {
+		return createToken(userId, REFRESH_TOKEN_TYPE, jwtProperties.getRefreshTokenExpiration());
+	}
+
+	private String createToken(Long userId, String tokenType, long expirationTime) {
 		Date now = new Date();
-		Date expiration = new Date(now.getTime() + jwtProperties.getRefreshTokenExpiration());
+		Date expiration = new Date(now.getTime() + expirationTime);
 
 		return Jwts.builder()
 			.subject(String.valueOf(userId))
-			.claim(TOKEN_TYPE_CLAIM, REFRESH_TOKEN_TYPE)
+			.claim(TOKEN_TYPE_CLAIM, tokenType)
 			.issuedAt(now)
 			.expiration(expiration)
 			.signWith(secretKey)
