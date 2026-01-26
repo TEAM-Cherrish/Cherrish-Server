@@ -102,17 +102,8 @@ public class JwtTokenProvider {
 		} catch (ExpiredJwtException e) {
 			log.debug("Expired JWT token: {}", e.getMessage());
 			throw new AuthException(AuthErrorCode.TOKEN_EXPIRED);
-		} catch (UnsupportedJwtException e) {
-			log.debug("Unsupported JWT token: {}", e.getMessage());
-			throw new AuthException(AuthErrorCode.INVALID_TOKEN);
-		} catch (MalformedJwtException e) {
-			log.debug("Malformed JWT token: {}", e.getMessage());
-			throw new AuthException(AuthErrorCode.INVALID_TOKEN);
-		} catch (SecurityException e) {
-			log.debug("Invalid JWT signature: {}", e.getMessage());
-			throw new AuthException(AuthErrorCode.INVALID_TOKEN);
-		} catch (IllegalArgumentException e) {
-			log.debug("JWT claims string is empty: {}", e.getMessage());
+		} catch (UnsupportedJwtException | MalformedJwtException | SecurityException | IllegalArgumentException e) {
+			log.debug("Invalid JWT token: {}", e.getMessage());
 			throw new AuthException(AuthErrorCode.INVALID_TOKEN);
 		}
 	}
