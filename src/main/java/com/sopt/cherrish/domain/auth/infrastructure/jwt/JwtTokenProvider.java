@@ -82,10 +82,16 @@ public class JwtTokenProvider {
 	 *
 	 * @param token JWT 토큰
 	 * @return 사용자 ID
+	 * @throws AuthException subject가 유효한 사용자 ID가 아닌 경우
 	 */
 	public Long getUserId(String token) {
-		Claims claims = parseClaims(token);
-		return Long.parseLong(claims.getSubject());
+		try {
+			Claims claims = parseClaims(token);
+			return Long.parseLong(claims.getSubject());
+		} catch (NumberFormatException | NullPointerException e) {
+			log.debug("Invalid user ID in token: {}", e.getMessage());
+			throw new AuthException(AuthErrorCode.INVALID_TOKEN);
+		}
 	}
 
 	/**
