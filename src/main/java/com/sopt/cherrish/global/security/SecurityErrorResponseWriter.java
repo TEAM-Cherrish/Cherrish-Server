@@ -27,19 +27,19 @@ public class SecurityErrorResponseWriter {
 	/**
 	 * 에러 응답을 HTTP Response에 작성합니다.
 	 *
+	 * <p>HTTP 상태 코드는 AuthErrorCode에서 가져옵니다.</p>
+	 *
 	 * @param response HTTP 응답 객체
-	 * @param status HTTP 상태 코드
 	 * @param errorCode 에러 코드
 	 * @throws IOException 응답 작성 중 예외 발생 시
 	 */
 	public void writeErrorResponse(
 		HttpServletResponse response,
-		int status,
 		AuthErrorCode errorCode
 	) throws IOException {
 		response.setContentType(MediaType.APPLICATION_JSON_VALUE);
 		response.setCharacterEncoding(StandardCharsets.UTF_8.name());
-		response.setStatus(status);
+		response.setStatus(errorCode.getStatus());
 
 		CommonApiResponse<Void> errorResponse = CommonApiResponse.fail(errorCode);
 		response.getWriter().write(objectMapper.writeValueAsString(errorResponse));

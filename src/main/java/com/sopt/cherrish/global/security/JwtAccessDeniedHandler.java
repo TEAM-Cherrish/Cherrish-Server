@@ -29,10 +29,6 @@ public class JwtAccessDeniedHandler implements AccessDeniedHandler {
 		HttpServletResponse response,
 		AccessDeniedException accessDeniedException
 	) throws IOException {
-		errorResponseWriter.writeErrorResponse(
-			response,
-			HttpServletResponse.SC_FORBIDDEN,
-			AuthErrorCode.ACCESS_DENIED
-		);
+		errorResponseWriter.writeErrorResponse(response, AuthErrorCode.ACCESS_DENIED);
 	}
 }
