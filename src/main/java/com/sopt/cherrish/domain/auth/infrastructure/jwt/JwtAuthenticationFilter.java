@@ -5,8 +5,6 @@ import java.io.IOException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
-import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.sopt.cherrish.domain.auth.domain.repository.AccessTokenBlacklistRepository;
@@ -38,7 +36,6 @@ import lombok.extern.slf4j.Slf4j;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 	private static final String AUTHORIZATION_HEADER = "Authorization";
-	private static final String BEARER_PREFIX = "Bearer ";
 
 	private final JwtTokenProvider jwtTokenProvider;
 	private final UserRepository userRepository;
@@ -50,7 +47,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 		HttpServletResponse response,
 		FilterChain filterChain
 	) throws ServletException, IOException {
-		String token = resolveToken(request);
+		String authorizationHeader = request.getHeader(AUTHORIZATION_HEADER);
+		String token = jwtTokenProvider.extractToken(authorizationHeader);
 
 		if (token != null) {
 			try {
@@ -81,13 +79,5 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 		}
 
 		filterChain.doFilter(request, response);
-	}
-
-	private String resolveToken(HttpServletRequest request) {
-		String bearerToken = request.getHeader(AUTHORIZATION_HEADER);
-		if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(BEARER_PREFIX)) {
-			return bearerToken.substring(BEARER_PREFIX.length());
-		}
-		return null;
 	}
 }
