@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -16,6 +17,7 @@ import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
+import com.sopt.cherrish.domain.auth.domain.model.SocialProvider;
 import com.sopt.cherrish.domain.procedure.domain.model.Procedure;
 import com.sopt.cherrish.domain.user.domain.model.User;
 import com.sopt.cherrish.domain.userprocedure.domain.model.UserProcedure;
@@ -183,6 +185,8 @@ class UserProcedureRepositoryTest {
 		User user = User.builder()
 			.name(name)
 			.age(age)
+			.socialProvider(SocialProvider.KAKAO)
+			.socialId(UUID.randomUUID().toString())
 			.build();
 		return entityManager.persist(user);
 	}

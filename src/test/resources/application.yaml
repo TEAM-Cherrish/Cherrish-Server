@@ -1,5 +1,16 @@
 spring:
 
+  profiles:
+    active: test
+
+  main:
+    allow-bean-definition-overriding: true
+
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration
+      - org.springframework.boot.autoconfigure.security.servlet.SecurityFilterAutoConfiguration
+
   datasource:
     url: jdbc:h2:mem:testdb
     driver-class-name: org.h2.Driver
@@ -25,3 +36,12 @@ spring:
   ai:
     openai:
       api-key: test-dummy-api-key-for-unit-tests
+
+jwt:
+  secret-key: dGVzdC1zZWNyZXQta2V5LWZvci11bml0LXRlc3RzLW11c3QtYmUtYXQtbGVhc3QtMjU2LWJpdHMtbG9uZw==
+  access-token-expiration: 1800000
+  refresh-token-expiration: 1209600000
+
+social:
+  apple:
+    client-id: com.test.app

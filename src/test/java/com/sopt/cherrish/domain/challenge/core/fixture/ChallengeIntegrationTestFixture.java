@@ -2,6 +2,7 @@ package com.sopt.cherrish.domain.challenge.core.fixture;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.stereotype.Component;
 
@@ -12,6 +13,7 @@ import com.sopt.cherrish.domain.challenge.core.domain.model.ChallengeStatistics;
 import com.sopt.cherrish.domain.challenge.core.domain.repository.ChallengeRepository;
 import com.sopt.cherrish.domain.challenge.core.domain.repository.ChallengeRoutineRepository;
 import com.sopt.cherrish.domain.challenge.core.domain.repository.ChallengeStatisticsRepository;
+import com.sopt.cherrish.domain.auth.domain.model.SocialProvider;
 import com.sopt.cherrish.domain.user.domain.model.User;
 
 import static com.sopt.cherrish.domain.challenge.core.fixture.ChallengeTestConstants.FIXED_START_DATE;
@@ -73,6 +75,8 @@ public class ChallengeIntegrationTestFixture {
 		return userRepository.save(User.builder()
 			.name(name)
 			.age(age)
+			.socialProvider(SocialProvider.KAKAO)
+			.socialId(UUID.randomUUID().toString())
 			.build());
 	}
 
